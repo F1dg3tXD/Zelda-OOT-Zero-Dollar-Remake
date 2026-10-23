@@ -1,0 +1,2328 @@
+@tool
+## Headless smoke tests for the Godot Collab add-on.
+##
+## Run with:
+##   ~/.apps/Godot/Godot_v4.7.2/bin/godot --headless \
+##     --script res://addons/godot_collab/tests/run_tests.gd
+##
+## These cover the pure/data layers (protocol framing, invitation codes, path
+## validation, rate limiting) and a real ENet loopback handshake between a host
+## and client coordinator. GUI-only behaviour (3D overlay drawing) still needs
+## the manual procedure on the project wiki's Testing page.
+extends SceneTree
+
+var _checks: int = 0
+var _failures: Array[String] = []
+
+
+func _check(condition: bool, label: String) -> void:
+	_checks += 1
+	if not condition:
+		_failures.append(label)
+		print("  FAIL: ", label)
+
+
+func _count_prefixed(root: Node, prefix: String) -> int:
+	var count: int = 0
+	for child in root.get_children():
+		if str(child.name).begins_with(prefix):
+			count += 1
+	return count
+
+
+func _test_node_id_map() -> void:
+	print("[node id map]")
+	var map := CollabNodeIdMap.new()
+	var a := Node.new()
+	var first: int = map.allocate_id()
+	_check(first > 0, "authoritative ids are positive")
+	var temp: int = map.allocate_temp_id()
+	_check(temp != -1, "temporary ids never use the -1 'no id' sentinel")
+	map.register(a, first)
+	# clear() must not hand out ids that live nodes still hold, otherwise a node
+	# created right after a snapshot overwrites the reverse mapping.
+	map.clear()
+	var after: int = map.allocate_id()
+	_check(after > first, "authoritative ids never repeat after clear()")
+	var temp2: int = map.allocate_temp_id()
+	_check(temp2 != temp, "temporary ids never repeat after clear()")
+	a.free()
+
+
+func _test_property_values() -> void:
+	print("[property values]")
+	# Round-trip every newly supported value shape.
+	var cases: Array = [
+		["vector2i", Vector2i(3, 4)],
+		["vector3i", Vector3i(1, 2, 3)],
+		["rect2", Rect2(1, 2, 3, 4)],
+		["transform3d", Transform3D(Basis.from_euler(Vector3(1, 2, 3)), Vector3(4, 5, 6))],
+		["aabb", AABB(Vector3.ONE, Vector3(2, 2, 2))],
+		["packed_string", PackedStringArray(["a", "b", "c"])],
+		["array", [1, "two", Vector3.ONE]],
+		["dictionary", {"k": 1, "v": Vector2(0.5, 0.5)}],
+		["string_name", "a_name"],
+	]
+	for case in cases:
+		var encoded: Dictionary = CollabSceneOperations.encode_value(case[1])
+		_check(encoded["kind"] != CollabSceneOperations.VALUE_UNSUPPORTED, "encode %s supported" % case[0])
+		var decoded: Variant = CollabSceneOperations.decode_value(encoded["kind"], encoded["value"])
+		_check(typeof(decoded) == typeof(case[1]), "decode %s preserves type" % case[0])
+		_check(decoded == case[1], "decode %s preserves value" % case[0])
+
+	# Containers holding live objects must be refused rather than silently lossy.
+	var with_node: Array = [Node.new()]
+	_check(CollabSceneOperations.encode_value(with_node)["kind"] == CollabSceneOperations.VALUE_UNSUPPORTED, "array containing an Object is refused")
+	(with_node[0] as Node).free()
+
+	var node := Node.new()
+	_check(CollabSceneOperations.is_property_syncable(node, "process_priority"), "process_priority is syncable")
+	_check(CollabSceneOperations.is_property_syncable(node, "editor_description"), "editor_description is syncable")
+	_check(not CollabSceneOperations.is_property_syncable(node, "name"), "name is reserved")
+	_check(not CollabSceneOperations.is_property_syncable(node, "script"), "script is reserved")
+	var props: Dictionary = CollabSceneOperations.collect_syncable_props(node)
+	_check(props.has("process_priority") and props.has("process_mode"), "collect includes general Node properties")
+	node.free()
+
+	var n3d := Node3D.new()
+	_check(not CollabSceneOperations.is_property_syncable(n3d, "position"), "Node3D position handled by transform op")
+	_check(not CollabSceneOperations.is_property_syncable(n3d, "transform"), "Node3D transform is reserved")
+	var n3d_props: Dictionary = CollabSceneOperations.collect_syncable_props(n3d)
+	_check(n3d_props.has("visible") and n3d_props.has("process_priority"), "collect includes Node3D editor properties")
+	_check(not n3d_props.has("transform") and not n3d_props.has("position"), "collect excludes handled transform properties")
+	n3d.free()
+
+	# Sub-properties (material overrides, theme overrides) use '/' and are ordinary
+	# storable properties, so they must be syncable; identity/behaviour names must not.
+	_check(CollabSceneOperations.is_syncable_property_name("surface_material_override/0"), "material override sub-property is syncable")
+	_check(CollabSceneOperations.is_syncable_property_name("theme_override_colors/font_color"), "theme override sub-property is syncable")
+	_check(not CollabSceneOperations.is_syncable_property_name("_editor_only"), "underscore-prefixed property rejected")
+	_check(not CollabSceneOperations.is_syncable_property_name("metadata/custom"), "metadata property rejected")
+	_check(not CollabSceneOperations.is_syncable_property_name(""), "empty property name rejected")
+
+	# Embedded (path-less) resources are serialized inline and must survive a
+	# round-trip; the cheap signature only needs to notice they changed.
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.2, 0.4, 0.9)
+	material.roughness = 0.25
+	var encoded_res: Dictionary = CollabSceneOperations.encode_value(material)
+	_check(encoded_res["kind"] == CollabSceneOperations.VALUE_RESOURCE_INLINE, "path-less resource encoded inline")
+	var encoded_text: Variant = encoded_res["value"]
+	_check(typeof(encoded_text) == TYPE_STRING and not (encoded_text as String).is_empty(), "inline payload is non-empty text")
+	var decoded_res: Variant = CollabSceneOperations.decode_value(encoded_res["kind"], encoded_text)
+	_check(decoded_res is StandardMaterial3D, "inline resource decodes back to a resource")
+	if decoded_res is StandardMaterial3D:
+		var restored: StandardMaterial3D = decoded_res
+		_check(restored.albedo_color.is_equal_approx(Color(0.2, 0.4, 0.9)), "inline resource preserves colour")
+		_check(is_equal_approx(restored.roughness, 0.25), "inline resource preserves roughness")
+		_check(restored.resource_path.is_empty(), "inline resource is detached from the temp receive path")
+		var carrier := MeshInstance3D.new()
+		carrier.material_override = restored
+		var packed := PackedScene.new()
+		var pack_err: Error = packed.pack(carrier)
+		var probe_path: String = "user://collab_inline_probe.tscn"
+		var save_err: Error = ResourceSaver.save(packed, probe_path)
+		var probe_text: String = FileAccess.get_file_as_string(probe_path) if save_err == OK else ""
+		if FileAccess.file_exists(probe_path):
+			DirAccess.remove_absolute(ProjectSettings.globalize_path(probe_path))
+		_check(pack_err == OK and save_err == OK, "inline resource packs into a scene")
+		_check(not probe_text.contains("godot_collab_recv_"), "saved scene embeds the resource instead of the temp path")
+		carrier.free()
+	# A cleared object property reports TYPE_OBJECT with a null value; it must
+	# encode as null (not unsupported) so a later null -> resource change is
+	# detected by the diff watcher instead of being silently ignored.
+	var empty_mesh := MeshInstance3D.new()
+	var cleared: Variant = empty_mesh.get("material_override")
+	_check(typeof(cleared) == TYPE_OBJECT, "cleared object property is typed as Object")
+	var cleared_encoded: Dictionary = CollabSceneOperations.encode_value(cleared)
+	_check(cleared_encoded["kind"] == CollabSceneOperations.VALUE_NULL, "cleared object property encodes as null")
+	_check(CollabSceneOperations.signature_value(cleared)["kind"] == CollabSceneOperations.VALUE_NULL, "cleared object property signature is null")
+	_check(CollabSceneOperations.collect_syncable_props(empty_mesh).has("material_override"), "collection keeps a null object property")
+	empty_mesh.free()
+
+	_check(CollabSceneOperations.is_resource_kind(CollabSceneOperations.VALUE_RESOURCE_INLINE), "inline kind is a resource kind")
+	_check(CollabSceneOperations.is_resource_kind(CollabSceneOperations.VALUE_RESOURCE), "path resource kind is a resource kind")
+	_check(not CollabSceneOperations.is_resource_kind(CollabSceneOperations.VALUE_VECTOR3), "plain value kind is not a resource kind")
+	var sig: Dictionary = CollabSceneOperations.signature_value(material)
+	_check(sig["kind"] == CollabSceneOperations.VALUE_RESOURCE_INLINE, "signature of embedded resource is inline kind")
+	_check(typeof(sig["value"]) == TYPE_INT, "signature of embedded resource carries its instance id, not serialized text")
+	material = null
+
+
+func _test_filesync_paths() -> void:
+	print("[file sync paths]")
+	_check(CollabWorkspaceService.is_source_file("scripts/player.gd"), "gd source file watched")
+	_check(CollabWorkspaceService.is_source_file("materials/sky.tres"), "tres resource watched")
+	# project.godot is synchronised as editor state, never as a file, so a
+	# client's own project file is never replaced by the host's copy.
+	_check(not CollabWorkspaceService.is_source_file("project.godot"), "project.godot excluded from raw file sync")
+	_check(CollabWorkspaceService.is_source_file("export_presets.cfg"), "export presets still watched")
+	_check(CollabWorkspaceService.is_source_file("shaders/thing.gdshader"), "shader watched")
+	# The add-on's own files are never relayed: live-editing an active add-on can
+	# crash a client and corrupt its project copy.
+	_check(not CollabWorkspaceService.is_source_file("addons/godot_collab/plugin.gd"), "addon files excluded from sync")
+	_check(not CollabWorkspaceService.is_source_file(".godot/imported/x.gd"), "generated cache excluded")
+	_check(not CollabWorkspaceService.is_source_file(".git/hooks/x.gd"), "git metadata excluded")
+	# Dropped binary assets are relayed so a client can add art/models/audio.
+	_check(CollabWorkspaceService.is_source_file("art/hero.png"), "png asset watched")
+	_check(CollabWorkspaceService.is_source_file("models/rock.glb"), "glb model watched")
+	_check(CollabWorkspaceService.is_source_file("audio/hit.wav"), "wav audio watched")
+	# A dropped scene travels as a file unless it is open (protected separately).
+	_check(CollabWorkspaceService.is_source_file("scenes/main.tscn"), "tscn tracked for drop-sync")
+	_check(not CollabWorkspaceService.is_source_file("../escape.gd"), "traversal excluded")
+	# Only files the editor can represent travel. Unknown/absent extensions have
+	# no loader, so a peer would only ever see them as failed imports; generated
+	# .import metadata is machine-local and is rebuilt by each editor.
+	_check(not CollabWorkspaceService.is_source_file("LICENSE"), "extensionless files excluded")
+	_check(not CollabWorkspaceService.is_source_file("notes/README"), "extensionless doc excluded")
+	_check(not CollabWorkspaceService.is_source_file("icon.png.import"), "generated import metadata excluded")
+	_check(not CollabWorkspaceService.is_source_file("data/dump.tmp"), "temporary junk excluded")
+	_check(CollabWorkspaceService.is_source_file("scripts/player.gd.uid"), "uid sidecars still watched")
+	_check(CollabWorkspaceService.is_source_file("data/table.yaml"), "editor text extensions watched")
+	_check(CollabWorkspaceService.is_source_file("notes/todo.md"), "markdown watched")
+	_check(not CollabWorkspaceService.is_source_file("data/unknown.xyzzy"), "unknown extensions excluded")
+	_check(not CollabWorkspaceService.is_source_file("sub/.git/hooks/x.gd"), "nested .git dirs excluded")
+	_check(not CollabWorkspaceService.is_source_file(".godot"), "bare excluded name rejected")
+
+	# A real scan must pick up watched files and skip addons/ + caches.
+	var ws_root: String = "/tmp/opencode/filesync_ws"
+	DirAccess.make_dir_recursive_absolute(ws_root.path_join("scripts"))
+	DirAccess.make_dir_recursive_absolute(ws_root.path_join("addons/godot_collab"))
+	DirAccess.make_dir_recursive_absolute(ws_root.path_join(".godot"))
+	_write_text(ws_root.path_join("project.godot"), "config_version=5\n")
+	_write_text(ws_root.path_join("export_presets.cfg"), "[preset.0]\nname=\"Linux\"\n")
+	_write_text(ws_root.path_join("LICENSE"), "MIT\n")
+	_write_text(ws_root.path_join("icon.png.import"), "[remap]\n")
+	_write_text(ws_root.path_join("scripts/player.gd"), "extends Node\n")
+	_write_text(ws_root.path_join("scripts/player.gd.uid"), "uid://test\n")
+	_write_text(ws_root.path_join("addons/godot_collab/plugin.gd"), "extends Object\n")
+	_write_text(ws_root.path_join(".godot/cache.gd"), "cached\n")
+
+	var logs := CollabLog.new()
+	var manager := CollabSessionManager.new(logs)
+	var coordinator := CollabSessionCoordinator.new()
+	coordinator.setup(manager, logs)
+	var workspace := CollabWorkspaceService.new()
+	workspace.setup(coordinator, CollabSettings.new(), logs, func() -> String: return ws_root, {})
+	workspace.prime_file_baseline()
+	var watched: Array = workspace.watched_paths()
+	_check(watched.has("export_presets.cfg"), "baseline tracks export presets")
+	_check(not watched.has("project.godot"), "baseline never tracks project.godot")
+	_check(not watched.has("LICENSE"), "baseline never tracks extensionless files")
+	_check(not watched.has("icon.png.import"), "baseline never tracks import metadata")
+	_check(watched.has("scripts/player.gd"), "baseline tracks a project script")
+	_check(watched.has("scripts/player.gd.uid"), "baseline tracks uid sidecars")
+	_check(not watched.has("addons/godot_collab/plugin.gd"), "baseline never tracks addon files")
+	_check(not watched.has(".godot/cache.gd"), "baseline never tracks generated caches")
+
+	# A scene open in the editor is driven by the operation stream, so its file
+	# must not also be relayed/written over the raw file path.
+	workspace.open_scene_paths = func() -> Array: return ["res://scenes/main.tscn"]
+	_check(workspace._is_protected_scene("scenes/main.tscn"), "open scene is protected from raw file sync")
+	_check(not workspace._is_protected_scene("scenes/other.tscn"), "closed scene is not protected")
+	_check(not workspace._is_protected_scene("scripts/player.gd"), "non-scene files are never protected")
+
+	workspace.free()
+	coordinator.free()
+	manager.free()
+
+
+## True when [param value] contains an Object (resource/Node) anywhere.
+func _contains_object(value: Variant) -> bool:
+	var kind: int = typeof(value)
+	if kind == TYPE_OBJECT:
+		return true
+	if kind == TYPE_ARRAY:
+		for entry in (value as Array):
+			if _contains_object(entry):
+				return true
+	elif kind == TYPE_DICTIONARY:
+		var dict: Dictionary = value
+		for key in dict.keys():
+			if _contains_object(key) or _contains_object(dict[key]):
+				return true
+	return false
+
+
+func _test_project_settings_sync() -> void:
+	print("[project settings sync]")
+	# Only project configuration is shared; renderer/feature selection is not,
+	# so a client is never forced onto the host's renderer.
+	_check(CollabWorkspaceService.is_synced_project_setting("application/run/main_scene"), "main scene is shared")
+	_check(CollabWorkspaceService.is_synced_project_setting("application/config/name"), "project name is shared")
+	_check(CollabWorkspaceService.is_synced_project_setting("input/ui_accept"), "input actions are shared")
+	_check(CollabWorkspaceService.is_synced_project_setting("autoload/Game"), "autoloads are shared")
+	_check(CollabWorkspaceService.is_synced_project_setting("layer_names/3d_physics/layer_1"), "layer names are shared")
+	_check(not CollabWorkspaceService.is_synced_project_setting("rendering/renderer/rendering_method"), "renderer is not forced")
+	_check(not CollabWorkspaceService.is_synced_project_setting("application/config/features"), "renderer features are not forced")
+	_check(not CollabWorkspaceService.is_synced_project_setting("display/window/energy_saving/keep_screen_on"), "unlisted settings are ignored")
+	_check(not CollabWorkspaceService.is_synced_project_setting("input/"), "bare prefix is not a setting")
+
+	# Input events become plain dictionaries so the wire never carries objects.
+	var key := InputEventKey.new()
+	key.keycode = KEY_SPACE
+	key.physical_keycode = KEY_SPACE
+	var encoded: Variant = CollabWorkspaceService.encode_project_setting_value("input/jump", {"deadzone": 0.25, "events": [key]})
+	_check(typeof(encoded) == TYPE_DICTIONARY, "input action encodes as a dictionary")
+	_check(not _contains_object(encoded), "encoded input action contains no objects")
+	var encoded_action: Dictionary = encoded
+	_check(is_equal_approx(float(encoded_action.get("deadzone", 0.0)), 0.25), "input deadzone preserved")
+	var encoded_events: Array = encoded_action.get("events", [])
+	_check(encoded_events.size() == 1, "one input event encoded")
+	if encoded_events.size() == 1:
+		var entry: Dictionary = encoded_events[0]
+		_check(str(entry.get("type", "")) == "InputEventKey", "event class preserved")
+		_check(int(entry.get("keycode", 0)) == KEY_SPACE, "event keycode preserved")
+
+	# The payload must round-trip through the real framing with object encoding
+	# disabled, and rebuild the event on the far side.
+	var packet: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.PROJECT_SETTINGS, {"settings": {"input/jump": encoded}})
+	_check(not packet.is_empty(), "settings packet encodes without objects")
+	var decoded_packet: Dictionary = CollabProtocol.decode(packet)
+	_check(bool(decoded_packet.get("ok", false)), "settings packet decodes")
+	var decoded_settings: Dictionary = (decoded_packet.get("payload", {}) as Dictionary).get("settings", {})
+	var rebuilt: Variant = CollabWorkspaceService.decode_project_setting_value("input/jump", decoded_settings.get("input/jump"))
+	_check(typeof(rebuilt) == TYPE_DICTIONARY, "input action decodes")
+	var rebuilt_events: Array = (rebuilt as Dictionary).get("events", []) if typeof(rebuilt) == TYPE_DICTIONARY else []
+	_check(rebuilt_events.size() == 1 and rebuilt_events[0] is InputEventKey, "input event rebuilt as InputEventKey")
+	if rebuilt_events.size() == 1 and rebuilt_events[0] is InputEventKey:
+		_check((rebuilt_events[0] as InputEventKey).keycode == KEY_SPACE, "rebuilt event keeps its keycode")
+
+	# Unknown event classes and malformed payloads are dropped, never rebuilt.
+	_check(CollabWorkspaceService.decode_project_setting_value("input/x", {"events": [{"type": "Node", "name": "evil"}]})["events"].is_empty(), "non-input event class rejected")
+	_check(CollabWorkspaceService.decode_project_setting_value("input/x", {"events": [{"type": "InputEventKey", "script": "x"}]})["events"].size() == 1, "extra dictionary keys ignored")
+
+	# The real host snapshot is plain data and fits the wire budget.
+	var collected: Dictionary = CollabWorkspaceService.collect_project_settings()
+	_check(not collected.is_empty(), "host project settings collected")
+	_check(collected.has("input/ui_accept"), "default input map collected")
+	_check(not _contains_object(collected), "collected project settings contain no objects")
+	_check(var_to_bytes({"settings": collected}).size() <= CollabConstants.MAX_PROJECT_SETTINGS_BYTES, "collected settings fit the size cap")
+
+	# Applying: allow-listed values land in ProjectSettings, dangling resource
+	# references and unlisted keys are skipped.
+	var layer_key: String = "layer_names/2d_physics/layer_1"
+	var action_key: String = "input/collab_probe_action"
+	var renderer_key: String = "rendering/renderer/rendering_method"
+	var saved_layer: Variant = ProjectSettings.get_setting(layer_key)
+	var saved_renderer: Variant = ProjectSettings.get_setting(renderer_key)
+	var result: Dictionary = CollabWorkspaceService.apply_project_settings({
+		"autoload/CollabMissing": "*res://does/not/exist.gd",
+		layer_key: "CollabProbe",
+		action_key: {"deadzone": 0.5, "events": [{"type": "InputEventKey", "keycode": KEY_J}]},
+		renderer_key: "mobile",
+	})
+	_check(int(result.get("applied", 0)) == 2, "only resolvable allow-listed settings applied")
+	_check(str(ProjectSettings.get_setting(layer_key)) == "CollabProbe", "layer name applied to the editor")
+	var applied: Variant = ProjectSettings.get_setting(action_key)
+	_check(typeof(applied) == TYPE_DICTIONARY, "input action applied to the editor")
+	if typeof(applied) == TYPE_DICTIONARY:
+		var applied_events: Array = (applied as Dictionary).get("events", [])
+		_check(applied_events.size() == 1 and applied_events[0] is InputEventKey, "applied input action has a real event")
+	_check(not ProjectSettings.has_setting("autoload/CollabMissing"), "missing-resource autoload skipped")
+	_check(ProjectSettings.get_setting(renderer_key) == saved_renderer, "renderer setting untouched")
+
+	# Re-applying an identical snapshot is a no-op (no needless churn).
+	var again: Dictionary = CollabWorkspaceService.apply_project_settings({
+		layer_key: "CollabProbe",
+		action_key: {"deadzone": 0.5, "events": [{"type": "InputEventKey", "keycode": KEY_J}]},
+	})
+	_check(int(again.get("applied", 0)) == 0, "identical settings are not re-applied")
+
+	ProjectSettings.set_setting(layer_key, saved_layer)
+	ProjectSettings.clear(action_key)
+
+
+func _write_text(path: String, text: String) -> void:
+	DirAccess.make_dir_recursive_absolute(path.get_base_dir())
+	var file := FileAccess.open(path, FileAccess.WRITE)
+	if file != null:
+		file.store_string(text)
+		file.close()
+
+
+func _test_id_reconciliation() -> void:
+	print("[id reconciliation]")
+	var logs := CollabLog.new()
+	var manager := CollabSessionManager.new(logs)
+	var coordinator := CollabSessionCoordinator.new()
+	coordinator.setup(manager, logs)
+	coordinator.get_project_id = func() -> String: return "proj"
+	coordinator.get_scene_id = func() -> String: return "res://r.tscn"
+	coordinator.get_username = func() -> String: return "peer"
+
+	var sync := CollabSceneSyncService.new()
+	sync.setup(coordinator, logs, {"get_edited_root": func() -> Node: return null, "mark_unsaved": func() -> void: pass})
+	sync.auto_apply_snapshot = false
+
+	var root := Node3D.new()
+	root.name = "Root"
+	var box := Node3D.new()
+	box.name = "Box"
+	root.add_child(box)
+	var decoy := Node3D.new()
+	decoy.name = "Decoy"
+	root.add_child(decoy)
+
+	sync.bind_scene(root, "res://r.tscn", true)
+	# A non-host must never allocate the authoritative positive id space, so a
+	# local node can never collide with a same-numbered host node.
+	_check(sync.node_id_for_scene("res://r.tscn", box) < 0, "pre-session client ids are non-authoritative (negative)")
+	_check(sync.node_id_for_scene("res://r.tscn", decoy) < 0, "every pre-session client id is non-authoritative")
+
+	var snapshot: Dictionary = {
+		"scene_id": "res://r.tscn",
+		"revision": 5,
+		"nodes": [
+			{"node_id": 10, "parent_id": -1, "class": "Node3D", "name": "Root", "props": {}},
+			{"node_id": 20, "parent_id": 10, "class": "Node3D", "name": "Box", "props": {}},
+		],
+	}
+	var matched: int = sync.reconcile_ids_from_snapshot(snapshot)
+	_check(matched == 2, "reconcile matches root and box by path (got %d)" % matched)
+	_check(sync.node_id_for_scene("res://r.tscn", box) == 20, "box adopts the host's authoritative id")
+	_check(sync.node_id_for_scene("res://r.tscn", decoy) != 20, "unmatched local node never adopts the host's id for a different node")
+
+	sync.detach_scene()
+	root.free()
+	sync.free()
+	coordinator.free()
+	manager.free()
+
+
+func _init() -> void:
+	print("== Godot Collab headless tests ==")
+	_test_protocol()
+	_test_relay_protocol()
+	_test_invite_codes()
+	_test_path_guard()
+	_test_rate_limiter()
+	_test_node_id_map()
+	_test_property_values()
+	_test_inline_resource_safety()
+	_test_stale_temp_repair()
+	_test_stale_temp_file_repair()
+	_test_resource_content_sync()
+	_test_deep_resource_watch()
+	_test_pending_resource_resolution()
+	_test_settings_defaults()
+	_test_filesync_paths()
+	_test_project_settings_sync()
+	_test_id_reconciliation()
+	_test_loopback_session()
+	_test_relay_session()
+	_test_relay_token_rejection()
+	_test_relay_password()
+	_test_scene_sync_loopback()
+	_test_general_property_sync()
+	_test_workspace_rename_delete_loopback()
+	_test_workspace_join_catchup()
+	_test_workspace_relay_sync()
+	_test_relay_project_mirror()
+	_test_rejoin_desync()
+	_test_multi_scene_isolation()
+	_test_cursor_state()
+	_test_marker_manager()
+	_test_cursor_2d_manager()
+	# The marker test needs a live frame so the node's ready/deferred calls run.
+	_run_marker_test_then_finish()
+
+
+func _run_marker_test_then_finish() -> void:
+	await process_frame
+	_test_marker_visuals()
+	_finish()
+
+
+func _finish() -> void:
+	print("")
+	print("%d checks, %d failures" % [_checks, _failures.size()])
+	if _failures.is_empty():
+		print("RESULT: PASS")
+		quit(0)
+	else:
+		for failure in _failures:
+			print("  - ", failure)
+		print("RESULT: FAIL")
+		quit(1)
+
+
+func _test_inline_resource_safety() -> void:
+	print("[inline resource safety]")
+	# Inline payloads must never rebuild executable content, whatever a peer
+	# sends, and oversized or empty payloads must be refused rather than loaded.
+	var kind: String = CollabSceneOperations.VALUE_RESOURCE_INLINE
+	_check(CollabSceneOperations.decode_value(kind, "[gd_resource type=\"GDScript\" format=3]") == null, "inline GDScript is refused")
+	_check(CollabSceneOperations.decode_value(kind, "[gd_resource type=\"PackedScene\" format=3]") == null, "inline PackedScene is refused")
+	_check(CollabSceneOperations.decode_value(kind, "[ext_resource type=\"Script\" path=\"res://x.gd\" id=\"1\"]\nscript = ExtResource(\"1\")") == null, "inline payload referencing an ext script is refused")
+	_check(CollabSceneOperations.decode_value(kind, "") == null, "empty inline payload is refused")
+	var oversized: String = "x".repeat(CollabSceneOperations.MAX_INLINE_RESOURCE_TEXT + 1)
+	_check(CollabSceneOperations.decode_value(kind, oversized) == null, "oversized inline payload is refused")
+
+
+func _test_stale_temp_repair() -> void:
+	print("[stale temp resource repair]")
+	var corrupt: String = """[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Material" path="user://godot_collab_recv_123_4.tres" id="1_bad"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="2_good"]
+
+[node name="Root" type="MeshInstance3D"]
+material_override = ExtResource("1_bad")
+texture = ExtResource("2_good")
+"""
+	var repaired: String = CollabWorkspaceService.strip_stale_temp_resource_refs(corrupt)
+	_check(not repaired.contains("godot_collab_recv_"), "stale temp ext_resource removed")
+	_check(not repaired.contains('ExtResource("1_bad")'), "stale temp reference replaced")
+	_check(repaired.contains("material_override = null"), "stale reference becomes null")
+	_check(repaired.contains('path="res://icon.svg" id="2_good"'), "valid external resource kept")
+	_check(repaired.contains('texture = ExtResource("2_good")'), "valid external reference kept")
+	_check(CollabWorkspaceService.strip_stale_temp_resource_refs(repaired) == repaired, "repair is idempotent")
+	var inline_case: String = '[gd_scene format=3]\n[ext_resource type="Material" path="user://godot_collab_inline_5.tres" id="1_x"]\n'
+	_check(not CollabWorkspaceService.strip_stale_temp_resource_refs(inline_case).contains("godot_collab_inline_"), "sender-side inline temp path removed")
+	_check(CollabWorkspaceService.strip_stale_temp_resource_refs("no refs") == "no refs", "unaffected text unchanged")
+
+
+func _test_stale_temp_file_repair() -> void:
+	print("[stale temp file repair]")
+	var root: String = "user://collab_repair_probe"
+	var abs_root: String = ProjectSettings.globalize_path(root)
+	DirAccess.make_dir_recursive_absolute(abs_root)
+	var broken_path: String = abs_root.path_join("broken.tscn")
+	var broken := FileAccess.open(broken_path, FileAccess.WRITE)
+	broken.store_string('[gd_scene format=3]\n[ext_resource type="Material" path="user://godot_collab_recv_9_1.tres" id="1_x"]\n[node name="N" type="Node3D"]\n')
+	broken.close()
+	var clean_path: String = abs_root.path_join("clean.tres")
+	var clean_text: String = '[gd_resource type="Material" format=3]\n'
+	var clean := FileAccess.open(clean_path, FileAccess.WRITE)
+	clean.store_string(clean_text)
+	clean.close()
+	var service := CollabWorkspaceService.new()
+	service._project_root = func() -> String: return abs_root
+	var repaired: int = service.repair_stale_temp_resource_refs()
+	_check(repaired == 1, "one stale file repaired on disk")
+	_check(not FileAccess.get_file_as_string(broken_path).contains("godot_collab_recv_"), "disk scene no longer references the temp file")
+	_check(FileAccess.get_file_as_string(broken_path).contains('[node name="N" type="Node3D"]'), "unrelated scene content preserved")
+	_check(FileAccess.get_file_as_string(clean_path) == clean_text, "unaffected resource left unchanged")
+	DirAccess.remove_absolute(broken_path)
+	DirAccess.remove_absolute(clean_path)
+	DirAccess.remove_absolute(abs_root)
+	service.free()
+
+
+## File-backed resources must carry their serialised content, not just their
+## path, so in-memory property edits travel even when the receiver already has
+## (a stale copy of) the file. Containers that hold resources must round-trip too.
+func _test_resource_content_sync() -> void:
+	print("[resource content sync]")
+	var mat := StandardMaterial3D.new()
+	mat.take_over_path("res://collab_content_mat.tres")
+	mat.albedo_color = Color(0.2, 0.3, 0.4)
+	var encoded: Dictionary = CollabSceneOperations.encode_value(mat)
+	_check(str(encoded.get("kind", "")) == CollabSceneOperations.VALUE_RESOURCE_CONTENT, "path-backed resource encodes as content")
+	var payload: Dictionary = encoded.get("value", {})
+	_check(str(payload.get("path", "")) == "res://collab_content_mat.tres", "content carries the resource path")
+	_check(not str(payload.get("text", "")).is_empty(), "content carries serialised text")
+	var rebuilt: Resource = CollabSceneOperations.decode_value(str(encoded["kind"]), encoded["value"])
+	_check(rebuilt is StandardMaterial3D and (rebuilt as StandardMaterial3D).albedo_color.is_equal_approx(Color(0.2, 0.3, 0.4)), "content payload rebuilds the resource")
+
+	# Merging onto an equivalent local instance must keep that instance alive so
+	# every reference to it stays valid.
+	var existing := StandardMaterial3D.new()
+	existing.take_over_path("res://collab_content_mat.tres")
+	existing.albedo_color = Color(0, 0, 0)
+	var merged: Resource = CollabSceneOperations.apply_resource_content(
+		str(payload["path"]), str(payload["text"]), existing)
+	_check(merged == existing, "content is merged onto the existing instance in place")
+	_check(existing.albedo_color.is_equal_approx(Color(0.2, 0.3, 0.4)), "merged instance takes the incoming colour")
+
+	# Signature must change when an in-place edit happens, so the deep scan fires.
+	var sig_before: String = CollabSceneOperations.deep_signature(existing)
+	existing.albedo_color = Color(0.9, 0.9, 0.1)
+	_check(CollabSceneOperations.deep_signature(existing) != sig_before, "deep signature reflects an in-place edit")
+
+	# Arrays/dictionaries that hold resources cannot use the plain kinds.
+	var array_value: Array = [mat, 5, "x"]
+	var array_encoded: Dictionary = CollabSceneOperations.encode_value(array_value)
+	_check(str(array_encoded.get("kind", "")) == CollabSceneOperations.VALUE_ARRAY_ENCODED, "resource array uses the encoded kind")
+	var array_decoded: Variant = CollabSceneOperations.decode_value(str(array_encoded["kind"]), array_encoded["value"])
+	_check(typeof(array_decoded) == TYPE_ARRAY and (array_decoded as Array).size() == 3, "encoded array rebuilds with its size")
+	_check((array_decoded as Array)[0] is StandardMaterial3D, "array element resource is rebuilt")
+	_check((array_decoded as Array)[1] == 5 and (array_decoded as Array)[2] == "x", "array plain elements survive")
+
+	var dict_value: Dictionary = {"mesh": mat, "count": 2}
+	var dict_encoded: Dictionary = CollabSceneOperations.encode_value(dict_value)
+	_check(str(dict_encoded.get("kind", "")) == CollabSceneOperations.VALUE_DICTIONARY_ENCODED, "resource dictionary uses the encoded kind")
+	var dict_decoded: Variant = CollabSceneOperations.decode_value(str(dict_encoded["kind"]), dict_encoded["value"])
+	_check(typeof(dict_decoded) == TYPE_DICTIONARY and (dict_decoded as Dictionary).get("count") == 2, "encoded dictionary keeps plain entries")
+	_check((dict_decoded as Dictionary).get("mesh") is StandardMaterial3D, "dictionary resource value is rebuilt")
+
+	_check(CollabSceneOperations.requires_deep_scan(mat), "resources require the deep scan")
+	_check(CollabSceneOperations.requires_deep_scan(array_value), "resource containers require the deep scan")
+	_check(not CollabSceneOperations.requires_deep_scan([1, 2, 3]), "plain arrays do not require the deep scan")
+
+
+## The watcher must notice an in-place edit of a path-backed resource (whose
+## cheap path signature never changes) and emit a content property operation.
+func _test_deep_resource_watch() -> void:
+	print("[deep resource watch]")
+	var ids := CollabNodeIdMap.new()
+	var watcher := CollabDiffWatcher.new()
+	watcher.setup(ids)
+	watcher.enabled = true
+	watcher.is_host = true
+	watcher.scene_id = "res://watch.tscn"
+
+	var root := Node3D.new()
+	root.name = "Root"
+	var mesh := MeshInstance3D.new()
+	mesh.name = "Mesh"
+	root.add_child(mesh)
+	var mat := StandardMaterial3D.new()
+	mat.take_over_path("res://collab_watch_mat.tres")
+	mat.albedo_color = Color(1, 0, 0)
+	mesh.material_override = mat
+	watcher.set_root(root)
+
+	var ops: Array = []
+	watcher.operations_detected.connect(func(detected: Array) -> void: ops.append_array(detected))
+
+	# First pass only anchors the content signature.
+	watcher._last_scan_ms = -100000
+	watcher._deep_last_ms = -100000
+	watcher.poll()
+	_check(ops.is_empty(), "anchoring the path-backed resource emits nothing")
+
+	mat.albedo_color = Color(0, 1, 0)
+	watcher._last_scan_ms = -100000
+	watcher._deep_last_ms = -100000
+	watcher.poll()
+	var found: bool = false
+	for op in ops:
+		if typeof(op) == TYPE_DICTIONARY and str((op as Dictionary).get("property", "")) == "material_override" and str((op as Dictionary).get("value_kind", "")) == CollabSceneOperations.VALUE_RESOURCE_CONTENT:
+			found = true
+	_check(found, "in-place edit of a path-backed resource emits a content operation")
+
+	root.free()
+
+
+## A path-backed resource reference that arrives before its file (the classic
+## rename ordering) must be queued and applied once the file exists, not dropped.
+func _test_pending_resource_resolution() -> void:
+	print("[pending resource resolution]")
+	var logs := CollabLog.new()
+	var manager := CollabSessionManager.new(logs)
+	var coordinator := CollabSessionCoordinator.new()
+	coordinator.setup(manager, logs)
+	var noop := func() -> void: pass
+	var sync := CollabSceneSyncService.new()
+	var conflicts: Dictionary = {"count": 0}
+	sync.conflict.connect(func(_text: String) -> void: conflicts["count"] += 1)
+	sync.setup(coordinator, logs, {"get_edited_root": func() -> Node: return null, "mark_unsaved": noop})
+
+	var root := Node3D.new()
+	root.name = "Root"
+	var mesh := MeshInstance3D.new()
+	mesh.name = "Mesh"
+	root.add_child(mesh)
+	sync.attach_scene(root, "res://pending.tscn")
+	var ctx: Variant = sync._scenes.get("res://pending.tscn")
+	_check(ctx != null, "pending test scene context exists")
+	if ctx == null:
+		sync.free()
+		coordinator.free()
+		manager.free()
+		root.free()
+		return
+	var node_id: int = sync.node_id_for_scene("res://pending.tscn", mesh)
+	_check(node_id != -1, "pending test node has an id")
+
+	var missing_path: String = "user://collab_pending_%d.tres" % Time.get_ticks_usec()
+	var queued: bool = sync._queue_pending_resource(ctx, node_id, "material_override", CollabSceneOperations.VALUE_RESOURCE, missing_path)
+	_check(queued, "unresolved path resource is queued")
+	_check(sync._pending_resources.size() == 1, "one pending reference held")
+
+	# Retrying before the file exists keeps it queued and emits no conflict yet.
+	sync._resolve_pending_resources(Time.get_ticks_msec())
+	_check(sync._pending_resources.size() == 1, "pending reference survives while unresolved")
+	_check(int(conflicts["count"]) == 0, "no conflict emitted before the timeout")
+
+	# Once the file exists the reference resolves and is applied.
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.1, 0.8, 0.4)
+	ResourceSaver.save(material, missing_path)
+	sync._resolve_pending_resources(Time.get_ticks_msec())
+	_check(sync._pending_resources.is_empty(), "pending reference clears once the file arrives")
+	var applied := mesh.material_override as StandardMaterial3D
+	_check(applied != null and applied.albedo_color.is_equal_approx(Color(0.1, 0.8, 0.4)), "deferred resource was applied to the node")
+
+	# A reference that never arrives is reported and dropped after the timeout.
+	_check(sync._queue_pending_resource(ctx, node_id, "material_override", CollabSceneOperations.VALUE_RESOURCE, "user://never_arrives_%d.tres" % Time.get_ticks_usec()), "second unresolved resource is queued")
+	for entry in sync._pending_resources:
+		entry["since_ms"] = Time.get_ticks_msec() - CollabSceneSyncService.PENDING_RESOURCE_TIMEOUT_MS - 1
+	sync._resolve_pending_resources(Time.get_ticks_msec())
+	_check(sync._pending_resources.is_empty(), "timed-out reference is dropped")
+	_check(int(conflicts["count"]) >= 1, "timed-out reference is reported as a conflict")
+
+	DirAccess.remove_absolute(ProjectSettings.globalize_path(missing_path))
+	sync.detach_scene()
+	root.free()
+	sync.free()
+	coordinator.free()
+	manager.free()
+
+
+func _test_settings_defaults() -> void:
+	print("[settings defaults]")
+	# Registered defaults live in EditorSettings (unavailable headless); these
+	# assertions cover the constants and the call-site fallbacks instead.
+	_check(CollabConstants.DEFAULT_RENDEZVOUS_URL.is_empty(), "rendezvous defaults to empty (relay-derived or configured)")
+	_check(CollabConstants.DEFAULT_RELAY_PORT == 45900, "relay default port is 45900")
+	_check(CollabConstants.DEFAULT_RENDEZVOUS_PORT == 9080, "rendezvous default port is 9080")
+	_check(not CollabSettings.new().get_bool(CollabSettings.KEY_APPROVE_JOINS, false), "host approval defaults to off")
+	# A single dropped file is delivered in one workspace packet, so the per-file
+	# cap must not exceed the packet cap.
+	_check(CollabConstants.MAX_WORKSPACE_FILE_BYTES <= CollabConstants.MAX_PACKET_PAYLOAD, "per-file cap fits within one packet")
+
+
+func _test_protocol() -> void:
+	print("[protocol]")
+	var payload: Dictionary = {"time_ms": 123, "label": "hello"}
+	var bytes: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.PING, payload)
+	_check(bytes.size() > CollabConstants.HEADER_SIZE, "encoded packet has header + body")
+	var decoded: Dictionary = CollabProtocol.decode(bytes)
+	_check(bool(decoded.get("ok", false)), "packet decodes")
+	_check(int(decoded.get("type", -1)) == CollabProtocol.MessageType.PING, "type preserved")
+	_check(int((decoded.get("payload", {}) as Dictionary).get("time_ms", 0)) == 123, "payload preserved")
+
+	var corrupted: PackedByteArray = bytes.duplicate()
+	corrupted[0] = 0x00
+	_check(not bool(CollabProtocol.decode(corrupted).get("ok", true)), "bad magic rejected")
+
+	var truncated: PackedByteArray = bytes.slice(0, CollabConstants.HEADER_SIZE - 2)
+	_check(not bool(CollabProtocol.decode(truncated).get("ok", true)), "truncated packet rejected")
+
+	# CURSOR_UPDATE requires an explicit view and the fields for that view.
+	var bad_cursor: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.CURSOR_UPDATE, {"time_ms": 1})
+	var bad_decoded: Dictionary = CollabProtocol.decode(bad_cursor)
+	_check(not bool(bad_decoded.get("ok", true)), "cursor payload validated")
+	var bad_view: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.CURSOR_UPDATE, {"view": "nope"})
+	_check(not bool(CollabProtocol.decode(bad_view).get("ok", true)), "unknown cursor view rejected")
+	var bad_2d: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.CURSOR_UPDATE, {"view": CollabConstants.CURSOR_VIEW_2D, "viewport_pos": Vector2(0.5, 0.5)})
+	_check(not bool(CollabProtocol.decode(bad_2d).get("ok", true)), "2D cursor requires a canvas position")
+	var good_2d: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.CURSOR_UPDATE, {
+		"view": CollabConstants.CURSOR_VIEW_2D,
+		"canvas_pos": Vector2(12.0, 34.0),
+		"viewport_pos": Vector2(0.5, 0.5),
+		"anim": CollabConstants.CURSOR_ANIM_GRAB,
+	})
+	_check(bool(CollabProtocol.decode(good_2d).get("ok", false)), "2D cursor payload validated")
+
+	# Workspace authoring messages are accepted with a valid shape...
+	var workspace: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.WORKSPACE_REQUEST, {
+		"request_id": 3,
+		"kind": CollabConstants.WorkspaceOp.ADD_FILE,
+		"path": "scripts/thing.gd",
+		"text": "extends Node\n",
+	})
+	var workspace_decoded: Dictionary = CollabProtocol.decode(workspace)
+	_check(bool(workspace_decoded.get("ok", false)), "workspace request validated")
+	_check(int(workspace_decoded.get("type", -1)) == CollabProtocol.MessageType.WORKSPACE_REQUEST, "workspace request type preserved")
+	# ...and rejected when the text payload is not a string.
+	var bad_workspace: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.WORKSPACE_REQUEST, {
+		"request_id": 3,
+		"kind": CollabConstants.WorkspaceOp.ADD_FILE,
+		"path": "scripts/thing.gd",
+		"text": 42,
+	})
+	_check(not bool(CollabProtocol.decode(bad_workspace).get("ok", true)), "workspace request rejects non-string text")
+	# A dropped binary file travels as raw bytes alongside (or instead of) text.
+	var workspace_bytes: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.WORKSPACE_REQUEST, {
+		"request_id": 4,
+		"kind": CollabConstants.WorkspaceOp.ADD_FILE,
+		"path": "art/hero.png",
+		"data": PackedByteArray([0x89, 0x50, 0x4e, 0x47]),
+	})
+	_check(bool(CollabProtocol.decode(workspace_bytes).get("ok", false)), "workspace request accepts byte payload")
+	var bad_workspace_bytes: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.WORKSPACE_REQUEST, {
+		"request_id": 5,
+		"kind": CollabConstants.WorkspaceOp.ADD_FILE,
+		"path": "art/hero.png",
+		"data": "not bytes",
+	})
+	_check(not bool(CollabProtocol.decode(bad_workspace_bytes).get("ok", true)), "workspace request rejects non-byte data")
+
+	# New message types must be inside the valid type range.
+	var scene_list: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.SCENE_LIST, {"scenes": ["res://a.tscn"], "revision": 4})
+	_check(bool(CollabProtocol.decode(scene_list).get("ok", false)), "scene list validated")
+	var file_apply: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.FILE_APPLY, {
+		"path": "a.tscn", "data": PackedByteArray([1, 2, 3]), "scene": true,
+	})
+	_check(bool(CollabProtocol.decode(file_apply).get("ok", false)), "file apply validated")
+	var bad_file_apply: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.FILE_APPLY, {
+		"path": "a.tscn", "data": "not bytes", "scene": true,
+	})
+	_check(not bool(CollabProtocol.decode(bad_file_apply).get("ok", true)), "file apply rejects non-byte data")
+	var file_remove: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.FILE_REMOVE, {"path": "old.tres"})
+	var remove_decoded: Dictionary = CollabProtocol.decode(file_remove)
+	_check(bool(remove_decoded.get("ok", false)), "file remove validated")
+	_check(int(remove_decoded.get("type", -1)) == CollabProtocol.MessageType.FILE_REMOVE, "file remove type preserved")
+	var bad_file_remove: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.FILE_REMOVE, {"path": 12})
+	_check(not bool(CollabProtocol.decode(bad_file_remove).get("ok", true)), "file remove rejects non-string path")
+
+
+func _test_relay_protocol() -> void:
+	print("[relay protocol]")
+	var register: PackedByteArray = CollabRelayProtocol.encode_register("AB12CD", CollabRelayProtocol.Role.HOST, "tok", 8)
+	var decoded: Dictionary = CollabRelayProtocol.decode(register)
+	_check(bool(decoded.get("ok", false)), "register decodes")
+	_check(int(decoded.get("kind", 0)) == CollabRelayProtocol.Kind.REGISTER, "register kind")
+	_check(str(decoded.get("room", "")) == "AB12CD", "register room")
+	_check(int(decoded.get("role", -1)) == CollabRelayProtocol.Role.HOST, "register role")
+	_check(str(decoded.get("token", "")) == "tok", "register token")
+	_check(int(decoded.get("max_peers", 0)) == 8, "register max peers")
+	_check(str(decoded.get("password", "missing")) == "", "register password defaults to empty")
+	var secured_register: Dictionary = CollabRelayProtocol.decode(
+		CollabRelayProtocol.encode_register("AB12CD", CollabRelayProtocol.Role.CLIENT, "tok", 8, "proj", "relay-secret"))
+	_check(str(secured_register.get("password", "")) == "relay-secret", "register carries the relay password")
+
+	var registered: Dictionary = CollabRelayProtocol.decode(CollabRelayProtocol.encode_registered(2, CollabRelayProtocol.HOST_APP_ID))
+	_check(int(registered.get("kind", 0)) == CollabRelayProtocol.Kind.REGISTERED, "registered kind")
+	_check(int(registered.get("peer_id", 0)) == 2, "registered app id")
+	_check(int(registered.get("host_id", 0)) == CollabRelayProtocol.HOST_APP_ID, "registered host id")
+
+	var member: Dictionary = CollabRelayProtocol.decode(CollabRelayProtocol.encode_member_join(3, CollabRelayProtocol.Role.CLIENT))
+	_check(int(member.get("kind", 0)) == CollabRelayProtocol.Kind.MEMBER_JOIN, "member join kind")
+	_check(int(member.get("peer_id", 0)) == 3, "member join id")
+
+	var app: PackedByteArray = CollabProtocol.encode(CollabProtocol.MessageType.PING, {"time_ms": 7})
+	var data: Dictionary = CollabRelayProtocol.decode(CollabRelayProtocol.encode_data(5, 1, app))
+	_check(int(data.get("kind", 0)) == CollabRelayProtocol.Kind.DATA, "data kind")
+	_check(int(data.get("origin", 0)) == 5, "data origin")
+	_check(int(data.get("dest", 0)) == 1, "data dest")
+	_check(bool(CollabProtocol.decode(data.get("data", PackedByteArray())).get("ok", false)), "data carries a valid app packet")
+
+	_check(not bool(CollabRelayProtocol.decode(PackedByteArray([1, 2, 3])).get("ok", true)), "short relay packet rejected")
+	var oversized: PackedByteArray = CollabRelayProtocol.MAGIC.duplicate()
+	oversized.append(CollabRelayProtocol.VERSION)
+	oversized.append(CollabRelayProtocol.Kind.DATA)
+	oversized.resize(CollabRelayProtocol.HEADER_SIZE)
+	oversized.encode_u32(6, CollabRelayProtocol.MAX_PAYLOAD + 1)
+	_check(not bool(CollabRelayProtocol.decode(oversized).get("ok", true)), "oversized relay payload rejected")
+
+
+func _test_invite_codes() -> void:
+	print("[invite codes]")
+	var invite: String = CollabInviteCode.encode_direct("192.168.1.5", 45899, "tok123", "proj-1", CollabConstants.WorkspaceMode.GIT_PRESENCE)
+	_check(invite.begins_with("gc1."), "direct invite prefixed")
+	var parsed: Dictionary = CollabInviteCode.decode(invite)
+	_check(str(parsed.get("kind", "")) == "direct", "direct kind")
+	_check(str(parsed.get("host", "")) == "192.168.1.5", "host round-trips")
+	_check(int(parsed.get("port", 0)) == 45899, "port round-trips")
+	_check(str(parsed.get("token", "")) == "tok123", "token round-trips")
+	_check(int(parsed.get("mode", -1)) == CollabConstants.WorkspaceMode.GIT_PRESENCE, "mode round-trips")
+
+	var short: Dictionary = CollabInviteCode.decode("K7P2QX")
+	_check(str(short.get("kind", "")) == "short" and str(short.get("code", "")) == "K7P2QX", "short code parsed")
+
+	var relay_invite: String = CollabInviteCode.encode_relay("relay.example.net", 45900, "AB12CD", "tok123", "proj-1", CollabConstants.WorkspaceMode.HOST_WORKSPACE, "http://relay.example.net:9080")
+	_check(relay_invite.begins_with("gc2."), "relay invite prefixed")
+	var relay_parsed: Dictionary = CollabInviteCode.decode(relay_invite)
+	_check(str(relay_parsed.get("kind", "")) == "relay", "relay kind")
+	_check(str(relay_parsed.get("host", "")) == "relay.example.net", "relay host round-trips")
+	_check(int(relay_parsed.get("port", 0)) == 45900, "relay port round-trips")
+	_check(str(relay_parsed.get("room", "")) == "AB12CD", "relay room round-trips")
+	_check(str(relay_parsed.get("token", "")) == "tok123", "relay token round-trips")
+	_check(str(relay_parsed.get("rendezvous_url", "")) == "http://relay.example.net:9080", "relay rendezvous URL round-trips")
+	_check(str(CollabInviteCode.decode("gc2.not-base64!!").get("kind", "")) == "invalid", "corrupt relay invite rejected")
+
+	var address: Dictionary = CollabInviteCode.decode("10.0.0.2:45899")
+	_check(str(address.get("kind", "")) == "address", "address kind")
+	_check(str(address.get("host", "")) == "10.0.0.2" and int(address.get("port", 0)) == 45899, "address parsed")
+
+	_check(str(CollabInviteCode.decode("!!!nonsense!!!").get("kind", "")) == "invalid", "garbage rejected")
+
+	var generated: String = CollabInviteCode.generate_short_code()
+	_check(generated.length() == 6, "generated short code has length 6")
+	_check(str(CollabInviteCode.decode(generated).get("kind", "")) == "short", "generated code parses as short")
+
+	var info: Dictionary = CollabConnectivity.evaluate("", "", false)
+	_check(info.has("state") and info.has("detail"), "connectivity evaluate returns state + detail")
+
+
+func _test_path_guard() -> void:
+	print("[path guard]")
+	_check(CollabPathGuard.is_safe_relative("res://a/b.txt".replace("res://", "")), "plain relative path safe")
+	_check(not CollabPathGuard.is_safe_relative("../secrets.txt"), "parent traversal rejected")
+	_check(not CollabPathGuard.is_safe_relative("a/../../b"), "nested traversal rejected")
+	_check(not CollabPathGuard.is_safe_relative("/etc/passwd"), "absolute path rejected")
+	_check(not CollabPathGuard.is_safe_relative("C:/Windows/system32"), "drive path rejected")
+	var resolved: String = CollabPathGuard.resolve_within("/tmp/opencode/ws", "sub/file.txt")
+	_check(resolved.begins_with("/tmp/opencode/ws"), "resolve stays inside root")
+	_check(CollabPathGuard.resolve_within("/tmp/opencode/ws", "../../etc/passwd").is_empty(), "escape resolve rejected")
+
+
+func _test_rate_limiter() -> void:
+	print("[rate limiter]")
+	var limiter := CollabRateLimiter.new(3.0, 0.0)
+	var allowed: int = 0
+	for i in 6:
+		if limiter.try_consume():
+			allowed += 1
+	_check(allowed == 3, "burst limited to capacity (got %d)" % allowed)
+
+
+func _test_cursor_state() -> void:
+	print("[cursor state]")
+	var state := CollabCursorState.new()
+	_check(not state.has(5), "no sample for an unknown peer")
+	state.update(5, Transform3D(Basis(), Vector3(1.0, 2.0, 3.0)), Vector3.ZERO, Vector3(0.0, 0.0, -1.0), Vector2(0.5, 0.5), "res://a.tscn", CollabConstants.CURSOR_ANIM_HOVER)
+	_check(state.view(5) == CollabConstants.CURSOR_VIEW_3D, "3D sample is marked as 3D")
+	_check(state.anim(5) == CollabConstants.CURSOR_ANIM_HOVER, "3D sample keeps its animation")
+	_check(state.world_position(5).is_equal_approx(Vector3(0.0, 0.0, -12.0)), "world position is along the ray at the marker depth")
+	state.update_2d(5, Vector2(40.0, 50.0), Vector2(0.25, 0.75), "res://a.tscn", CollabConstants.CURSOR_ANIM_FILE_MATERIAL)
+	_check(state.view(5) == CollabConstants.CURSOR_VIEW_2D, "2D sample flips the view mode")
+	_check(state.canvas_pos(5).is_equal_approx(Vector2(40.0, 50.0)), "2D sample stores the canvas position")
+	_check(state.anim(5) == CollabConstants.CURSOR_ANIM_FILE_MATERIAL, "2D sample keeps its animation")
+	state.set_marker_depth(20.0)
+	state.update(6, Transform3D.IDENTITY, Vector3.ZERO, Vector3(0.0, 0.0, -1.0), Vector2(0.5, 0.5), "res://a.tscn")
+	_check(state.world_position(6).is_equal_approx(Vector3(0.0, 0.0, -20.0)), "marker depth is configurable")
+	_check(not state.is_stale(6, Time.get_ticks_msec()), "a fresh sample is not stale")
+	state.remove(6)
+	_check(not state.has(6), "remove drops the sample")
+	state.clear()
+	_check(not state.has(5), "clear drops all samples")
+
+
+func _test_marker_manager() -> void:
+	print("[marker manager]")
+	var logs := CollabLog.new()
+	var viewport := SubViewport.new()
+	root.add_child(viewport)
+
+	var manager_node := CollabSessionManager.new(logs)
+	var coordinator := CollabSessionCoordinator.new()
+	coordinator.setup(manager_node, logs)
+	coordinator.get_project_id = func() -> String: return "proj"
+	coordinator.get_scene_id = func() -> String: return "res://scene.tscn"
+	coordinator.get_username = func() -> String: return "host"
+
+	var state := CollabCursorState.new()
+	var markers := CollabMarkerManager.new()
+	markers.setup(coordinator, CollabSettings.new(), logs, state)
+	markers.set_viewport_provider(func() -> SubViewport: return viewport)
+	root.add_child(markers)
+
+	var err: Error = coordinator.start_host(45980, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "marker host starts (%s)" % error_string(err))
+	coordinator.registry.upsert(CollabParticipant.make(2, "Bob", false, true))
+	markers.set_local_scene_id("res://scene.tscn")
+
+	var camera := Transform3D(Basis(), Vector3(0.0, 5.0, 10.0))
+	state.update(2, camera, Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, -1.0), Vector2(0.5, 0.5), "res://scene.tscn", CollabConstants.CURSOR_ANIM_GRAB)
+	markers.poll()
+	_check(markers.has_marker(2), "a marker is created for a remote cursor")
+	_check(markers.marker_count() == 1, "exactly one marker per remote peer")
+	var created: Node = viewport.get_node_or_null("CollabUserMarkers/CollabPeer_2")
+	_check(created != null, "marker is parented into the editor viewport container")
+	if created is CollabUserMarker:
+		var marker: CollabUserMarker = created as CollabUserMarker
+		_check(marker.position.is_equal_approx(camera.origin), "marker body sits at the remote camera")
+		_check(marker.cursor_global_position().is_equal_approx(Vector3(0.0, 0.0, -12.0)), "cursor sprite sits at the configured depth along the remote ray")
+		_check(marker.cursor_animation() == &"grab", "remote animation is applied to the cursor sprite")
+
+	state.remove(2)
+	markers.poll()
+	_check(not markers.has_marker(2), "marker is removed when the remote cursor is gone")
+
+	state.update(2, camera, Vector3(0.0, 0.0, 0.0), Vector3(0.0, 0.0, -1.0), Vector2(0.5, 0.5), "res://other.tscn")
+	markers.poll()
+	_check(not markers.has_marker(2), "marker hidden when the peer is editing another scene")
+
+	state.update_2d(2, Vector2(5.0, 6.0), Vector2(0.5, 0.5), "res://scene.tscn")
+	markers.poll()
+	_check(not markers.has_marker(2), "no 3D marker while the peer is in the 2D view")
+
+	coordinator.stop("cleanup")
+	markers.free()
+	viewport.free()
+	coordinator.free()
+	manager_node.free()
+
+
+func _test_cursor_2d_manager() -> void:
+	print("[cursor 2d manager]")
+	var logs := CollabLog.new()
+	var mapping_viewport := SubViewport.new()
+	root.add_child(mapping_viewport)
+	mapping_viewport.set_global_canvas_transform(Transform2D(Vector2(2.0, 0.0), Vector2(0.0, 2.0), Vector2(100.0, 50.0)))
+	_check(
+		CollabCursor2DManager.viewport_to_canvas(mapping_viewport, Vector2(200.0, 100.0)).is_equal_approx(Vector2(50.0, 25.0)),
+		"2D container-to-canvas mapping uses the editor pan/zoom"
+	)
+	_check(
+		CollabCursor2DManager.viewport_to_canvas(null, Vector2(3.0, 4.0)) == Vector2(3.0, 4.0),
+		"2D viewport-to-canvas mapping tolerates a missing viewport"
+	)
+	mapping_viewport.free()
+
+	var container := SubViewportContainer.new()
+	container.stretch = true
+	container.stretch_shrink = 2
+	root.add_child(container)
+	var shrunk := SubViewport.new()
+	container.add_child(shrunk)
+	_check(
+		CollabCursor2DManager.viewport_to_canvas(shrunk, Vector2(200.0, 100.0)).is_equal_approx(Vector2(100.0, 50.0)),
+		"2D container-to-canvas mapping accounts for stretch shrink"
+	)
+	container.free()
+
+	var viewport := SubViewport.new()
+	root.add_child(viewport)
+
+	var manager_node := CollabSessionManager.new(logs)
+	var coordinator := CollabSessionCoordinator.new()
+	coordinator.setup(manager_node, logs)
+	coordinator.get_project_id = func() -> String: return "proj"
+	coordinator.get_scene_id = func() -> String: return "res://scene.tscn"
+	coordinator.get_username = func() -> String: return "host"
+
+	var state := CollabCursorState.new()
+	var cursors := CollabCursor2DManager.new()
+	cursors.setup(coordinator, CollabSettings.new(), logs, state)
+	cursors.set_viewport_provider(func() -> SubViewport: return viewport)
+	root.add_child(cursors)
+
+	var err: Error = coordinator.start_host(45981, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "cursor 2D host starts (%s)" % error_string(err))
+	coordinator.registry.upsert(CollabParticipant.make(2, "Bob", false, true))
+	cursors.set_local_scene_id("res://scene.tscn")
+
+	state.update_2d(2, Vector2(40.0, 50.0), Vector2(0.5, 0.5), "res://scene.tscn", CollabConstants.CURSOR_ANIM_GRAB)
+	cursors.poll()
+	_check(cursors.has_cursor(2), "a cursor is created for a remote 2D sample")
+	_check(cursors.cursor_count() == 1, "exactly one 2D cursor per remote peer")
+	var created: Node = viewport.get_node_or_null("CollabCursor2D/CollabPeer_2")
+	_check(created != null, "2D cursor is parented into the editor 2D viewport container")
+	if created is CollabCursor2D:
+		var cursor: CollabCursor2D = created as CollabCursor2D
+		_check(cursor.position.is_equal_approx(Vector2(40.0, 50.0)), "2D cursor sits at the remote canvas position")
+		_check(cursor.cursor_animation() == &"grab", "remote animation is applied to the 2D cursor")
+		_check(cursor.username == "Bob", "remote username is applied to the 2D cursor")
+
+	state.update_2d(2, Vector2(10.0, 20.0), Vector2(0.5, 0.5), "res://other.tscn")
+	cursors.poll()
+	_check(not cursors.has_cursor(2), "2D cursor hidden when the peer is editing another scene")
+
+	state.update(2, Transform3D.IDENTITY, Vector3.ZERO, Vector3.FORWARD, Vector2(0.5, 0.5), "res://scene.tscn")
+	cursors.poll()
+	_check(not cursors.has_cursor(2), "no 2D cursor while the peer is in the 3D view")
+
+	coordinator.stop("cleanup")
+	cursors.free()
+	viewport.free()
+	coordinator.free()
+	manager_node.free()
+
+
+func _test_marker_visuals() -> void:
+	print("[marker visuals]")
+	var packed: PackedScene = load("res://addons/godot_collab/assets/editorNodeVis.tscn") as PackedScene
+	_check(packed != null, "marker scene loads")
+	if packed == null:
+		return
+	var marker: CollabUserMarker = packed.instantiate() as CollabUserMarker
+	_check(marker != null, "marker scene instantiates as CollabUserMarker")
+	if marker == null:
+		return
+	root.add_child(marker)
+	_check(marker.is_node_ready(), "marker runs _ready when added to the tree")
+
+	var label: Label = marker.find_child("$user", true, false) as Label
+	var sphere: CSGSphere3D = marker.get_node_or_null("CSGSphere3D") as CSGSphere3D
+	_check(label != null, "marker exposes its username label")
+	_check(sphere != null, "marker exposes its sphere")
+	_check(marker.animated_sprite_3d != null, "marker exposes its 3D cursor sprite")
+	if marker.animated_sprite_3d != null:
+		_check(marker.animated_sprite_3d.sprite_frames != null, "cursor sprite has the shared SpriteFrames")
+	# Unknown animation names are ignored rather than crashing.
+	marker.set_cursor_animation("does_not_exist")
+	_check(marker.animated_sprite_3d != null and marker.animated_sprite_3d.animation != &"does_not_exist", "unknown animation name is ignored")
+	marker.set_cursor_animation(CollabConstants.CURSOR_ANIM_HOVER)
+	_check(marker.cursor_animation() == &"idle_hover", "known animation name is applied")
+
+	# Applying the default colour must be a no-op so loading the scene in the
+	# editor does not duplicate resources / mark it modified.
+	var original_material: Material = null
+	if sphere != null:
+		original_material = sphere.material_override
+	marker.marker_color = Color(1, 0, 0, 0.6)
+	_check(
+		sphere != null and sphere.material_override == original_material,
+		"re-applying the default colour keeps the shared material"
+	)
+
+	var blue := Color(0.2, 0.4, 1.0, 0.8)
+	marker.username = "Alice"
+	marker.marker_color = blue
+	_check(label != null and label.text == "Alice", "username is applied to the label")
+	if label != null and label.label_settings != null:
+		_check(label.label_settings.font_color.is_equal_approx(blue), "marker colour is applied to the label")
+	if sphere != null and sphere.material_override is StandardMaterial3D:
+		var mat: StandardMaterial3D = sphere.material_override as StandardMaterial3D
+		_check(mat.albedo_color.is_equal_approx(blue) and mat.emission.is_equal_approx(blue), "marker colour is applied to the material")
+	if marker.animated_sprite_3d != null:
+		_check(marker.animated_sprite_3d.modulate.is_equal_approx(Color(blue.r, blue.g, blue.b, 1.0)), "marker colour tints the cursor sprite")
+
+	root.remove_child(marker)
+	marker.free()
+
+
+func _test_loopback_session() -> void:
+	print("[loopback session]")
+	var logs := CollabLog.new()
+	var port: int = 45977
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	# Dictionaries are reference types, so lambdas can mutate this shared state
+	# (GDScript lambdas capture plain locals by value).
+	var state: Dictionary = {
+		"client_joined": false,
+		"client_saw_host": false,
+		"host_cursor_from_peer": -1,
+		"host_stopped": false,
+	}
+
+	client.session_started.connect(func(_is_host: bool) -> void: state["client_joined"] = true)
+	client.participants_changed.connect(func() -> void:
+		for p in client.registry.all():
+			if p.is_host:
+				state["client_saw_host"] = true)
+	host.cursor_received.connect(func(peer_id: int, _payload: Dictionary) -> void: state["host_cursor_from_peer"] = peer_id)
+
+	var err: Error = host.start_host(port, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "host starts (%s)" % error_string(err))
+	err = client.join("127.0.0.1", port, "")
+	_check(err == OK, "client join call starts (%s)" % error_string(err))
+
+	var deadline: int = Time.get_ticks_msec() + 6000
+	while Time.get_ticks_msec() < deadline:
+		host.poll()
+		client.poll()
+		if bool(state["client_joined"]) and host.registry.count() >= 2 and client.registry.count() >= 2:
+			break
+		OS.delay_msec(5)
+
+	_check(bool(state["client_joined"]), "client received WELCOME")
+	_check(host.registry.count() == 2, "host registry has 2 participants (got %d)" % host.registry.count())
+	_check(client.registry.count() >= 2, "client registry has 2 participants (got %d)" % client.registry.count())
+	_check(bool(state["client_saw_host"]), "client sees the host in its registry")
+
+	if bool(state["client_joined"]):
+		client.send_cursor({
+			"view": CollabConstants.CURSOR_VIEW_3D,
+			"camera_transform": Transform3D.IDENTITY,
+			"ray_origin": Vector3.ZERO,
+			"ray_direction": Vector3.FORWARD,
+			"viewport_pos": Vector2(0.5, 0.5),
+			"scene_id": "",
+			"anim": CollabConstants.CURSOR_ANIM_IDLE,
+			"time_ms": Time.get_ticks_msec(),
+		})
+		var cursor_deadline: int = Time.get_ticks_msec() + 3000
+		while Time.get_ticks_msec() < cursor_deadline and int(state["host_cursor_from_peer"]) < 0:
+			host.poll()
+			client.poll()
+			OS.delay_msec(5)
+		_check(int(state["host_cursor_from_peer"]) >= 0, "host received a relayed cursor")
+
+	# Disconnect and verify the client observes the host leaving.
+	client.session_stopped.connect(func(_reason: String) -> void: state["host_stopped"] = true)
+	host.stop("test end")
+	var stop_deadline: int = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < stop_deadline and not bool(state["host_stopped"]):
+		client.poll()
+		OS.delay_msec(5)
+	_check(bool(state["host_stopped"]), "client saw the host disconnect")
+
+	client.stop("cleanup")
+	host.free()
+	client.free()
+	host_manager.free()
+	client_manager.free()
+
+
+## Exercises the dedicated relay path end to end in-process: a relay server, a
+## relay-host manager and a relay-client manager. Verifies registration, HELLO
+## routing through the relay, cursor relay, token rejection and host departure.
+func _test_relay_session() -> void:
+	print("[relay session]")
+	var logs := CollabLog.new()
+	var relay_port: int = 45990
+	var room: String = "AB12CD"
+	var token: String = "secret-token"
+
+	var relay := CollabRelayServer.new(logs)
+	var relay_err: Error = relay.start(relay_port, 16)
+	_check(relay_err == OK, "relay server starts (%s)" % error_string(relay_err))
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	var state: Dictionary = {
+		"client_joined": false,
+		"client_saw_host": false,
+		"host_cursor_from_peer": -1,
+		"host_stopped": false,
+	}
+	client.session_started.connect(func(_is_host: bool) -> void: state["client_joined"] = true)
+	client.participants_changed.connect(func() -> void:
+		for p in client.registry.all():
+			if p.is_host:
+				state["client_saw_host"] = true)
+	host.cursor_received.connect(func(peer_id: int, _payload: Dictionary) -> void: state["host_cursor_from_peer"] = peer_id)
+
+	host.require_token = true
+	client.require_token = true
+	var err: Error = host.start_host_via_relay("127.0.0.1", relay_port, room, token, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "relay host starts (%s)" % error_string(err))
+	_check(host.session_manager.is_relay(), "host manager reports relay mode")
+	_check(host.local_peer_id() == CollabRelayProtocol.HOST_APP_ID, "relay host is assigned app id 1")
+	err = client.join_via_relay("127.0.0.1", relay_port, room, token, CollabConstants.WorkspaceMode.HOST_WORKSPACE)
+	_check(err == OK, "relay client join starts (%s)" % error_string(err))
+
+	var deadline: int = Time.get_ticks_msec() + 6000
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		client.poll()
+		if bool(state["client_joined"]) and host.registry.count() >= 2 and client.registry.count() >= 2:
+			break
+		OS.delay_msec(5)
+
+	_check(bool(state["client_joined"]), "relay client received WELCOME")
+	_check(host.registry.count() == 2, "relay host registry has 2 participants (got %d)" % host.registry.count())
+	_check(client.registry.count() >= 2, "relay client registry has 2 participants (got %d)" % client.registry.count())
+	_check(bool(state["client_saw_host"]), "relay client sees the host")
+
+	if bool(state["client_joined"]):
+		client.send_cursor({
+			"view": CollabConstants.CURSOR_VIEW_3D,
+			"camera_transform": Transform3D.IDENTITY,
+			"ray_origin": Vector3.ZERO,
+			"ray_direction": Vector3.FORWARD,
+			"viewport_pos": Vector2(0.5, 0.5),
+			"scene_id": "",
+			"anim": CollabConstants.CURSOR_ANIM_IDLE,
+			"time_ms": Time.get_ticks_msec(),
+		})
+		var cursor_deadline: int = Time.get_ticks_msec() + 3000
+		while Time.get_ticks_msec() < cursor_deadline and int(state["host_cursor_from_peer"]) < 0:
+			relay.poll()
+			host.poll()
+			client.poll()
+			OS.delay_msec(5)
+		_check(int(state["host_cursor_from_peer"]) >= 0, "relay host received a relayed cursor")
+
+	# Host leaves: the relay notifies the client, which must observe a stop.
+	client.session_stopped.connect(func(_reason: String) -> void: state["host_stopped"] = true)
+	host.stop("test end")
+	var stop_deadline: int = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < stop_deadline and not bool(state["host_stopped"]):
+		relay.poll()
+		client.poll()
+		OS.delay_msec(5)
+	_check(bool(state["host_stopped"]), "relay client saw the host stop")
+
+	client.stop("cleanup")
+	host.free()
+	client.free()
+	host_manager.free()
+	client_manager.free()
+	relay.stop()
+	relay.free()
+
+
+## A client presenting the wrong session token must be rejected by the relay
+## before any application handshake happens.
+func _test_relay_token_rejection() -> void:
+	print("[relay token rejection]")
+	var logs := CollabLog.new()
+	var relay_port: int = 45991
+	var relay := CollabRelayServer.new(logs)
+	_check(relay.start(relay_port, 8) == OK, "relay server starts for token test")
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	host.require_token = true
+	_check(host.start_host_via_relay("127.0.0.1", relay_port, "ROOM99", "correct", 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false) == OK, "host starts for token test")
+
+	var bad_manager := CollabSessionManager.new(logs)
+	var bad := CollabSessionCoordinator.new()
+	bad.setup(bad_manager, logs)
+	var state: Dictionary = {"failed": false}
+	bad_manager.connection_failed.connect(func(_reason: String) -> void: state["failed"] = true)
+	bad.join_via_relay("127.0.0.1", relay_port, "ROOM99", "wrong", CollabConstants.WorkspaceMode.HOST_WORKSPACE)
+
+	var deadline: int = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < deadline and not bool(state["failed"]):
+		relay.poll()
+		host.poll()
+		bad.poll()
+		OS.delay_msec(5)
+	_check(bool(state["failed"]), "bad token is rejected by the relay")
+
+	bad.stop("cleanup")
+	host.stop("cleanup")
+	host.free()
+	bad.free()
+	host_manager.free()
+	bad_manager.free()
+	relay.stop()
+	relay.free()
+
+
+## A relay started with a password must reject registrations that present a
+## wrong password (or none) before creating/joining a room, and accept matching
+## ones for both the host and a client.
+func _test_relay_password() -> void:
+	print("[relay password]")
+	var logs := CollabLog.new()
+	var relay_port: int = 45992
+	var relay := CollabRelayServer.new(logs)
+	_check(relay.start(relay_port, 8, "*", "", "relay-secret") == OK, "password relay starts")
+	_check(relay.is_password_protected(), "relay reports password protection")
+
+	var bad_host_manager := CollabSessionManager.new(logs)
+	var bad_host := CollabSessionCoordinator.new()
+	bad_host.setup(bad_host_manager, logs)
+	var bad_host_state: Dictionary = {"failed": false, "message": ""}
+	bad_host_manager.connection_failed.connect(func(reason: String) -> void:
+		bad_host_state["failed"] = true
+		bad_host_state["message"] = reason)
+	bad_host.start_host_via_relay("127.0.0.1", relay_port, "PWROOM", "tok", 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false, "", "wrong-password")
+	var deadline: int = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < deadline and not bool(bad_host_state["failed"]):
+		relay.poll()
+		bad_host.poll()
+		OS.delay_msec(5)
+	_check(bool(bad_host_state["failed"]), "host with a wrong relay password is rejected")
+	_check(str(bad_host_state["message"]).to_lower().contains("password"), "password rejection explains the problem")
+	_check(relay.room_count() == 0, "rejected host did not create a room")
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	_check(
+		host.start_host_via_relay("127.0.0.1", relay_port, "PWROOM", "tok", 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false, "", "relay-secret") == OK,
+		"host with the correct relay password starts"
+	)
+	var host_deadline: int = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < host_deadline and host.session_manager.get_state() != CollabConstants.ConnectionState.HOSTING:
+		relay.poll()
+		host.poll()
+		OS.delay_msec(5)
+	_check(host.session_manager.get_state() == CollabConstants.ConnectionState.HOSTING, "relay accepted the password-protected host")
+	_check(relay.room_count() == 1, "password-protected host created a room")
+
+	var bad_client_manager := CollabSessionManager.new(logs)
+	var bad_client := CollabSessionCoordinator.new()
+	bad_client.setup(bad_client_manager, logs)
+	var bad_client_state: Dictionary = {"failed": false}
+	bad_client_manager.connection_failed.connect(func(_reason: String) -> void: bad_client_state["failed"] = true)
+	bad_client.join_via_relay("127.0.0.1", relay_port, "PWROOM", "tok", CollabConstants.WorkspaceMode.HOST_WORKSPACE, "")
+	deadline = Time.get_ticks_msec() + 4000
+	while Time.get_ticks_msec() < deadline and not bool(bad_client_state["failed"]):
+		relay.poll()
+		host.poll()
+		bad_client.poll()
+		OS.delay_msec(5)
+	_check(bool(bad_client_state["failed"]), "client without the relay password is rejected")
+
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+	var client_state: Dictionary = {"joined": false}
+	client.session_started.connect(func(_is_host: bool) -> void: client_state["joined"] = true)
+	_check(
+		client.join_via_relay("127.0.0.1", relay_port, "PWROOM", "tok", CollabConstants.WorkspaceMode.HOST_WORKSPACE, "relay-secret") == OK,
+		"client with the correct relay password starts"
+	)
+	deadline = Time.get_ticks_msec() + 6000
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		client.poll()
+		if bool(client_state["joined"]) and host.registry.count() >= 2:
+			break
+		OS.delay_msec(5)
+	_check(bool(client_state["joined"]), "password-protected client completed the handshake")
+
+	client.stop("cleanup")
+	host.stop("cleanup")
+	bad_client.stop("cleanup")
+	bad_host.stop("cleanup")
+	bad_client.free()
+	client.free()
+	host.free()
+	bad_host.free()
+	bad_host_manager.free()
+	client_manager.free()
+	host_manager.free()
+	bad_client_manager.free()
+	relay.stop()
+	relay.free()
+
+
+## Drives two in-process peers until [param done] returns true or the timeout
+## elapses. Returns true if the condition was met.
+func _pump(host: CollabSessionCoordinator, client: CollabSessionCoordinator, host_sync: CollabSceneSyncService, client_sync: CollabSceneSyncService, timeout_ms: int, done: Callable) -> bool:
+	var deadline: int = Time.get_ticks_msec() + timeout_ms
+	while Time.get_ticks_msec() < deadline:
+		host.poll()
+		client.poll()
+		host_sync.poll()
+		client_sync.poll()
+		if done.call():
+			return true
+		OS.delay_msec(5)
+	return bool(done.call())
+
+
+## Reproduces the reported bug: the host has scene A open in the background but
+## is focused on scene B. A client editing A must reach A and must not be undone
+## or applied to B.
+func _test_multi_scene_isolation() -> void:
+	print("[multi-scene isolation]")
+	var logs := CollabLog.new()
+	var port: int = 45981
+
+	var host_a := Node3D.new()
+	host_a.name = "RootA"
+	var a_box := Node3D.new()
+	a_box.name = "A_Box"
+	a_box.position = Vector3(1, 1, 1)
+	host_a.add_child(a_box)
+
+	var host_b := Node3D.new()
+	host_b.name = "RootB"
+	var b_box := Node3D.new()
+	b_box.name = "B_Box"
+	b_box.position = Vector3(2, 2, 2)
+	host_b.add_child(b_box)
+
+	var client_a := Node3D.new()
+	client_a.name = "RootA"
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://b.tscn"
+	host.get_username = func() -> String: return "host"
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://a.tscn"
+	client.get_username = func() -> String: return "peer"
+
+	var noop := func() -> void: pass
+	var host_sync := CollabSceneSyncService.new()
+	host_sync.setup(host, logs, {"get_edited_root": func() -> Node: return host_b, "mark_unsaved": noop})
+	var client_sync := CollabSceneSyncService.new()
+	client_sync.setup(client, logs, {"get_edited_root": func() -> Node: return client_a, "mark_unsaved": noop})
+	client_sync.auto_apply_snapshot = true
+
+	# The host has BOTH scenes open; B is the focused tab. The old implementation
+	# bound only the focused tab, so A's context disappeared whenever B got focus.
+	host_sync.bind_scene(host_a, "res://a.tscn", false)
+	host_sync.bind_scene(host_b, "res://b.tscn", true)
+	client_sync.bind_scene(client_a, "res://a.tscn", true)
+
+	var err: Error = host.start_host(port, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "multi-scene host starts (%s)" % error_string(err))
+	err = client.join("127.0.0.1", port, "")
+	_check(err == OK, "multi-scene client join starts (%s)" % error_string(err))
+
+	# The host sends A's snapshot (the client's scene), not the focused B.
+	var synced: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		return client_a.get_node_or_null("A_Box") != null)
+	_check(synced, "client received scene A snapshot while the host was focused on B")
+
+	var client_box: Node3D = client_a.get_node_or_null("A_Box") as Node3D
+	if client_box != null:
+		client_box.position = Vector3(9, 9, 9)
+	var applied: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		var hb: Node3D = host_a.get_node_or_null("A_Box") as Node3D
+		return hb != null and hb.position.is_equal_approx(Vector3(9, 9, 9)))
+	_check(applied, "host applied the client's edit to the background scene A")
+
+	var host_b_box: Node3D = host_b.get_node_or_null("B_Box") as Node3D
+	_check(host_b_box != null and host_b_box.position.is_equal_approx(Vector3(2, 2, 2)), "focused scene B was not modified")
+	_check(host_sync.scene_id == "res://b.tscn", "host still reports its focused scene as B")
+
+	client_sync.detach_scene()
+	host_sync.detach_scene()
+	client.stop("cleanup")
+	host.stop("cleanup")
+	host_a.free()
+	host_b.free()
+	client_a.free()
+	host.free()
+	client.free()
+	host_manager.free()
+	client_manager.free()
+
+
+func _test_scene_sync_loopback() -> void:
+	print("[scene sync loopback]")
+	var logs := CollabLog.new()
+	var port: int = 45978
+
+	# Host scene: Root -> Box at (1,2,3).
+	var host_root := Node3D.new()
+	host_root.name = "Root"
+	var host_box := Node3D.new()
+	host_box.name = "Box"
+	host_box.position = Vector3(1.0, 2.0, 3.0)
+	host_root.add_child(host_box)
+
+	# Client starts with a different scene content that the host snapshot must replace.
+	var client_root := Node3D.new()
+	client_root.name = "Root"
+	var client_stale := Node3D.new()
+	client_stale.name = "Stale"
+	client_root.add_child(client_stale)
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://scene.tscn"
+	host.get_username = func() -> String: return "host"
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://scene.tscn"
+	client.get_username = func() -> String: return "peer"
+
+	var get_host_root := func() -> Node: return host_root
+	var get_client_root := func() -> Node: return client_root
+	var noop := func() -> void: pass
+	var host_sync := CollabSceneSyncService.new()
+	host_sync.setup(host, logs, {"get_edited_root": get_host_root, "mark_unsaved": noop})
+	var client_sync := CollabSceneSyncService.new()
+	client_sync.setup(client, logs, {"get_edited_root": get_client_root, "mark_unsaved": noop})
+	client_sync.auto_apply_snapshot = true
+
+	# The plugin attaches the edited scene when the plugin enables, before any
+	# session exists, so reproduce that ordering here.
+	host_sync.attach_scene(host_root, "res://scene.tscn")
+	client_sync.attach_scene(client_root, "res://scene.tscn")
+
+	var err: Error = host.start_host(port, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "sync host starts (%s)" % error_string(err))
+	err = client.join("127.0.0.1", port, "")
+	_check(err == OK, "sync client join starts (%s)" % error_string(err))
+
+	# The host sends its scene on peer_ready; the client must auto-apply it.
+	var synced: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		return client_root.get_node_or_null("Box") != null)
+	_check(synced, "client received the host scene snapshot")
+	_check(client_root.get_node_or_null("Stale") == null, "client's previous content replaced by snapshot")
+
+	var client_box: Node3D = client_root.get_node_or_null("Box") as Node3D
+	_check(client_box != null and client_box.position.is_equal_approx(Vector3(1.0, 2.0, 3.0)), "snapshot preserved the node transform")
+
+	# A peer edit must reach the host and remain visible on the peer.
+	if client_box != null:
+		client_box.position = Vector3(4.0, 5.0, 6.0)
+	var applied: bool = _pump(host, client, host_sync, client_sync, 4000, func() -> bool:
+		var hb: Node3D = host_root.get_node_or_null("Box") as Node3D
+		return hb != null and hb.position.is_equal_approx(Vector3(4.0, 5.0, 6.0)))
+	var host_box_after: Node3D = host_root.get_node_or_null("Box") as Node3D
+	_check(applied, "host applied the peer transform edit (got %s)" % str(host_box_after.position if host_box_after != null else "missing"))
+	_check(client_box != null and client_box.position.is_equal_approx(Vector3(4.0, 5.0, 6.0)), "peer edit stayed visible locally")
+
+	# A host edit must reach the peer.
+	var host_only := Node3D.new()
+	host_only.name = "HostOnly"
+	host_only.position = Vector3(7.0, 8.0, 9.0)
+	host_root.add_child(host_only)
+	var host_propagated: bool = _pump(host, client, host_sync, client_sync, 4000, func() -> bool:
+		var cb: Node3D = client_root.get_node_or_null("HostOnly") as Node3D
+		return cb != null and cb.position.is_equal_approx(Vector3(7.0, 8.0, 9.0)))
+	_check(host_propagated, "host-created node propagated to the peer")
+
+	# A peer-created node must reach the host and stay on the peer.
+	var peer_box := Node3D.new()
+	peer_box.name = "PeerBox"
+	peer_box.position = Vector3(10.0, 11.0, 12.0)
+	client_root.add_child(peer_box)
+	var created: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		var hb: Node3D = host_root.get_node_or_null("PeerBox") as Node3D
+		return hb != null and hb.position.is_equal_approx(Vector3(10.0, 11.0, 12.0)))
+	_check(created, "host received the peer-created node")
+	_check(client_root.get_node_or_null("PeerBox") != null, "peer-created node stayed visible locally")
+	_check(_count_prefixed(host_root, "PeerBox") == 1, "host has exactly one copy of the peer-created node")
+	_check(_count_prefixed(client_root, "PeerBox") == 1, "client has exactly one copy of its created node")
+
+	# A peer edit to its own created node must target that node on the host and
+	# must never collide with another node's id (e.g. the scene root).
+	var peer_box_node: Node3D = client_root.get_node_or_null("PeerBox")
+	if peer_box_node != null:
+		peer_box_node.position = Vector3(7.5, 7.5, 7.5)
+	var peer_edit: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		var hb: Node = host_root.get_node_or_null("PeerBox")
+		return hb is Node3D and (hb as Node3D).position.is_equal_approx(Vector3(7.5, 7.5, 7.5)))
+	_check(peer_edit, "peer edit to its created node reached that node on the host")
+	_check(host_root.position.is_zero_approx(), "host scene root was not moved by a peer node edit")
+
+	# The host must also observe a peer removal.
+	if client_box != null:
+		client_root.remove_child(client_box)
+		client_box.free()
+	var removed: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		return host_root.get_node_or_null("Box") == null)
+	_check(removed, "host observed the peer removal")
+
+	# Simulate the client requesting a snapshot after editing: the host's scene
+	# already contains the peer's edits, so a pull must not undo them.
+	client_sync.request_snapshot()
+	var survives_pull: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		return client_root.get_node_or_null("PeerBox") != null and client_root.get_node_or_null("HostOnly") != null)
+	_check(survives_pull, "peer edits survived a snapshot request round-trip")
+	_check(client_root.get_node_or_null("Box") == null, "removed node stayed removed after snapshot")
+
+	client_sync.detach_scene()
+	host_sync.detach_scene()
+	client.stop("cleanup")
+	host.stop("cleanup")
+	host_root.free()
+	client_root.free()
+	host.free()
+	client.free()
+	host_manager.free()
+	client_manager.free()
+
+
+## Verifies that ordinary inspector properties (not just the old hard-coded
+## whitelist) reach the host in both directions.
+func _test_general_property_sync() -> void:
+	print("[general property sync]")
+	var logs := CollabLog.new()
+	var port: int = 45982
+
+	var host_root := Node3D.new()
+	host_root.name = "Root"
+	var host_box := Node3D.new()
+	host_box.name = "Box"
+	host_root.add_child(host_box)
+	var host_mesh := MeshInstance3D.new()
+	host_mesh.name = "Mesh"
+	host_root.add_child(host_mesh)
+
+	var client_root := Node3D.new()
+	client_root.name = "Root"
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://g.tscn"
+	host.get_username = func() -> String: return "host"
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://g.tscn"
+	client.get_username = func() -> String: return "peer"
+
+	var noop := func() -> void: pass
+	var host_sync := CollabSceneSyncService.new()
+	host_sync.setup(host, logs, {"get_edited_root": func() -> Node: return host_root, "mark_unsaved": noop})
+	var client_sync := CollabSceneSyncService.new()
+	client_sync.setup(client, logs, {"get_edited_root": func() -> Node: return client_root, "mark_unsaved": noop})
+	client_sync.auto_apply_snapshot = true
+
+	host_sync.attach_scene(host_root, "res://g.tscn")
+	client_sync.attach_scene(client_root, "res://g.tscn")
+
+	var err: Error = host.start_host(port, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "property host starts (%s)" % error_string(err))
+	err = client.join("127.0.0.1", port, "")
+	_check(err == OK, "property client joins (%s)" % error_string(err))
+
+	var synced: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		return client_root.get_node_or_null("Box") != null)
+	_check(synced, "client received the host snapshot")
+
+	# These two properties were absent from the old whitelist.
+	host_box.editor_description = "greetings"
+	host_box.process_priority = 7
+	var host_to_client: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		var cb: Node = client_root.get_node_or_null("Box")
+		return cb != null and cb.editor_description == "greetings" and cb.process_priority == 7)
+	_check(host_to_client, "host inspector property change (editor_description/process_priority) reached the client")
+
+	var client_box: Node3D = client_root.get_node_or_null("Box") as Node3D
+	if client_box != null:
+		client_box.visible = false
+	var client_to_host: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		return not host_box.visible)
+	_check(client_to_host, "client inspector property change (visible) reached the host")
+
+	# Dragging a brand-new material from the filesystem (or assigning one in the
+	# inspector) produces a path-less/embedded resource on the host that must
+	# travel inline and be rebuilt on the client.
+	var material := StandardMaterial3D.new()
+	material.albedo_color = Color(0.9, 0.1, 0.3)
+	host_mesh.material_override = material
+	var resource_synced: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		var client_mesh: MeshInstance3D = client_root.get_node_or_null("Mesh") as MeshInstance3D
+		if client_mesh == null:
+			return false
+		var received := client_mesh.material_override as StandardMaterial3D
+		return received != null and received.albedo_color.is_equal_approx(Color(0.9, 0.1, 0.3)))
+	_check(resource_synced, "host inline material_override reached the client as a rebuilt resource")
+
+	# Editing that embedded material in place (change its colour) changes no node
+	# reference, and StandardMaterial3D never emits its "changed" signal for this,
+	# so it is only caught by the watcher's periodic content re-serialisation.
+	# This is the "nested node properties" case: no file exists, yet the edit must
+	# travel.
+	if material != null:
+		material.albedo_color = Color(0.05, 0.95, 0.15)
+	var nested_edit: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		var client_mesh: MeshInstance3D = client_root.get_node_or_null("Mesh") as MeshInstance3D
+		if client_mesh == null:
+			return false
+		var received := client_mesh.material_override as StandardMaterial3D
+		return received != null and received.albedo_color.is_equal_approx(Color(0.05, 0.95, 0.15)))
+	_check(nested_edit, "in-place edit of an embedded material propagated to the client")
+
+	# A sub-resource owned by a node (a BoxShape3D on a CollisionShape3D) is also
+	# embedded; both its initial value and its later nested edits must travel.
+	var host_shape := CollisionShape3D.new()
+	host_shape.name = "Hull"
+	var box := BoxShape3D.new()
+	box.size = Vector3(1, 2, 3)
+	host_shape.shape = box
+	host_root.add_child(host_shape)
+	var shape_synced: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		var cs: CollisionShape3D = client_root.get_node_or_null("Hull") as CollisionShape3D
+		if cs == null or not (cs.shape is BoxShape3D):
+			return false
+		return (cs.shape as BoxShape3D).size.is_equal_approx(Vector3(1, 2, 3)))
+	_check(shape_synced, "nested BoxShape3D sub-resource reached the client with its size")
+
+	box.size = Vector3(4, 5, 6)
+	var shape_edit: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		var cs: CollisionShape3D = client_root.get_node_or_null("Hull") as CollisionShape3D
+		if cs == null or not (cs.shape is BoxShape3D):
+			return false
+		return (cs.shape as BoxShape3D).size.is_equal_approx(Vector3(4, 5, 6)))
+	_check(shape_edit, "in-place edit of a nested sub-resource reached the client")
+
+	# A file-backed resource (loaded from a .tres, so it has a res:// path) must
+	# sync in-memory property edits too; sending only its path would leave the
+	# client on its stale on-disk copy.
+	var file_mat := StandardMaterial3D.new()
+	file_mat.take_over_path("res://collab_e2e_mat.tres")
+	file_mat.albedo_color = Color(0.2, 0.4, 0.6)
+	host_mesh.material_override = file_mat
+	var file_synced: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		var client_mesh: MeshInstance3D = client_root.get_node_or_null("Mesh") as MeshInstance3D
+		if client_mesh == null:
+			return false
+		var received := client_mesh.material_override as StandardMaterial3D
+		return received != null and received.albedo_color.is_equal_approx(Color(0.2, 0.4, 0.6)))
+	_check(file_synced, "path-backed material_override reached the client")
+
+	file_mat.albedo_color = Color(0.7, 0.2, 0.2)
+	var file_edit: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		var client_mesh: MeshInstance3D = client_root.get_node_or_null("Mesh") as MeshInstance3D
+		if client_mesh == null:
+			return false
+		var received := client_mesh.material_override as StandardMaterial3D
+		return received != null and received.albedo_color.is_equal_approx(Color(0.7, 0.2, 0.2)))
+	_check(file_edit, "in-place edit of a path-backed material propagated to the client")
+
+	client_sync.detach_scene()
+	host_sync.detach_scene()
+	client.stop("cleanup")
+	host.stop("cleanup")
+	host_root.free()
+	client_root.free()
+	host.free()
+	client.free()
+	host_manager.free()
+	client_manager.free()
+
+
+## Drives two peers plus their workspace services until [param done] is true.
+func _pump_workspaces(host: CollabSessionCoordinator, client: CollabSessionCoordinator, host_ws: CollabWorkspaceService, client_ws: CollabWorkspaceService, timeout_ms: int, done: Callable) -> bool:
+	var deadline: int = Time.get_ticks_msec() + timeout_ms
+	while Time.get_ticks_msec() < deadline:
+		host.poll()
+		client.poll()
+		host_ws.poll()
+		client_ws.poll()
+		if done.call():
+			return true
+		OS.delay_msec(5)
+	return bool(done.call())
+
+
+func _reset_dir(path: String) -> void:
+	if DirAccess.dir_exists_absolute(path):
+		_remove_tree(path)
+	DirAccess.make_dir_recursive_absolute(path)
+
+
+func _remove_tree(path: String) -> void:
+	var dir: DirAccess = DirAccess.open(path)
+	if dir == null:
+		return
+	dir.list_dir_begin()
+	var entry: String = dir.get_next()
+	while entry != "":
+		var abs: String = path.path_join(entry)
+		if dir.current_is_dir():
+			_remove_tree(abs)
+		else:
+			DirAccess.remove_absolute(abs)
+		entry = dir.get_next()
+	dir.list_dir_end()
+	DirAccess.remove_absolute(path)
+
+
+## Reproduces the reported rename desync: a client renames a resource file (or
+## deletes a file) and the host must converge to the new name and drop the old
+## copy, instead of keeping both.
+func _test_workspace_rename_delete_loopback() -> void:
+	print("[workspace rename/delete loopback]")
+	var logs := CollabLog.new()
+	var port: int = 45984
+
+	var host_root: String = "/tmp/opencode/wsrename_host"
+	var client_root: String = "/tmp/opencode/wsrename_client"
+	_reset_dir(host_root)
+	_reset_dir(client_root)
+
+	var material_text: String = "[gd_resource type=\"StandardMaterial3D\" format=3]\n\n[resource]\nalbedo_color = Color(0.2, 0.4, 0.8, 1)\n"
+	_write_text(host_root.path_join("mat_old.tres"), material_text)
+	_write_text(client_root.path_join("mat_old.tres"), material_text)
+	_write_text(host_root.path_join("scripts/util.gd"), "extends Node\n")
+	_write_text(client_root.path_join("scripts/util.gd"), "extends Node\n")
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://w.tscn"
+	host.get_username = func() -> String: return "host"
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://w.tscn"
+	client.get_username = func() -> String: return "peer"
+
+	var host_ws := CollabWorkspaceService.new()
+	host_ws.setup(host, CollabSettings.new(), logs, func() -> String: return host_root, {})
+	var client_ws := CollabWorkspaceService.new()
+	client_ws.setup(client, CollabSettings.new(), logs, func() -> String: return client_root, {})
+
+	var err: Error = host.start_host(port, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "rename host starts (%s)" % error_string(err))
+	err = client.join("127.0.0.1", port, "")
+	_check(err == OK, "rename client joins (%s)" % error_string(err))
+
+	var ready: bool = _pump_workspaces(host, client, host_ws, client_ws, 6000, func() -> bool:
+		return host.registry.count() >= 2 and client.registry.count() >= 2)
+	_check(ready, "rename peers connected")
+
+	# Prime baselines only after both peers already have the same files, so the
+	# initial state is not treated as a change.
+	host_ws.prime_file_baseline()
+	client_ws.prime_file_baseline()
+	host_ws.file_sync_enabled = true
+	client_ws.file_sync_enabled = true
+	host_ws._watch_last_ms = 0
+	client_ws._watch_last_ms = 0
+
+	# The client renames the resource and deletes the script.
+	DirAccess.rename_absolute(client_root.path_join("mat_old.tres"), client_root.path_join("mat_new.tres"))
+	DirAccess.remove_absolute(client_root.path_join("scripts/util.gd"))
+
+	var host_mat: String = host_root.path_join("mat_new.tres")
+	var host_old: String = host_root.path_join("mat_old.tres")
+	var host_util: String = host_root.path_join("scripts/util.gd")
+	var converged: bool = _pump_workspaces(host, client, host_ws, client_ws, 9000, func() -> bool:
+		return FileAccess.file_exists(host_mat) and not FileAccess.file_exists(host_old) and not FileAccess.file_exists(host_util))
+	_check(FileAccess.file_exists(host_mat), "renamed file arrived on the host")
+	_check(not FileAccess.file_exists(host_old), "renamed-away file was removed on the host (no stale duplicate)")
+	_check(not FileAccess.file_exists(host_util), "deleted file was removed on the host")
+	_check(converged, "host converged to the renamed file and the deletion")
+	# The client's own copy must remain the renamed one.
+	_check(FileAccess.file_exists(client_root.path_join("mat_new.tres")), "client kept the renamed file")
+	_check(not FileAccess.file_exists(client_root.path_join("mat_old.tres")), "client dropped the old name")
+
+	client_ws.free()
+	host_ws.free()
+	client.stop("cleanup")
+	host.stop("cleanup")
+	client.free()
+	host.free()
+	client_manager.free()
+	host_manager.free()
+
+
+
+## Join-time catch-up: a newly admitted peer must converge on the host's files
+## and the host must learn about files only the client has. Before this existed,
+## every file created before the session simply never travelled.
+func _test_workspace_join_catchup() -> void:
+	print("[workspace join catch-up]")
+	var logs := CollabLog.new()
+	var port: int = 45985
+
+	var host_root: String = "/tmp/opencode/ws_catchup_host"
+	var client_root: String = "/tmp/opencode/ws_catchup_client"
+	_reset_dir(host_root)
+	_reset_dir(client_root)
+	_write_text(host_root.path_join("project.godot"), "config_version=5\n")
+	_write_text(host_root.path_join("scripts/host_only.gd"), "extends Node\n")
+	_write_text(client_root.path_join("extra/client_only.gd"), "extends Node\n")
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://w.tscn"
+	host.get_username = func() -> String: return "host"
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://w.tscn"
+	client.get_username = func() -> String: return "peer"
+
+	var host_ws := CollabWorkspaceService.new()
+	host_ws.setup(host, CollabSettings.new(), logs, func() -> String: return host_root, {})
+	var client_ws := CollabWorkspaceService.new()
+	client_ws.setup(client, CollabSettings.new(), logs, func() -> String: return client_root, {})
+	# File sync is on from the start so the catch-up runs at admit time.
+	host_ws.file_sync_enabled = true
+	client_ws.file_sync_enabled = true
+
+	var err: Error = host.start_host(port, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "catch-up host starts (%s)" % error_string(err))
+	err = client.join("127.0.0.1", port, "")
+	_check(err == OK, "catch-up client joins (%s)" % error_string(err))
+
+	var ready: bool = _pump_workspaces(host, client, host_ws, client_ws, 6000, func() -> bool:
+		return host.registry.count() >= 2 and client.registry.count() >= 2)
+	_check(ready, "catch-up peers connected")
+
+	var host_script: String = client_root.path_join("scripts/host_only.gd")
+	var client_script: String = host_root.path_join("extra/client_only.gd")
+	var converged: bool = _pump_workspaces(host, client, host_ws, client_ws, 9000, func() -> bool:
+		return FileAccess.file_exists(host_script) and FileAccess.file_exists(client_script))
+	_check(FileAccess.file_exists(host_script), "client received a pre-existing host file at join")
+	_check(FileAccess.file_exists(client_script), "host received a pre-existing client-only file at join")
+	_check(converged, "join-time catch-up converged both projects")
+
+	client_ws.free()
+	host_ws.free()
+	client.stop("cleanup")
+	host.stop("cleanup")
+	client.free()
+	host.free()
+	client_manager.free()
+	host_manager.free()
+
+
+## File sync must work through the relay as well: the join-time catch-up and
+## the live file stream are relayed frames, so a client that only has an
+## outbound connection still converges with the host's project.
+func _test_workspace_relay_sync() -> void:
+	print("[workspace relay sync]")
+	var logs := CollabLog.new()
+	var relay_port: int = 45987
+	var room: String = "RLWS77"
+	var token: String = "secret-token"
+
+	var host_root: String = "/tmp/opencode/wsrelay_host"
+	var client_root: String = "/tmp/opencode/wsrelay_client"
+	_reset_dir(host_root)
+	_reset_dir(client_root)
+	_write_text(host_root.path_join("project.godot"), "config_version=5\n")
+	_write_text(host_root.path_join("scripts/host_only.gd"), "extends Node\n")
+	_write_text(client_root.path_join("extra/client_only.gd"), "extends Node\n")
+
+	var relay := CollabRelayServer.new(logs)
+	_check(relay.start(relay_port, 16) == OK, "relay workspace relay starts")
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://w.tscn"
+	host.get_username = func() -> String: return "host"
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://w.tscn"
+	client.get_username = func() -> String: return "peer"
+	var client_messages: Array = []
+	client.workspace_message.connect(func(_from: int, type: int, _payload: Dictionary) -> void:
+		client_messages.append(type)
+	)
+
+	var host_ws := CollabWorkspaceService.new()
+	host_ws.setup(host, CollabSettings.new(), logs, func() -> String: return host_root, {})
+	var client_ws := CollabWorkspaceService.new()
+	client_ws.setup(client, CollabSettings.new(), logs, func() -> String: return client_root, {})
+	host_ws.file_sync_enabled = true
+	client_ws.file_sync_enabled = true
+
+	var err: Error = host.start_host_via_relay("127.0.0.1", relay_port, room, token, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "relay workspace host starts (%s)" % error_string(err))
+	err = client.join_via_relay("127.0.0.1", relay_port, room, token, CollabConstants.WorkspaceMode.HOST_WORKSPACE)
+	_check(err == OK, "relay workspace client joins (%s)" % error_string(err))
+
+	var connected: bool = false
+	var deadline: int = Time.get_ticks_msec() + 8000
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		client.poll()
+		host_ws.poll()
+		client_ws.poll()
+		if host.registry.count() >= 2 and client.registry.count() >= 2:
+			connected = true
+			break
+		OS.delay_msec(5)
+	_check(connected, "relay workspace peers connected")
+	if not connected:
+		relay.stop()
+		relay.free()
+		client_ws.free()
+		host_ws.free()
+		client.free()
+		host.free()
+		client_manager.free()
+		host_manager.free()
+		return
+
+	# The join-time catch-up travels through the relay in both directions.
+	host_ws.prime_file_baseline()
+	client_ws.prime_file_baseline()
+	var host_script: String = client_root.path_join("scripts/host_only.gd")
+	var client_script: String = host_root.path_join("extra/client_only.gd")
+	var caught_up: bool = false
+	deadline = Time.get_ticks_msec() + 12000
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		client.poll()
+		host_ws.poll()
+		client_ws.poll()
+		if FileAccess.file_exists(host_script) and FileAccess.file_exists(client_script):
+			caught_up = true
+			break
+		OS.delay_msec(5)
+	_check(FileAccess.file_exists(host_script), "relay client received a pre-existing host file at join")
+	_check(FileAccess.file_exists(client_script), "relay host received a pre-existing client-only file at join")
+	_check(caught_up, "relay join-time catch-up converged both projects")
+	# Project configuration travels as editor state, not as a project.godot file.
+	_check(client_messages.has(CollabProtocol.MessageType.PROJECT_SETTINGS), "relay client received project settings at join")
+
+	# A live host-side add must reach the client through the relay.
+	_write_text(host_root.path_join("scripts/live_from_host.gd"), "extends Node\n")
+	var live_host: bool = false
+	deadline = Time.get_ticks_msec() + 12000
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		client.poll()
+		host_ws.poll()
+		client_ws.poll()
+		if FileAccess.file_exists(client_root.path_join("scripts/live_from_host.gd")):
+			live_host = true
+			break
+		OS.delay_msec(5)
+	_check(live_host, "live host file reached the client through the relay")
+
+	# A live client-side add must reach the host through the relay.
+	_write_text(client_root.path_join("scripts/live_from_client.gd"), "extends Node\n")
+	var live_client: bool = false
+	deadline = Time.get_ticks_msec() + 12000
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		client.poll()
+		host_ws.poll()
+		client_ws.poll()
+		if FileAccess.file_exists(host_root.path_join("scripts/live_from_client.gd")):
+			live_client = true
+			break
+		OS.delay_msec(5)
+	_check(live_client, "live client file reached the host through the relay")
+
+	client_ws.free()
+	host_ws.free()
+	client.stop("cleanup")
+	host.stop("cleanup")
+	client.free()
+	host.free()
+	client_manager.free()
+	host_manager.free()
+	relay.stop()
+	relay.free()
+
+
+## The relay mirrors the host's live project under the configured projects
+## directory and replays it to clients that join later.
+func _test_relay_project_mirror() -> void:
+	print("[relay project mirror]")
+	var logs := CollabLog.new()
+	var relay_port: int = 45986
+	var room: String = "MRRR11"
+	var token: String = "secret-token"
+	var projects_dir: String = "/tmp/opencode/relay_mirror_projects"
+	_reset_dir(projects_dir)
+
+	var host_root: String = "/tmp/opencode/mirror_host"
+	var client_root: String = "/tmp/opencode/mirror_client"
+	_reset_dir(host_root)
+	_reset_dir(client_root)
+	_write_text(host_root.path_join("project.godot"), "config_version=5\n")
+	_write_text(host_root.path_join("scenes/main.tscn"), "[gd_scene format=3]\n")
+
+	var relay := CollabRelayServer.new(logs)
+	_check(relay.start(relay_port, 16, "*", projects_dir) == OK, "mirror relay starts")
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://scenes/main.tscn"
+	host.get_username = func() -> String: return "host"
+	var host_transfer := CollabTransferManager.new()
+	host_transfer.setup(host, CollabSettings.new(), logs, func() -> String: return host_root)
+
+	var err: Error = host.start_host_via_relay("127.0.0.1", relay_port, room, token, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false, "MirrorTest")
+	_check(err == OK, "mirror host starts via relay (%s)" % error_string(err))
+
+	var mirror_root: String = projects_dir.path_join("live_MirrorTest")
+	var synced: bool = false
+	var deadline: int = Time.get_ticks_msec() + 12000
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		host_transfer.poll()
+		if FileAccess.file_exists(mirror_root.path_join("project.godot")) and FileAccess.file_exists(mirror_root.path_join("scenes/main.tscn")):
+			synced = true
+			break
+		OS.delay_msec(5)
+	_check(synced, "relay mirror pulled the host project")
+
+	# A live host-side add must be persisted in the mirror.
+	var host_ws := CollabWorkspaceService.new()
+	host_ws.setup(host, CollabSettings.new(), logs, func() -> String: return host_root, {})
+	host_ws.request_add_file("notes/live.txt", "hello mirror", true)
+	deadline = Time.get_ticks_msec() + 8000
+	var mirrored_add: bool = false
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		host_transfer.poll()
+		host_ws.poll()
+		if FileAccess.file_exists(mirror_root.path_join("notes/live.txt")):
+			mirrored_add = true
+			break
+		OS.delay_msec(5)
+	_check(mirrored_add, "relay mirror persisted a live file add")
+
+	# A joining client starts from the server-side mirror state.
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://scenes/main.tscn"
+	client.get_username = func() -> String: return "peer"
+	var client_ws := CollabWorkspaceService.new()
+	client_ws.setup(client, CollabSettings.new(), logs, func() -> String: return client_root, {})
+	err = client.join_via_relay("127.0.0.1", relay_port, room, token, CollabConstants.WorkspaceMode.HOST_WORKSPACE)
+	_check(err == OK, "mirror client joins via relay (%s)" % error_string(err))
+
+	deadline = Time.get_ticks_msec() + 12000
+	var replayed: bool = false
+	while Time.get_ticks_msec() < deadline:
+		relay.poll()
+		host.poll()
+		host_transfer.poll()
+		host_ws.poll()
+		client.poll()
+		client_ws.poll()
+		# project.godot is never replayed as a raw file (it is host editor
+		# state), so the mirror replay delivers the project's content instead.
+		if FileAccess.file_exists(client_root.path_join("scenes/main.tscn")) and FileAccess.file_exists(client_root.path_join("notes/live.txt")):
+			replayed = true
+			break
+		OS.delay_msec(5)
+	_check(replayed, "joining client received the mirrored project state")
+	_check(not FileAccess.file_exists(client_root.path_join("project.godot")), "mirror replay never writes project.godot")
+	_check(FileAccess.file_exists(mirror_root.path_join("project.godot")), "relay mirror still stores project.godot")
+
+	client_ws.free()
+	host_ws.free()
+	client.stop("cleanup")
+	host.stop("cleanup")
+	client.free()
+	host.free()
+	host_transfer.free()
+	client_manager.free()
+	host_manager.free()
+	relay.stop()
+	relay.free()
+
+
+## Reproduces the reported post-crash bug: a client whose local scene does not
+## match the host (because it restarted / reopened a stale scene) must never
+## toggle a same-numbered but different local node on the host, and after a
+## reconnect its edits must address the right nodes again.
+func _test_rejoin_desync() -> void:
+	print("[rejoin desync]")
+	var logs := CollabLog.new()
+	var port: int = 45983
+
+	var host_root := Node3D.new()
+	host_root.name = "Root"
+	var host_box := Node3D.new()
+	host_box.name = "Box"
+	host_box.visible = true
+	host_root.add_child(host_box)
+
+	# The client has a differently-named node that would previously have been
+	# allocated the same positive id as the host's Box.
+	var client_root := Node3D.new()
+	client_root.name = "Root"
+	var decoy := Node3D.new()
+	decoy.name = "Decoy"
+	client_root.add_child(decoy)
+
+	var host_manager := CollabSessionManager.new(logs)
+	var host := CollabSessionCoordinator.new()
+	host.setup(host_manager, logs)
+	var client_manager := CollabSessionManager.new(logs)
+	var client := CollabSessionCoordinator.new()
+	client.setup(client_manager, logs)
+
+	host.get_project_id = func() -> String: return "proj"
+	host.get_scene_id = func() -> String: return "res://rejoin.tscn"
+	host.get_username = func() -> String: return "host"
+	client.get_project_id = func() -> String: return "proj"
+	client.get_scene_id = func() -> String: return "res://rejoin.tscn"
+	client.get_username = func() -> String: return "peer"
+
+	var noop := func() -> void: pass
+	var host_sync := CollabSceneSyncService.new()
+	host_sync.setup(host, logs, {"get_edited_root": func() -> Node: return host_root, "mark_unsaved": noop})
+	var client_sync := CollabSceneSyncService.new()
+	client_sync.setup(client, logs, {"get_edited_root": func() -> Node: return client_root, "mark_unsaved": noop})
+	client_sync.auto_apply_snapshot = true
+
+	host_sync.attach_scene(host_root, "res://rejoin.tscn")
+	client_sync.attach_scene(client_root, "res://rejoin.tscn")
+
+	var err: Error = host.start_host(port, 4, CollabConstants.WorkspaceMode.HOST_WORKSPACE, false)
+	_check(err == OK, "rejoin host starts (%s)" % error_string(err))
+	err = client.join("127.0.0.1", port, "")
+	_check(err == OK, "rejoin client joins (%s)" % error_string(err))
+
+	var synced: bool = _pump(host, client, host_sync, client_sync, 6000, func() -> bool:
+		return client_root.get_node_or_null("Box") != null and client_root.get_node_or_null("Decoy") == null)
+	_check(synced, "rejoining client's stale node replaced by the host snapshot")
+
+	var client_box: Node3D = client_root.get_node_or_null("Box") as Node3D
+	if client_box != null:
+		client_box.visible = false
+	var toggled_correct: bool = _pump(host, client, host_sync, client_sync, 5000, func() -> bool:
+		return not host_box.visible)
+	_check(toggled_correct, "client visibility toggle reaches the host's Box")
+	_check(host_root.get_node_or_null("Decoy") == null, "no phantom node appeared on the host")
+
+	# Disconnect and reconnect with a fresh client: its local ids must be
+	# re-keyed to the host's again, not left stale.
+	client_sync.detach_scene()
+	client.stop("simulated crash")
+	var drain: int = Time.get_ticks_msec() + 300
+	while Time.get_ticks_msec() < drain:
+		host.poll()
+		host_sync.poll()
+		OS.delay_msec(5)
+
+	var client2_manager := CollabSessionManager.new(logs)
+	var client2 := CollabSessionCoordinator.new()
+	client2.setup(client2_manager, logs)
+	client2.get_project_id = func() -> String: return "proj"
+	client2.get_scene_id = func() -> String: return "res://rejoin.tscn"
+	client2.get_username = func() -> String: return "peer2"
+	var client2_sync := CollabSceneSyncService.new()
+	client2_sync.setup(client2, logs, {"get_edited_root": func() -> Node: return client_root, "mark_unsaved": noop})
+	client2_sync.auto_apply_snapshot = true
+	client2_sync.attach_scene(client_root, "res://rejoin.tscn")
+
+	err = client2.join("127.0.0.1", port, "")
+	_check(err == OK, "client reconnects (%s)" % error_string(err))
+	var resynced: bool = _pump(host, client2, host_sync, client2_sync, 6000, func() -> bool:
+		var cb: Node = client_root.get_node_or_null("Box")
+		return client2.local_peer_id() > 0 and cb != null and client2_sync.node_id_for_scene("res://rejoin.tscn", cb) > 0)
+	_check(resynced, "client resynced and re-keyed to host ids after reconnect")
+
+	var client_box2: Node3D = client_root.get_node_or_null("Box") as Node3D
+	if client_box2 != null:
+		client_box2.visible = true
+	var toggled_after: bool = _pump(host, client2, host_sync, client2_sync, 5000, func() -> bool:
+		return host_box.visible)
+	_check(toggled_after, "post-reconnect toggle targets the correct node")
+	_check(host_root.get_node_or_null("Decoy") == null, "no phantom node appeared after reconnect")
+
+	client2_sync.detach_scene()
+	host_sync.detach_scene()
+	client2.stop("cleanup")
+	host.stop("cleanup")
+	host_root.free()
+	client_root.free()
+	host.free()
+	client.free()
+	client2.free()
+	host_manager.free()
+	client_manager.free()
+	client2_manager.free()
