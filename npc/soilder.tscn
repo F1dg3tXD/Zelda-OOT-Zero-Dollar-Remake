@@ -1,14 +1,9 @@
 [gd_scene format=4 uid="uid://csplpnmg35oxh"]
 
-<<<<<<< Updated upstream
 [ext_resource type="PackedScene" uid="uid://deemf5puuysor" path="res://models/soilder/Soilder.glb" id="1_6l3xi"]
 [ext_resource type="Script" uid="uid://bdpkod2xa25ya" path="res://npc/soilder.gd" id="2_qitif"]
 [ext_resource type="Texture2D" uid="uid://ca85ikoj1rwtk" path="res://models/soilder/Soilder_bodyCOlor.png" id="3_6m0nm"]
 [ext_resource type="Texture2D" uid="uid://dgqcmpxcihij2" path="res://models/soilder/Soilder_bodyNormal.png" id="4_awmrf"]
-=======
-[ext_resource type="PackedScene" uid="uid://ba6awg3c1xgj5" path="res://models/Link/Link.glb" id="1_qitif"]
-[ext_resource type="PackedScene" uid="uid://dv3i4lobgembm" path="res://player/link.tscn" id="2_pqghu"]
->>>>>>> Stashed changes
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c0cdo"]
 resource_name = "body"

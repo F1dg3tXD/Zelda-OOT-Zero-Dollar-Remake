@@ -1,11 +1,6 @@
 [gd_scene format=3 uid="uid://b3qysbdwl7n88"]
 
-<<<<<<< Updated upstream
 [ext_resource type="PackedScene" uid="uid://bjc04buqt1d1s" path="res://models/Sword/Sword.glb" id="1_rk2yr"]
-=======
-[ext_resource type="PackedScene" uid="uid://ba6awg3c1xgj5" path="res://models/Link/Link.glb" id="1_hv1tj"]
-[ext_resource type="PackedScene" uid="uid://dv3i4lobgembm" path="res://player/link.tscn" id="2_3oxjh"]
->>>>>>> Stashed changes
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5d25b"]
 radius = 0.31933594
