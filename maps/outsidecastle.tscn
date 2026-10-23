@@ -14,42 +14,92 @@ size = Vector3(458, 3.84906, 441.87018)
 material = ExtResource("1_hco7w")
 
 [node name="CSGSphere3D" type="CSGSphere3D" parent="Main Ground" unique_id=1477611127]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99.49802, 0, 228.53595)
+transform = Transform3D(1, 0, 0, 0, 1.5561368, 0, 0, 0, 1, 99.49801, 0, 228.53595)
 radius = 91.44172
 material = ExtResource("1_hco7w")
 
 [node name="CSGSphere3D5" type="CSGSphere3D" parent="Main Ground" unique_id=449519436]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 232.49802, 0, 228.53595)
+transform = Transform3D(1, 0, 0, 0, 2.7081313, 0, 0, 0, 1, 232.49802, 0, 228.53595)
 radius = 91.44172
 material = ExtResource("1_hco7w")
 
 [node name="CSGSphere3D6" type="CSGSphere3D" parent="Main Ground" unique_id=25919721]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 286.49802, 0, 98.53595)
-radius = 91.44172
-material = ExtResource("1_hco7w")
-
-[node name="CSGSphere3D7" type="CSGSphere3D" parent="Main Ground" unique_id=647156063]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 286.49802, -23, -21.46405)
+transform = Transform3D(1, 0, 0, 0, 3.1176565, 0, 0, 0, 1, 286.498, 0, 98.53595)
 radius = 91.44172
 material = ExtResource("1_hco7w")
 
 [node name="CSGSphere3D8" type="CSGSphere3D" parent="Main Ground" unique_id=527675761]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 232.49802, -23, -205.46407)
+transform = Transform3D(1, 0, 0, 0, 1.6426291, 0, 0, 0, 1, 232.49802, -23, -205.4641)
 radius = 145.0
 material = ExtResource("1_hco7w")
 
 [node name="CSGSphere3D2" type="CSGSphere3D" parent="Main Ground" unique_id=638191588]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.162384, -36, 182.09538)
+transform = Transform3D(1, 0, 0, 0, 1.6463478, 0, 0, 0, 1, -34.1624, -36, 182.09538)
 radius = 91.44172
 material = ExtResource("1_hco7w")
 
 [node name="CSGSphere3D3" type="CSGSphere3D" parent="Main Ground" unique_id=1111254726]
-transform = Transform3D(1, 0, 0, 0, -0.9659258, -0.25881907, 0, 0.25881907, -0.9659258, 99.49802, -41.39652, -191.45467)
+transform = Transform3D(1, 0, 0, 0, -1.821197, -0.3202248, 0, 0.4879883, -1.1950951, 99.49801, -41.39652, -191.4547)
 radius = 91.44172
 material = ExtResource("1_hco7w")
 
 [node name="CSGSphere3D4" type="CSGSphere3D" parent="Main Ground" unique_id=981349726]
-transform = Transform3D(1, 0, 0, 0, -0.9659258, -0.25881907, 0, 0.25881907, -0.9659258, -34.162384, 5.396515, -155.91402)
+transform = Transform3D(1, 0, 0, 0, -1.5773327, -0.30271614, 0, 0.4226451, -1.1297519, -34.1624, 5.396515, -155.91403)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="Main Ground2" type="CSGBox3D" parent="." unique_id=759820467]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.0000669, 0, 0, 0, 1.0000669, 285.2996, -2.3077087, -68.66405)
+size = Vector3(518.5449, 3.84906, 441.87018)
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="Main Ground2" unique_id=794919374]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 99.49802, 0, 228.53595)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D5" type="CSGSphere3D" parent="Main Ground2" unique_id=486017500]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 232.49802, 0, 228.53595)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D6" type="CSGSphere3D" parent="Main Ground2" unique_id=1977506829]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 286.49802, 0, 98.53595)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D7" type="CSGSphere3D" parent="Main Ground2" unique_id=866993356]
+transform = Transform3D(1, 0, 0, 0, 1.5894644, 0, 0, 0, 1, 286.49802, -2.9765196, -52.33586)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D8" type="CSGSphere3D" parent="Main Ground2" unique_id=1084270518]
+transform = Transform3D(1, 0, 0, 0, 1.6225321, 0, 0, 0, 1, 232.49802, -23, -205.4641)
+radius = 145.0
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="Main Ground2" unique_id=1376880737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -34.162384, -36, 223.91847)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D9" type="CSGSphere3D" parent="Main Ground2" unique_id=88791090]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -162.73758, -36, 223.91847)
+radius = 151.62587
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D3" type="CSGSphere3D" parent="Main Ground2" unique_id=1769222162]
+transform = Transform3D(1, 0, 0, 0, -0.9659258, -0.25881907, 0, 0.25881907, -0.9659258, 99.49802, -41.39652, -191.45467)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D4" type="CSGSphere3D" parent="Main Ground2" unique_id=1482791848]
+transform = Transform3D(1, 0, 0, 0, -0.9659258, -0.25881907, 0, 0.25881907, -0.9659258, -14.806305, 5.396515, -189.78716)
+radius = 91.44172
+material = ExtResource("1_hco7w")
+
+[node name="CSGSphere3D10" type="CSGSphere3D" parent="Main Ground2" unique_id=1386025542]
+transform = Transform3D(1, 0, 0, 0, -0.9659258, -0.25881907, 0, 0.25881907, -0.9659258, -122.6886, -0.0029916763, -189.78716)
 radius = 91.44172
 material = ExtResource("1_hco7w")
 
