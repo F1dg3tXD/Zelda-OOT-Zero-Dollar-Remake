@@ -1,0 +1,374 @@
+[gd_scene format=3 uid="uid://b0uuvnieqo8hi"]
+
+[ext_resource type="PackedScene" uid="uid://dv3i4lobgembm" path="res://player/link.tscn" id="1_oul6g"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_oul6g"]
+load_path = "res://.godot/imported/Link_link_face.png-f2471852ae5714d324b48b9d3c422fc2.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rkbax"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.003
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g1dw6"]
+resource_name = "link_skin"
+next_pass = SubResource("StandardMaterial3D_rkbax")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_oul6g")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.003
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_g1dw6"]
+load_path = "res://.godot/imported/Link_link_eye.png-4071ba73e38e7af2c3f59ae12921162b.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c35mf"]
+resource_name = "link_eye"
+transparency = 4
+cull_mode = 2
+shading_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_g1dw6")
+roughness = 0.4
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_65viv"]
+resource_name = "outline_details"
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 1
+albedo_color = Color(0, 0, 0, 1)
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_yw30f"]
+load_path = "res://.godot/imported/Link_link_tunic.png-ec812855df905927cdedd2a0bb8511ac.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qjkh3"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.005
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g6k8r"]
+resource_name = "link_tunic"
+next_pass = SubResource("StandardMaterial3D_qjkh3")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_yw30f")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_boad6"]
+load_path = "res://.godot/imported/Link_link_tunic_3.png-32cf0cfc18c0d9b8c5974cfd0e596cad.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rgyib"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.005
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hg6s5"]
+resource_name = "link_tunic transpaent"
+next_pass = SubResource("StandardMaterial3D_rgyib")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_boad6")
+metallic = 1.0
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_8t03j"]
+load_path = "res://.godot/imported/Link_link_hair_bake.png-99acadf3faf04db90ccbf57f08c7a0b6.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ieo8"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.005
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ebec5"]
+resource_name = "tunic golden"
+next_pass = SubResource("StandardMaterial3D_2ieo8")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_8t03j")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_yllr7"]
+load_path = "res://.godot/imported/Link_link_hand.png-6e6c45ebee3a71f3b4a473eb2291416c.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kb6p2"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.005
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wodsf"]
+resource_name = "link_hand"
+next_pass = SubResource("StandardMaterial3D_kb6p2")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_yllr7")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_rkbax"]
+load_path = "res://.godot/imported/Link_belt_link.png-3464edff9c3c5772b2ef12f61f61da9d.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yw30f"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.005
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_boad6"]
+resource_name = "belt_link"
+next_pass = SubResource("StandardMaterial3D_yw30f")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_rkbax")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_rgyib"]
+load_path = "res://.godot/imported/Link_Link_hat.png-f05f4b84cfc9ee0ded00b89f708b6619.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8t03j"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.005
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_yllr7"]
+resource_name = "link_hat"
+next_pass = SubResource("StandardMaterial3D_8t03j")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_rgyib")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_kb6p2"]
+load_path = "res://.godot/imported/Link_link_hair_bake.png-99acadf3faf04db90ccbf57f08c7a0b6.s3tc.ctex"
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_32hag"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.005
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tqiix"]
+resource_name = "hair1"
+next_pass = SubResource("StandardMaterial3D_32hag")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_kb6p2")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e7oew"]
+resource_name = "hair1"
+next_pass = SubResource("StandardMaterial3D_32hag")
+transparency = 4
+cull_mode = 2
+diffuse_mode = 3
+specular_mode = 1
+albedo_texture = SubResource("CompressedTexture2D_kb6p2")
+roughness = 0.4
+stencil_mode = 1
+stencil_flags = 2
+stencil_outline_thickness = 0.005
+metadata/_gltf_primary_texture_coord = 0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5d25b"]
+radius = 0.39941406
+height = 1.8432617
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_3atma"]
+radius = 0.3984375
+height = 1.1889648
+
+[node name="Player" type="CharacterBody3D" unique_id=865303889]
+collision_layer = 59
+collision_mask = 59
+
+[node name="Link" parent="." unique_id=1295221308 instance=ExtResource("1_oul6g")]
+
+[node name="Skeleton3D" parent="Link/Armature" parent_id_path=PackedInt32Array(1295221308, 1390216991) index="0" unique_id=530651956]
+bones/1/rotation = Quaternion(-0.09077528, 0.2678575, 0.95505977, -0.08873037)
+bones/2/rotation = Quaternion(-0.27748248, -2.239627e-06, -6.8023655e-07, 0.96073073)
+bones/3/rotation = Quaternion(0.43045348, -0.24022824, 0.039859876, 0.8691441)
+bones/4/rotation = Quaternion(0.33661568, -0.07001593, 0.012948904, 0.93894625)
+bones/5/rotation = Quaternion(-0.12170033, 0.13264576, 0.9809513, 0.072998926)
+bones/6/rotation = Quaternion(-0.30975902, -2.8392833e-06, -1.0433945e-06, 0.95081514)
+bones/7/rotation = Quaternion(0.57829046, 0.13642581, 0.016058467, 0.804183)
+bones/8/rotation = Quaternion(0.34624633, 0.0676484, -0.015050347, 0.93558043)
+bones/9/rotation = Quaternion(0.168642, 0.030770214, 0.008240095, 0.98516256)
+bones/10/rotation = Quaternion(0.03181448, 0.009820279, -0.0059636375, 0.9994278)
+bones/11/rotation = Quaternion(0.031689912, 0.010503447, -0.005919349, 0.9994251)
+bones/12/rotation = Quaternion(0.687832, 0.37283313, -0.40257144, 0.47520393)
+bones/13/rotation = Quaternion(0.4564853, -0.055774592, 0.27365258, 0.84476316)
+bones/14/rotation = Quaternion(-2.0954761e-07, -2.6286583e-07, 0.3590119, 0.93333304)
+bones/15/rotation = Quaternion(0.08175, -0.23862088, 0.08378701, 0.9640315)
+bones/16/rotation = Quaternion(0.61216384, -0.059672914, -0.03116853, 0.78785986)
+bones/17/rotation = Quaternion(0.39744517, -0.016246835, -0.02167626, 0.9172261)
+bones/18/rotation = Quaternion(0.6336164, -0.03876842, 0.017279848, 0.77248216)
+bones/19/rotation = Quaternion(0.66315544, -0.04594258, -0.091957755, 0.7413893)
+bones/20/rotation = Quaternion(0.59401184, 0.0015383568, 0.0047434247, 0.8044408)
+bones/21/rotation = Quaternion(0.17308076, -0.011748742, 0.0048382096, 0.98482573)
+bones/22/rotation = Quaternion(0.69529426, -0.20784481, -0.021719337, 0.68767345)
+bones/23/rotation = Quaternion(0.48555717, -8.989184e-06, -0.014734903, 0.8740807)
+bones/24/rotation = Quaternion(0.22737356, 2.6733014e-05, -0.0068695126, 0.97378343)
+bones/25/rotation = Quaternion(0.70108235, -0.13756871, -0.073768206, 0.6957849)
+bones/26/rotation = Quaternion(0.43057677, -0.0035651927, -0.0030643265, 0.90254176)
+bones/27/rotation = Quaternion(0.33849853, 0.030193618, -0.08531961, 0.9366044)
+bones/28/rotation = Quaternion(0.25846273, 0.024635486, 0.25728673, 0.93080276)
+bones/29/rotation = Quaternion(0.10550068, 0.10804223, -0.2719191, 0.95039815)
+bones/30/rotation = Quaternion(0.35590622, 0.41782054, -0.3249246, 0.7701823)
+bones/31/rotation = Quaternion(-0.07807505, 0.011797854, 0.019108996, 0.9966945)
+bones/32/rotation = Quaternion(-0.119736105, 0.064436324, -0.03674223, 0.99003094)
+bones/33/rotation = Quaternion(0.6559091, -0.4155, 0.33824614, 0.5317262)
+bones/34/rotation = Quaternion(0.47723356, 0.14107028, -0.29520434, 0.815599)
+bones/35/rotation = Quaternion(-2.540183e-07, 2.2724277e-07, -0.49009487, 0.87166905)
+bones/36/rotation = Quaternion(0.03473878, 0.21818054, -0.11137006, 0.9689104)
+bones/37/rotation = Quaternion(0.26213494, -0.15865226, 0.006119314, 0.95188093)
+bones/38/rotation = Quaternion(0.8329261, 0.00055259396, 0.005851414, 0.5533532)
+bones/39/rotation = Quaternion(0.28659335, -0.008384977, 0.014875428, 0.9579001)
+bones/40/rotation = Quaternion(0.772751, -0.06680135, 0.06365684, 0.6279661)
+bones/41/rotation = Quaternion(0.5076355, -0.0013524112, -0.011820045, 0.86148983)
+bones/42/rotation = Quaternion(0.27105978, -0.0153053, -0.003939758, 0.96243274)
+bones/43/rotation = Quaternion(0.74048024, 0.041758697, 0.12236823, 0.6595235)
+bones/44/rotation = Quaternion(0.37325487, -8.888921e-06, 0.008770042, 0.92768747)
+bones/45/rotation = Quaternion(0.48280075, 1.8479535e-05, 0.011384237, 0.87565625)
+bones/46/rotation = Quaternion(0.7996669, -0.0149107, 0.058920965, 0.5973599)
+bones/47/rotation = Quaternion(0.3523458, -0.005019567, -0.003967622, 0.93584806)
+bones/48/rotation = Quaternion(0.43143973, -0.008212364, -0.010797558, 0.90203977)
+bones/49/rotation = Quaternion(0.12744243, -0.19860834, -0.26463437, 0.93503034)
+bones/50/rotation = Quaternion(0.12360929, 0.13305032, 0.32122818, 0.929425)
+bones/51/rotation = Quaternion(0.08476519, -0.041164033, 0.36968616, 0.92436606)
+
+[node name="link_head" parent="Link/Armature/Skeleton3D" index="0" unique_id=1730986232]
+surface_material_override/0 = SubResource("StandardMaterial3D_g1dw6")
+surface_material_override/1 = SubResource("StandardMaterial3D_c35mf")
+surface_material_override/2 = SubResource("StandardMaterial3D_65viv")
+surface_material_override/3 = SubResource("StandardMaterial3D_g6k8r")
+surface_material_override/4 = SubResource("StandardMaterial3D_hg6s5")
+surface_material_override/5 = SubResource("StandardMaterial3D_ebec5")
+surface_material_override/6 = SubResource("StandardMaterial3D_wodsf")
+surface_material_override/7 = SubResource("StandardMaterial3D_boad6")
+surface_material_override/8 = SubResource("StandardMaterial3D_yllr7")
+surface_material_override/9 = SubResource("StandardMaterial3D_tqiix")
+surface_material_override/10 = SubResource("StandardMaterial3D_e7oew")
+
+[node name="BoneAttachment3D" parent="Link/Armature/Skeleton3D" index="1" unique_id=197822186]
+transform = Transform3D(0.15228552, -0.6511262, -0.74353486, -0.6198238, -0.64889854, 0.44130346, -0.7698226, 0.3936566, -0.50240153, -0.019725323, 0.8176075, 0.28000697)
+
+[node name="AnimationTree" parent="Link" index="3" unique_id=1650308630]
+parameters/Walk/blend_position = Vector2(0, 0)
+parameters/Crouch/add_amount = 0.0
+
+[node name="CameraRoot" type="Node3D" parent="." unique_id=1001193110]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraRoot" unique_id=1708237679]
+
+[node name="Camera3D" type="Camera3D" parent="CameraRoot/SpringArm3D" unique_id=2115680768]
+
+[node name="StandingHitbox" type="CollisionShape3D" parent="." unique_id=2025886453]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.92163086, 0)
+shape = SubResource("CapsuleShape3D_5d25b")
+
+[node name="CrouchingHitbox" type="CollisionShape3D" parent="." unique_id=313275452]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0922852, 0)
+shape = SubResource("CapsuleShape3D_3atma")
+
+[editable path="Link"]

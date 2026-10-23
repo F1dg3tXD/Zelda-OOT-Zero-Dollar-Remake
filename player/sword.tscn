@@ -9,6 +9,8 @@ height = 3.7841797
 [node name="Sword" unique_id=586533133 instance=ExtResource("1_rk2yr")]
 
 [node name="Area3D" type="Area3D" parent="." index="1" unique_id=182654378]
+collision_layer = 13
+collision_mask = 13
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" index="0" unique_id=2027688546]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -2.3413765e-08, 2.5356445)
