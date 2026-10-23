@@ -4,12 +4,6 @@
 [ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://textures/Stone.tres" id="2_dt3nx"]
 [ext_resource type="Material" uid="uid://cgm5nsvnb1hgm" path="res://textures/neonsign.tres" id="3_agub2"]
 
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_1h0cx"]
-load_path = "res://.godot/imported/stone.jpg-20f81dbadfccd08aed722085fb04d4d9.s3tc.ctex"
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63luo"]
-albedo_texture = SubResource("CompressedTexture2D_1h0cx")
-
 [node name="Node3D" type="Node3D" unique_id=274387360]
 
 [node name="Main Ground" type="CSGBox3D" parent="." unique_id=1956134223]
@@ -107,8 +101,9 @@ outer_radius = 53.0
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=781474466]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -413, 36.499996, -48.5)
-material_override = SubResource("StandardMaterial3D_63luo")
+material_override = ExtResource("2_dt3nx")
 size = Vector3(239, 74, 204)
+material = ExtResource("2_dt3nx")
 
 [node name="CSGPolygon3D" type="CSGPolygon3D" parent="CSGBox3D" unique_id=565709158]
 transform = Transform3D(-3.0685376e-07, 0, 204.30899, 0, 3.2399998, 0, -7.0199957, 0, -8.93063e-06, 122, -34, 0)
