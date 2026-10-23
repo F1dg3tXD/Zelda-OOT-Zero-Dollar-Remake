@@ -3,7 +3,15 @@
 [ext_resource type="Material" uid="uid://bcwon06iq2a4j" path="res://textures/Grass.tres" id="1_hwggo"]
 [ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://textures/Stone.tres" id="2_dt3nx"]
 [ext_resource type="Material" uid="uid://cgm5nsvnb1hgm" path="res://textures/neonsign.tres" id="3_agub2"]
+<<<<<<< Updated upstream
 [ext_resource type="PackedScene" uid="uid://gvh6bssvbdb1" path="res://Atmospheres/outside_enviroment.tscn" id="4_dt3nx"]
+=======
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_1h0cx"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63luo"]
+albedo_texture = SubResource("CompressedTexture2D_1h0cx")
+>>>>>>> Stashed changes
 
 [node name="Node3D" type="Node3D" unique_id=274387360]
 
