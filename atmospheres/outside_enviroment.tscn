@@ -13,7 +13,13 @@ sky_material = SubResource("ProceduralSkyMaterial_51wh7")
 [sub_resource type="Environment" id="Environment_6k3qs"]
 background_mode = 2
 sky = SubResource("Sky_pdmgq")
-glow_enabled = true
+tonemap_mode = 3
+ssao_enabled = true
+ssil_enabled = true
+fog_light_color = Color(0.35707685, 0.5822264, 0.6652074, 1)
+volumetric_fog_density = 0.01
+volumetric_fog_albedo = Color(0.44699174, 0.59535706, 0.62321806, 1)
+volumetric_fog_emission_energy = 0.5
 
 [node name="OutsideEnviroment" type="Node3D" unique_id=780237616]
 
@@ -22,6 +28,7 @@ transform = Transform3D(0.085417025, 0.794669, -0.60100347, 0, 0.603208, 0.79758
 light_color = Color(0.92679644, 0.9486919, 0.789651, 1)
 light_energy = 3.075
 shadow_enabled = true
+directional_shadow_mode = 0
 directional_shadow_max_distance = 135.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=329891872]

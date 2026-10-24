@@ -43217,6 +43217,11 @@ _subresources={
 "slice_99/start_frame": 0,
 "slices/amount": 0
 }
+},
+"nodes": {
+"PATH:cs_grp": {
+"import/skip_import": true
+}
 }
 }
 gltf/naming_version=2

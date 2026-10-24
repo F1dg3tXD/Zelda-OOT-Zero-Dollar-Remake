@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://dfxm0ua707rtr"]
+
+[ext_resource type="Material" uid="uid://dw3tlmdu5oja8" path="res://mat/animatedFire.tres" id="1_3olav"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_ls3bv"]
+material = ExtResource("1_3olav")
+size = Vector2(5, 5)
+center_offset = Vector3(0, 0, 0.375)
+
+[node name="Fire" type="Node3D" unique_id=2125099557]
+
+[node name="fireEffect" type="MeshInstance3D" parent="." unique_id=1305250178]
+mesh = SubResource("QuadMesh_ls3bv")

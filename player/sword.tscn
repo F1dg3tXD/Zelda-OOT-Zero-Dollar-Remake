@@ -1,12 +1,47 @@
 [gd_scene format=3 uid="uid://b3qysbdwl7n88"]
 
 [ext_resource type="PackedScene" uid="uid://bjc04buqt1d1s" path="res://models/Sword/Sword.glb" id="1_rk2yr"]
+[ext_resource type="Texture2D" uid="uid://ch3bmy6x0f40f" path="res://models/Sword/Sword_MasterSword_BaseColor.png" id="2_t4id6"]
+[ext_resource type="Texture2D" uid="uid://bo1cncijbe1am" path="res://models/Sword/Sword_MasterSword_Metallic-MasterSword_Roughness.png" id="3_aug44"]
+[ext_resource type="Texture2D" uid="uid://b84lgwj64oj0q" path="res://models/Sword/Sword_MasterSword_Normal_OpenGL.png" id="4_jmisa"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_t4id6"]
+render_priority = 1
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0, 0, 0, 1)
+grow = true
+grow_amount = 0.01
+stencil_mode = 3
+stencil_flags = 1
+stencil_compare = 5
+metadata/_stencil_owned = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4jlp3"]
+resource_name = "Sword"
+next_pass = SubResource("StandardMaterial3D_t4id6")
+cull_mode = 2
+diffuse_mode = 3
+albedo_texture = ExtResource("2_t4id6")
+metallic = 1.0
+metallic_texture = ExtResource("3_aug44")
+metallic_texture_channel = 2
+roughness_texture = ExtResource("3_aug44")
+roughness_texture_channel = 1
+normal_enabled = true
+normal_texture = ExtResource("4_jmisa")
+stencil_mode = 1
+stencil_flags = 2
+metadata/_gltf_primary_texture_coord = 0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_5d25b"]
 radius = 0.31933594
 height = 3.7841797
 
 [node name="Sword" unique_id=586533133 instance=ExtResource("1_rk2yr")]
+
+[node name="Blade_Base_low" parent="." index="0" unique_id=1610416346]
+surface_material_override/0 = SubResource("StandardMaterial3D_4jlp3")
 
 [node name="Area3D" type="Area3D" parent="." index="1" unique_id=182654378]
 collision_layer = 13

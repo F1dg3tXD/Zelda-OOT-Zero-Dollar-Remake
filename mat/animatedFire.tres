@@ -1,0 +1,48 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dw3tlmdu5oja8"]
+
+[ext_resource type="Shader" uid="uid://0xan71frdnmh" path="res://shaders/fire.gdshader" id="1_j0jf1"]
+
+[sub_resource type="Gradient" id="Gradient_p8olj"]
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_oe5xp"]
+frequency = 0.0408
+domain_warp_enabled = true
+domain_warp_type = 2
+
+[sub_resource type="NoiseTexture3D" id="NoiseTexture3D_0udyd"]
+width = 128
+height = 128
+depth = 128
+noise = SubResource("FastNoiseLite_oe5xp")
+color_ramp = SubResource("Gradient_p8olj")
+seamless = true
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_j0jf1")
+shader_parameter/raymarch_steps = 6
+shader_parameter/sample_jitter = true
+shader_parameter/potato_mode = true
+shader_parameter/sample_noise = SubResource("NoiseTexture3D_0udyd")
+shader_parameter/billboard = true
+shader_parameter/billboard_z_offset = 0.675
+shader_parameter/proximity_fade_distance = 0.375
+shader_parameter/time_scale = 0.027
+shader_parameter/noise_scale = 0.45
+shader_parameter/noise_threshold = 0.43
+shader_parameter/fire_height = 10.62
+shader_parameter/fire_width = 5.655
+shader_parameter/box_center = Vector3(0, 0, 0)
+shader_parameter/box_rotation = Vector3(0, 0, 0)
+shader_parameter/taper_factor = 0.425
+shader_parameter/wobble_strength = 0.225
+shader_parameter/wobble_speed = 6.0
+shader_parameter/wobble_noise_frequency = 0.125
+shader_parameter/sharpness_cutoff = 4.5
+shader_parameter/emission_strength = 12.5
+shader_parameter/core_glow_multiplier = 16.0
+shader_parameter/color_core = Vector3(1, 0.9, 0.5)
+shader_parameter/color_mid = Vector3(1, 0.625, 0)
+shader_parameter/color_outer = Vector3(0.8, 0.01, 0)
+shader_parameter/color_smoke = Vector3(-0.067, -0.067, -0.067)
+shader_parameter/jitter_multiplier = 1.0
