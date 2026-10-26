@@ -1,0 +1,42 @@
+[gd_scene format=3 uid="uid://c8gvwkxj33it6"]
+
+[ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="1_hkv3n"]
+[ext_resource type="PackedScene" uid="uid://h1anqjdif17d" path="res://ent/info_player_start.tscn" id="2_h5w0v"]
+[ext_resource type="PackedScene" uid="uid://bs8jdqaeegnml" path="res://ent/swasticka.tscn" id="3_qc2dy"]
+[ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="4_h5w0v"]
+[ext_resource type="AudioStream" uid="uid://bsw5tqfab66y3" path="res://music/Necromancer - The Fuhrer (Original Mix).mp3" id="5_qc2dy"]
+
+[node name="Node3D" type="Node3D" unique_id=1175048481]
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=1934139178]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 30.75504, 0)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+flip_faces = true
+radius = 90.81201
+height = 77.888504
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="." unique_id=378988077]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 33.86151, 1.8067799)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 15.424805
+height = 92.7209
+
+[node name="swasticka" parent="." unique_id=1146470291 instance=ExtResource("3_qc2dy")]
+transform = Transform3D(0.21176314, 0.2657545, 0.36678454, -0.4330127, -1.8927587e-08, 0.25, 0.13287726, -0.42352632, 0.23015013, -0.55714417, 30.331245, 9.68141)
+
+[node name="swasticka2" parent="." unique_id=688018269 instance=ExtResource("3_qc2dy")]
+transform = Transform3D(0.21176314, 0.2657545, 0.36678454, -0.4330127, -1.8927587e-08, 0.25, 0.13287726, -0.42352632, 0.23015013, -0.55714417, 30.331245, -5.7531786)
+
+[node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("2_h5w0v")]
+transform = Transform3D(0.15887749, 0, -0.9872983, 0, 1, 0, 0.9872983, 0, 0.15887749, -1.7294068, 11.445246, 30.471306)
+
+[node name="Node3D" parent="." unique_id=464369689 instance=ExtResource("4_h5w0v")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.700893, 12.282913, 24.29466)
+
+[node name="NecromancerTheFuhrer(originalMix)" type="AudioStreamPlayer" parent="." unique_id=1412530175]
+stream = ExtResource("5_qc2dy")
+volume_db = -13.986
+autoplay = true
+bus = &"Music"

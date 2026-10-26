@@ -1,0 +1,5 @@
+[gd_scene format=3 uid="uid://dqwb5trb75gfp"]
+
+[node name="Level Transition" type="Area3D" unique_id=1480755747]
+
+[node name="destination pos" type="Node3D" parent="." unique_id=513211162]
