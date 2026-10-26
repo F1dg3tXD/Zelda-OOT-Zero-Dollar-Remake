@@ -14,6 +14,11 @@ config/name="Zelda-OOT-Zero-Dollar-Remake"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+Console="*uid://ouiu5xh1cs8n"
+DevConsole="*res://globals/dev_console.gd"
+
 [display]
 
 window/stretch/mode="canvas_items"
@@ -21,7 +26,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_collab/plugin.cfg")
+enabled=PackedStringArray("res://addons/console/plugin.cfg", "res://addons/godot_collab/plugin.cfg")
 
 [input]
 

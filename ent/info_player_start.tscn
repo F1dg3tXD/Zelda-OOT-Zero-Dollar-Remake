@@ -1,6 +1,12 @@
 [gd_scene format=3 uid="uid://h1anqjdif17d"]
 
 [ext_resource type="Script" uid="uid://oqml7kb0s86x" path="res://ent/info_player_start.gd" id="1_wford"]
+[ext_resource type="PackedScene" uid="uid://bqkvd2cyh852i" path="res://models/info_player_start_mdl.glb" id="2_ms0fr"]
 
-[node name="info_player_start" type="Node3D" unique_id=375073552]
+[node name="info_player_start" type="Node3D" unique_id=375073552 node_paths=PackedStringArray("debug_vis")]
 script = ExtResource("1_wford")
+debug_vis = NodePath("debugVis")
+
+[node name="debugVis" type="Node3D" parent="." unique_id=2046979754]
+
+[node name="info_player_start_mdl" parent="debugVis" unique_id=1093534605 instance=ExtResource("2_ms0fr")]
