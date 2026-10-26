@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://be23mrv0j0x8y"
 path.s3tc="res://.godot/imported/Link_link_eye.png-4071ba73e38e7af2c3f59ae12921162b.s3tc.ctex"
+path.etc2="res://.godot/imported/Link_link_eye.png-4071ba73e38e7af2c3f59ae12921162b.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/Link/Link_link_eye.png"
-dest_files=["res://.godot/imported/Link_link_eye.png-4071ba73e38e7af2c3f59ae12921162b.s3tc.ctex"]
+dest_files=["res://.godot/imported/Link_link_eye.png-4071ba73e38e7af2c3f59ae12921162b.s3tc.ctex", "res://.godot/imported/Link_link_eye.png-4071ba73e38e7af2c3f59ae12921162b.etc2.ctex"]
 
 [params]
 

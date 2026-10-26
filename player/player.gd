@@ -29,6 +29,9 @@ class_name player
 # Sword
 @onready var sword: Node3D = $Link/Armature/Skeleton3D/BoneAttachment3D/Sword
 
+# (voice already declared above)
+var _sword_sounds: Array = []
+
 # Exported (configurable) stats
 @export var walk_speed: float = 5.0
 @export var sprint_speed: float = 8.0
@@ -63,6 +66,12 @@ func _ready() -> void:
 	camera_root.global_position = global_position + Vector3(0, 1, 0)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	_sync_sword()
+	_sword_sounds = [
+		load("res://sounds/sword grunts/grunt1.mp3"),
+		load("res://sounds/sword grunts/grunt2.mp3"),
+		load("res://sounds/sword grunts/grunt3.mp3"),
+		load("res://sounds/sword grunts/grunt4.mp3"),
+	]
 
 func _sync_sword() -> void:
 	if sword != null:
@@ -180,6 +189,9 @@ func _physics_process(delta: float) -> void:
 		if sword != null and sword.has_method("enable"):
 			sword.enable()
 		_sword_timer = 0.4
+		if player_voice != null and _sword_sounds.size() > 0:
+			player_voice.stream = _sword_sounds[randi() % _sword_sounds.size()]
+			player_voice.play()
 
 	if _sword_timer > 0.0:
 		_sword_timer -= delta
@@ -193,9 +205,11 @@ func _physics_process(delta: float) -> void:
 		direction = (camera_root.global_transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 
 	# Sprint handling
-	var is_sprinting := Input.is_action_pressed("sprint") and input_dir.length() > 0.0 and not _crouching
-	var current_speed := sprint_speed if is_sprinting else walk_speed
-	var walk2run_target := 1.0 if is_sprinting else 0.0
+	var input_mag := clampf(input_dir.length(), 0.0, 1.0)
+	var is_sprinting := Input.is_action_pressed("sprint") and input_mag > 0.0 and not _crouching
+	var base_speed := sprint_speed if is_sprinting else walk_speed
+	var current_speed := base_speed * input_mag
+	var walk2run_target := 1.0 if is_sprinting else input_mag
 	_walk2run_amount = lerpf(_walk2run_amount, walk2run_target, clampf(delta * 8.0, 0.0, 1.0))
 	var walk2run := _walk2run_amount
 

@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://ccjjahu3lyqsu"
+path="res://.godot/imported/hyrule feild but youre having a terrible benadryl trip.mp3-290fda302562b1d9f7c8e5557c12a489.mp3str"
+
+[deps]
+
+source_file="res://music/hyrule feild but youre having a terrible benadryl trip.mp3"
+dest_files=["res://.godot/imported/hyrule feild but youre having a terrible benadryl trip.mp3-290fda302562b1d9f7c8e5557c12a489.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0.0
+bpm=0.0
+beat_count=0
+bar_beats=4

@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dhcegrxknim7e"
 path.s3tc="res://.godot/imported/Link_link_hand.png-6e6c45ebee3a71f3b4a473eb2291416c.s3tc.ctex"
+path.etc2="res://.godot/imported/Link_link_hand.png-6e6c45ebee3a71f3b4a473eb2291416c.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/Link/Link_link_hand.png"
-dest_files=["res://.godot/imported/Link_link_hand.png-6e6c45ebee3a71f3b4a473eb2291416c.s3tc.ctex"]
+dest_files=["res://.godot/imported/Link_link_hand.png-6e6c45ebee3a71f3b4a473eb2291416c.s3tc.ctex", "res://.godot/imported/Link_link_hand.png-6e6c45ebee3a71f3b4a473eb2291416c.etc2.ctex"]
 
 [params]
 

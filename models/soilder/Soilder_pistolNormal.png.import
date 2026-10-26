@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dks7j27an8kha"
 path.s3tc="res://.godot/imported/Soilder_pistolNormal.png-3e7f56e40aec75256f064cbbe6fa03ad.s3tc.ctex"
+path.etc2="res://.godot/imported/Soilder_pistolNormal.png-3e7f56e40aec75256f064cbbe6fa03ad.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/soilder/Soilder_pistolNormal.png"
-dest_files=["res://.godot/imported/Soilder_pistolNormal.png-3e7f56e40aec75256f064cbbe6fa03ad.s3tc.ctex"]
+dest_files=["res://.godot/imported/Soilder_pistolNormal.png-3e7f56e40aec75256f064cbbe6fa03ad.s3tc.ctex", "res://.godot/imported/Soilder_pistolNormal.png-3e7f56e40aec75256f064cbbe6fa03ad.etc2.ctex"]
 
 [params]
 

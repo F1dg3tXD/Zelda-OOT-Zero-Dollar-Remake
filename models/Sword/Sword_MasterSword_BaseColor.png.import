@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://ch3bmy6x0f40f"
 path.s3tc="res://.godot/imported/Sword_MasterSword_BaseColor.png-aebe0e78293217f8e59b4a5b37ff7815.s3tc.ctex"
+path.etc2="res://.godot/imported/Sword_MasterSword_BaseColor.png-aebe0e78293217f8e59b4a5b37ff7815.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://models/Sword/Sword_MasterSword_BaseColor.png"
-dest_files=["res://.godot/imported/Sword_MasterSword_BaseColor.png-aebe0e78293217f8e59b4a5b37ff7815.s3tc.ctex"]
+dest_files=["res://.godot/imported/Sword_MasterSword_BaseColor.png-aebe0e78293217f8e59b4a5b37ff7815.s3tc.ctex", "res://.godot/imported/Sword_MasterSword_BaseColor.png-aebe0e78293217f8e59b4a5b37ff7815.etc2.ctex"]
 
 [params]
 

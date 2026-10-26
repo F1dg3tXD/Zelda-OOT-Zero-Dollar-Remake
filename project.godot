@@ -13,7 +13,12 @@ config_version=5
 config/name="Zelda-OOT-Zero-Dollar-Remake"
 run/main_scene="res://maps/outsidecastle.tscn"
 config/features=PackedStringArray("4.7", "Forward Plus")
-config/icon="res://icon.svg"
+boot_splash/bg_color=Color(0.14117648, 0.14117648, 0.14117648, 1)
+config/icon="uid://dyfdcj0ayicrp"
+
+[audio]
+
+buses/default_bus_layout="uid://2tj2tuqiysaa"
 
 [autoload]
 
@@ -133,3 +138,4 @@ sprint={
 [rendering]
 
 rendering_device/driver.windows="d3d12"
+textures/vram_compression/import_etc2_astc=true
