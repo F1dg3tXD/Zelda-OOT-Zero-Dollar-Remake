@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://c7weygtlu4xvi"
+path="res://.godot/imported/grunt4.mp3-26c7f60f0c2f74705fb35245c5f252f3.mp3str"
+
+[deps]
+
+source_file="res://sounds/sword grunts/grunt4.mp3"
+dest_files=["res://.godot/imported/grunt4.mp3-26c7f60f0c2f74705fb35245c5f252f3.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -141,6 +141,7 @@ use_collision = true
 [node name="Pillar 1" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1120456741]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 53, 77)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 radius = 43.0
 height = 108.0
 material = ExtResource("2_mnpkl")
@@ -154,6 +155,7 @@ material = ExtResource("2_mnpkl")
 [node name="Pillar 5" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=2101674852]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, 151)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 radius = 43.0
 height = 349.5
 material = ExtResource("2_mnpkl")
@@ -167,6 +169,7 @@ material = ExtResource("2_mnpkl")
 [node name="Pillar 6" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1995768242]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, -59)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 radius = 43.0
 height = 349.5
 material = ExtResource("2_mnpkl")
@@ -180,6 +183,7 @@ material = ExtResource("2_mnpkl")
 [node name="Pillar 8" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=632131198]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, -251)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 radius = 43.0
 height = 349.5
 material = ExtResource("2_mnpkl")
@@ -193,6 +197,7 @@ material = ExtResource("2_mnpkl")
 [node name="Pillar 2" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1030023379]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 53, -180)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 radius = 43.0
 height = 108.0
 material = ExtResource("2_mnpkl")
@@ -206,6 +211,7 @@ material = ExtResource("2_mnpkl")
 [node name="Pillar 3" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1958227915]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -547, 86.04614, -180)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 radius = 43.0
 height = 173.90771
 material = ExtResource("2_mnpkl")
@@ -219,6 +225,7 @@ material = ExtResource("2_mnpkl")
 [node name="Pillar 4" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1428236805]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -547, 84.15039, 73)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 radius = 43.0
 height = 177.69922
 material = ExtResource("2_mnpkl")
@@ -232,13 +239,14 @@ material = ExtResource("2_mnpkl")
 [node name="CSGBox3D" type="CSGBox3D" parent="map/CSGCombiner3D2" unique_id=781474466]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -413, 36.499996, -48.5)
 material_override = ExtResource("2_mnpkl")
+use_collision = true
 size = Vector3(239, 74, 204)
 material = ExtResource("2_mnpkl")
 
 [node name="CSGPolygon3D" type="CSGPolygon3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=565709158]
-transform = Transform3D(-3.0685376e-07, 0, 204.30899, 0, 3.2399998, 0, -7.0199957, 0, -8.93063e-06, 122, -34, 0)
+transform = Transform3D(-3.0685382e-07, 0, 204.30899, 0, 3.2399998, 0, -7.019996, 0, -8.93063e-06, 121.59219, -34.5667, 4.9818497)
 operation = 2
-polygon = PackedVector2Array(-2, -1, 0, 11, 4, 11, 7, -1)
+polygon = PackedVector2Array(-2, -1, -1.3313069, 11.526212, 5.390447, 11.174288, 6.709599, -0.69376934)
 material = ExtResource("2_mnpkl")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=1967713351]
@@ -253,6 +261,6 @@ size = Vector3(103, 37, 85)
 material = ExtResource("2_mnpkl")
 
 [node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_mnpkl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.665077, 28.524826, 2.8839617)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.217873, 1.049797, 1.0984535)
 
 [editable path="map/OutsideEnviroment"]
