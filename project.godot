@@ -12,9 +12,13 @@ config_version=5
 
 config/name="Zelda-OOT-Zero-Dollar-Remake"
 run/main_scene="res://maps/outsidecastle.tscn"
+config/use_custom_user_dir=true
+config/custom_user_dir_name="OneDollarOOTRemake"
 config/features=PackedStringArray("4.7", "Forward Plus")
-boot_splash/bg_color=Color(0.14117648, 0.14117648, 0.14117648, 1)
-config/icon="uid://dyfdcj0ayicrp"
+boot_splash/bg_color=Color(0.14117648, 0.14117648, 0.14117648, 0)
+boot_splash/image="uid://bgy4samvqcjws"
+config/icon="uid://bgy4samvqcjws"
+boot_splash/minimum_display_time=1000
 
 [audio]
 

@@ -17,8 +17,16 @@ texture_filter = 0
 
 [node name="Node3D" type="Node3D" unique_id=274387360]
 
+[node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_mnpkl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.217873, 1.049797, 1.0984535)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1506787606]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 7.642742e-15, -8.742278e-08, 7.642742e-15, -1, -46.83783, 1.9883122, 4)
+material_override = SubResource("StandardMaterial3D_8prpk")
+size = Vector3(10.855347, 3.9258423, 1)
+
 [node name="map" type="Node3D" parent="." unique_id=1934002964]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, -0.119752884, 0)
 
 [node name="Main Ground" type="CSGBox3D" parent="map" unique_id=1956134223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 148.57785, -206.86546, -54.0728)
@@ -274,13 +282,5 @@ stream = ExtResource("5_vbdtl")
 volume_db = -20.0
 autoplay = true
 bus = &"Music"
-
-[node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_mnpkl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.217873, 1.049797, 1.0984535)
-
-[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1506787606]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 7.642742e-15, -8.742278e-08, 7.642742e-15, -1, -46.83783, 1.9883122, 4)
-material_override = SubResource("StandardMaterial3D_8prpk")
-size = Vector3(10.855347, 3.9258423, 1)
 
 [editable path="map/OutsideEnviroment"]
