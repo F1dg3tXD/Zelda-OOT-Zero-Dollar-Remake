@@ -56,6 +56,7 @@ var _strafe_lock: bool = false
 var _sword_timer: float = 0.0
 var _velocity_smooth: Vector3 = Vector3.ZERO
 var _walk2run_amount: float = 0.0
+var _anim_blend: Vector2 = Vector2.ZERO
 
 const TURN_SPEED := 10.0
 const MOUSE_SENSITIVITY := 0.005
@@ -252,8 +253,13 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	# Bind animation parameters
-	animation_tree.set("parameters/Walk/blend_position", Vector2(input_dir.x, -input_dir.y))
-	animation_tree.set("parameters/Run/blend_position", Vector2(input_dir.x, -input_dir.y))
+	# Bind animation parameters based on actual character facing direction
+	var local_dir := Vector3.ZERO
+	if direction != Vector3.ZERO:
+		local_dir = transform.basis.inverse() * direction
+	var target_blend := Vector2(local_dir.x, local_dir.z)
+	_anim_blend = _anim_blend.lerp(target_blend, clampf(delta * 8.0, 0.0, 1.0))
+	animation_tree.set("parameters/Walk/blend_position", _anim_blend)
+	animation_tree.set("parameters/Run/blend_position", _anim_blend)
 	animation_tree.set("parameters/Walk2Run/blend_amount", walk2run)
 	animation_tree.set("parameters/Crouch/add_amount", _crouch_amount)
