@@ -19,6 +19,8 @@ class_name player
 @onready var step_back_left: RayCast3D = $StepOverRays/StepBackLeft
 @onready var step_front_right: RayCast3D = $StepOverRays/StepFrontRight
 
+# Player Voice
+@onready var player_voice: AudioStreamPlayer3D = $playerVoice
 
 # Animations
 @onready var animation_player: AnimationPlayer = $Link/AnimationPlayer

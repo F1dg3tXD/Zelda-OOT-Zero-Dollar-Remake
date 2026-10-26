@@ -5,6 +5,7 @@
 [ext_resource type="Material" uid="uid://cgm5nsvnb1hgm" path="res://mat/neonsign.tres" id="3_vbdtl"]
 [ext_resource type="PackedScene" uid="uid://gvh6bssvbdb1" path="res://atmospheres/outside_enviroment.tscn" id="4_83f10"]
 [ext_resource type="PackedScene" uid="uid://h1anqjdif17d" path="res://ent/info_player_start.tscn" id="5_mnpkl"]
+[ext_resource type="AudioStream" uid="uid://ccjjahu3lyqsu" path="res://sounds/hyrule feild but youre having a terrible benadryl trip.mp3" id="5_vbdtl"]
 
 [node name="Node3D" type="Node3D" unique_id=274387360]
 
@@ -259,6 +260,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54, -17, 42)
 operation = 2
 size = Vector3(103, 37, 85)
 material = ExtResource("2_mnpkl")
+
+[node name="HyruleFeildButYoureHavingATerribleBenadrylTrip" type="AudioStreamPlayer" parent="map" unique_id=93475619]
+stream = ExtResource("5_vbdtl")
+volume_db = -20.0
+autoplay = true
+bus = &"Music"
 
 [node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_mnpkl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.217873, 1.049797, 1.0984535)
