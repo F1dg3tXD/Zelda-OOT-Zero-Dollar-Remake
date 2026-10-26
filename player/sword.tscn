@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b3qysbdwl7n88"]
 
 [ext_resource type="PackedScene" uid="uid://bjc04buqt1d1s" path="res://models/Sword/Sword.glb" id="1_rk2yr"]
+[ext_resource type="Script" uid="uid://ds6xs37pltqgw" path="res://player/sword.gd" id="2_aug44"]
 [ext_resource type="Texture2D" uid="uid://ch3bmy6x0f40f" path="res://models/Sword/Sword_MasterSword_BaseColor.png" id="2_t4id6"]
 [ext_resource type="Texture2D" uid="uid://bo1cncijbe1am" path="res://models/Sword/Sword_MasterSword_Metallic-MasterSword_Roughness.png" id="3_aug44"]
 [ext_resource type="Texture2D" uid="uid://b84lgwj64oj0q" path="res://models/Sword/Sword_MasterSword_Normal_OpenGL.png" id="4_jmisa"]
@@ -39,14 +40,15 @@ radius = 0.31933594
 height = 3.7841797
 
 [node name="Sword" unique_id=586533133 instance=ExtResource("1_rk2yr")]
+script = ExtResource("2_aug44")
 
 [node name="Blade_Base_low" parent="." index="0" unique_id=1610416346]
 surface_material_override/0 = SubResource("StandardMaterial3D_4jlp3")
 
-[node name="Area3D" type="Area3D" parent="." index="1" unique_id=182654378]
-collision_layer = 13
-collision_mask = 13
+[node name="hitbox" type="Area3D" parent="." index="1" unique_id=182654378]
+collision_layer = 12
+collision_mask = 12
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D" index="0" unique_id=2027688546]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="hitbox" index="0" unique_id=2027688546]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -2.3413765e-08, 2.5356445)
 shape = SubResource("CapsuleShape3D_5d25b")
