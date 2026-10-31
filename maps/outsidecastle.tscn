@@ -46,8 +46,16 @@ albedo_texture = ExtResource("11_jv70r")
 
 [node name="Node3D" type="Node3D" unique_id=274387360]
 
+[node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_mnpkl")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 44.217873, 1.049797, 1.0984535)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1506787606]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 7.642742e-15, -8.742278e-08, 7.642742e-15, -1, -46.83783, 1.9883122, 4)
+material_override = SubResource("StandardMaterial3D_8prpk")
+size = Vector3(10.855347, 3.9258423, 1)
+
 [node name="map" type="Node3D" parent="." unique_id=1934002964]
-transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, -0.119752884, 0)
 
 [node name="Main Ground" type="CSGBox3D" parent="map" unique_id=1956134223]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 691.159, -206.86546, -54.0728)
@@ -422,63 +430,5 @@ stream = ExtResource("5_vbdtl")
 volume_db = -20.0
 autoplay = true
 bus = &"Music"
-
-[node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_mnpkl")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 158.3935, -0.041434288, 1.0984535)
-
-[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1506787606]
-transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 7.642742e-15, -8.742278e-08, 7.642742e-15, -1, -46.83783, 1.9883122, 4)
-material_override = SubResource("StandardMaterial3D_8prpk")
-size = Vector3(10.855347, 3.9258423, 1)
-
-[node name="TemporarySceneChange" type="Area3D" parent="." unique_id=855325603]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.991951, 2.1254272, -5.764221)
-script = ExtResource("8_scene")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="TemporarySceneChange" unique_id=1728582602]
-shape = SubResource("BoxShape3D_ep77b")
-debug_color = Color(1, 0.1882353, 0.5058824, 1)
-
-[node name="Tree3" type="CSGBox3D" parent="." unique_id=1365478895]
-transform = Transform3D(1, 0, 0, 0, 0.99951494, 0.031142684, 0, -0.031142684, 0.99951494, 124.14516, 9.251284, 15.052742)
-material_override = SubResource("StandardMaterial3D_jau4p")
-cast_shadow = 0
-size = Vector3(0.001, 20.301987, 21.948347)
-
-[node name="Tree5" type="CSGBox3D" parent="." unique_id=1944065840]
-transform = Transform3D(1, 0, 0, 0, 0.99951494, 0.031142684, 0, -0.031142684, 0.99951494, 93.42122, 9.251284, 10.584663)
-material_override = SubResource("StandardMaterial3D_jau4p")
-cast_shadow = 0
-size = Vector3(0.001, 20.301987, 21.948347)
-
-[node name="Mountain" type="CSGBox3D" parent="." unique_id=125327712]
-transform = Transform3D(0.7852711, -0.50918853, -0.35224476, 0.3935945, -0.028629016, 0.91883826, -0.4779463, -0.8601787, 0.17793228, 13.631405, 20.961613, 96.3129)
-material_override = SubResource("StandardMaterial3D_gqkb4")
-cast_shadow = 0
-size = Vector3(0.001, 114.75574, 114.650055)
-
-[node name="Mountain2" type="CSGBox3D" parent="." unique_id=62211223]
-transform = Transform3D(0.9716265, 0.03104937, -0.2344735, 0.23180906, 0.07186915, 0.9701028, 0.046972603, -0.9969306, 0.062632374, -168.36261, 24.369064, 71.98294)
-material_override = SubResource("StandardMaterial3D_gqkb4")
-cast_shadow = 0
-size = Vector3(0.001, 198.27057, 258.50372)
-
-[node name="Tree6" type="CSGBox3D" parent="." unique_id=234168648]
-transform = Transform3D(1, 0, 0, 0, 0.99951494, 0.031142684, 0, -0.031142684, 0.99951494, 93.42122, 9.251284, -14.960711)
-material_override = SubResource("StandardMaterial3D_jau4p")
-cast_shadow = 0
-size = Vector3(0.001, 20.301987, 21.948347)
-
-[node name="Tree7" type="CSGBox3D" parent="." unique_id=258425217]
-transform = Transform3D(1, 0, 0, 0, 0.99951494, 0.031142684, 0, -0.031142684, 0.99951494, 58.875477, 13.282146, 12.819104)
-material_override = SubResource("StandardMaterial3D_jau4p")
-cast_shadow = 0
-size = Vector3(0.001, 20.301987, 21.948347)
-
-[node name="Tree4" type="CSGBox3D" parent="." unique_id=2097921791]
-transform = Transform3D(1, 0, 0, 0, 0.99951494, 0.031142684, 0, -0.031142684, 0.99951494, 124.14516, 9.251284, -17.220406)
-material_override = SubResource("StandardMaterial3D_jau4p")
-cast_shadow = 0
-size = Vector3(0.001, 20.301987, 21.948347)
 
 [editable path="map/OutsideEnviroment"]
