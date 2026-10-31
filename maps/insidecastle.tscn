@@ -5,6 +5,16 @@
 [ext_resource type="PackedScene" uid="uid://bs8jdqaeegnml" path="res://ent/swasticka.tscn" id="3_qc2dy"]
 [ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="4_h5w0v"]
 [ext_resource type="AudioStream" uid="uid://bsw5tqfab66y3" path="res://music/Necromancer - The Fuhrer (Original Mix).mp3" id="5_qc2dy"]
+[ext_resource type="Script" path="res://maps/temporary_scene_change.gd" id="6_trigger"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jv70r"]
+albedo_color = Color(0.8213464, 0, 0.30790737, 1)
+emission_enabled = true
+emission = Color(0.62982863, 0.08566194, 0.1589781, 1)
+emission_energy_multiplier = 16.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_totop"]
+size = Vector3(5.931488, 7.383316, 3.563446)
 
 [node name="Node3D" type="Node3D" unique_id=1175048481]
 
@@ -15,6 +25,7 @@ use_collision = true
 flip_faces = true
 radius = 90.81201
 height = 77.888504
+smooth_faces = false
 
 [node name="CSGCylinder3D2" type="CSGCylinder3D" parent="." unique_id=378988077]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 33.86151, 1.8067799)
@@ -30,7 +41,7 @@ transform = Transform3D(0.21176314, 0.2657545, 0.36678454, -0.4330127, -1.892758
 transform = Transform3D(0.21176314, 0.2657545, 0.36678454, -0.4330127, -1.8927587e-08, 0.25, 0.13287726, -0.42352632, 0.23015013, -0.55714417, 30.331245, -5.7531786)
 
 [node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("2_h5w0v")]
-transform = Transform3D(0.15887749, 0, -0.9872983, 0, 1, 0, 0.9872983, 0, 0.15887749, -1.7294068, 11.445246, 30.471306)
+transform = Transform3D(0.15887749, 0, -0.9872983, 0, 1, 0, 0.9872983, 0, 0.15887749, -1.7294068, 11.445246, -37.22225)
 
 [node name="Node3D" parent="." unique_id=464369689 instance=ExtResource("4_h5w0v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.700893, 12.282913, 24.29466)
@@ -40,3 +51,163 @@ stream = ExtResource("5_qc2dy")
 volume_db = -13.986
 autoplay = true
 bus = &"Music"
+
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="." unique_id=1550704370]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.28109, 11.561664, -12.559332)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="." unique_id=736998190]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20.28109, 12.309601, -1.6815815)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGCylinder3D5" type="CSGCylinder3D" parent="." unique_id=1004555313]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.443897, 13.19585, 7.043212)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGCylinder3D7" type="CSGCylinder3D" parent="." unique_id=1889848018]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.4524355, 13.608126, 16.716251)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGCylinder3D6" type="CSGCylinder3D" parent="." unique_id=145939654]
+transform = Transform3D(-0.2467248, -0.29535568, 0.92297995, -0.076274395, 0.95538735, 0.28533706, -0.96607935, 0, -0.25824583, -8.329289, 15.651909, 23.105396)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGCylinder3D8" type="CSGCylinder3D" parent="." unique_id=1611053315]
+transform = Transform3D(-0.2467248, -0.29535568, 0.92297995, -0.076274395, 0.95538735, 0.28533706, -0.96607935, 0, -0.25824583, 1.4897466, 18.852972, 20.29626)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGCylinder3D9" type="CSGCylinder3D" parent="." unique_id=2058364517]
+transform = Transform3D(-0.2467248, -0.29535568, 0.92297995, -0.076274395, 0.95538735, 0.28533706, -0.96607935, 0, -0.25824583, 8.827517, 21.294949, 16.268246)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGCylinder3D11" type="CSGCylinder3D" parent="." unique_id=1368033436]
+transform = Transform3D(-0.2467248, -0.29535568, 0.92297995, -0.076274395, 0.95538735, 0.28533706, -0.96607935, 0, -0.25824583, 17.317009, 27.533585, -1.4145594)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.2312622
+
+[node name="CSGCylinder3D10" type="CSGCylinder3D" parent="." unique_id=31813082]
+transform = Transform3D(-0.25080305, -0.23834917, 0.93823636, 0.3942198, 0.86005783, 0.32386893, -0.8841315, 0.45109868, -0.12174315, 16.648975, 24.255999, 9.914156)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+radius = 6.2436523
+height = 0.6627197
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=117360824]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, 7.005192, 27.73505, -20.604742)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.20715332, 30.376709)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=265096747]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -0.6761365, 29.767366, -33.134365)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=445962523]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -0.99497384, 29.986576, -33.633472)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="." unique_id=1019748486]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -1.3545926, 30.276785, -34.189743)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="." unique_id=337928159]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -1.6734298, 30.41243, -34.701847)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="." unique_id=891546876]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -2.0136116, 30.62682, -35.2374)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="." unique_id=682556887]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -2.332449, 30.784086, -35.74614)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="." unique_id=2045275569]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -2.6617773, 30.942259, -36.272285)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="." unique_id=1911547400]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -2.9806147, 31.126322, -36.77686)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="." unique_id=1999769856]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -3.316679, 31.345955, -37.304714)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.37261963, 0.7039795)
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="." unique_id=1683042173]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -5.4966536, 31.981861, -40.851444)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(5.8582764, 0.3899231, 7.8934937)
+
+[node name="totopcastle" type="CSGBox3D" parent="." unique_id=964856065]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -6.995072, 35.32721, -42.861694)
+material_override = SubResource("StandardMaterial3D_jv70r")
+use_collision = true
+size = Vector3(4.431488, 6.383316, 2.063446)
+
+[node name="ToTopCastleTrigger" type="Area3D" parent="totopcastle"]
+script = ExtResource("6_trigger")
+target_scene = "res://maps/topcastle.tscn"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="totopcastle/ToTopCastleTrigger"]
+shape = SubResource("BoxShape3D_totop")
+
+[node name="CSGBox3D13" type="CSGBox3D" parent="." unique_id=1518356545]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -6.8096385, 38.359673, -42.079983)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(4.431488, 0.41284943, 2.77977)
+
+[node name="CSGBox3D14" type="CSGBox3D" parent="." unique_id=985510570]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -5.116606, 35.564526, -43.551548)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(0.4736786, 6.1263466, 2.77977)
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="." unique_id=767937976]
+transform = Transform3D(0.8555401, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.5115869, 0.15367126, 0.84537804, -8.659879, 35.235016, -41.432777)
+material_override = ExtResource("1_hkv3n")
+use_collision = true
+size = Vector3(0.4736786, 6.1263466, 2.77977)

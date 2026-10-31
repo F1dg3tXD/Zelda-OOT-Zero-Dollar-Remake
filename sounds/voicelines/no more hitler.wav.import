@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://wbp2xr3jn71a"
+path="res://.godot/imported/no more hitler.wav-763de3be660a7a04892890dec9c0d6aa.sample"
+
+[deps]
+
+source_file="res://sounds/voicelines/no more hitler.wav"
+dest_files=["res://.godot/imported/no more hitler.wav-763de3be660a7a04892890dec9c0d6aa.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

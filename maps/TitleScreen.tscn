@@ -1,0 +1,513 @@
+[gd_scene format=3 uid="uid://cxfdpqr7gmoie"]
+
+[ext_resource type="PackedScene" uid="uid://cd3gglmaem6vy" path="res://ent/title_screen_gui.tscn" id="1_ceomm"]
+[ext_resource type="Material" uid="uid://bcwon06iq2a4j" path="res://mat/Grass.tres" id="1_pustc"]
+[ext_resource type="AudioStream" uid="uid://b1pdkx730l7x0" path="res://music/titlemusic.mp3" id="1_r2s7s"]
+[ext_resource type="Texture2D" uid="uid://28jb4cndlvrh" path="res://textures/path.png" id="2_r2s7s"]
+[ext_resource type="Material" uid="uid://cgm5nsvnb1hgm" path="res://mat/neonsign.tres" id="3_ceomm"]
+[ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="4_fd7rs"]
+[ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="5_c64uc"]
+[ext_resource type="PackedScene" uid="uid://b0uuvnieqo8hi" path="res://player/player.tscn" id="6_dmp6d"]
+[ext_resource type="Script" uid="uid://5iygd2nx1nf3" path="res://maps/title_screen.gd" id="7_title"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1xik1"]
+albedo_texture = ExtResource("2_r2s7s")
+uv1_scale = Vector3(0.005, 0.005, 0.005)
+uv1_triplanar = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_f1tpq"]
+albedo_texture = ExtResource("2_r2s7s")
+
+[sub_resource type="Animation" id="Animation_bwqst"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(8.327702, 1.0825909, -6.91959)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, -1.3089969, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:fov")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [75.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../TitleScreenGUI:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_44jlo"]
+resource_name = "TitleScreen"
+length = 7.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 3.7333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(8.327702, 1.0825909, -6.91959), Vector3(-6.3429832, 1.0825909, -6.91959)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(2.7666667, 4.5333333, 6.7),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, -1.3089969, 0), Vector3(0, 1.513916, 0), Vector3(0.6265672, 1.5005578, -0.0412301)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:fov")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(4.4333334, 6.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [75.0, 115.1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_qojg5"]
+_data = {
+&"RESET": SubResource("Animation_bwqst"),
+&"TitleScreen": SubResource("Animation_44jlo")
+}
+
+[node name="Node3D" type="Node3D" unique_id=241996780]
+script = ExtResource("7_title")
+
+[node name="TitleScreenGUI" parent="." unique_id=1123225952 instance=ExtResource("1_ceomm")]
+visible = false
+position = Vector2(33, -22)
+
+[node name="Titlemusic" type="AudioStreamPlayer" parent="." unique_id=1669881056]
+stream = ExtResource("1_r2s7s")
+volume_db = -3.165
+autoplay = true
+parameters/looping = true
+
+[node name="map" type="Node3D" parent="." unique_id=130803306]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+
+[node name="Main Ground" type="CSGBox3D" parent="map" unique_id=1601360923]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 691.159, -206.86546, -54.0728)
+use_collision = true
+size = Vector3(2676.9453, 412.96457, 790.23175)
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="map/Main Ground" unique_id=1829744254]
+transform = Transform3D(1, 0, 0, 0, 1.5561368, 0, 0, 0, 1, -797.1386, 204.55779, 213.9447)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D5" type="CSGSphere3D" parent="map/Main Ground" unique_id=1830856226]
+transform = Transform3D(1, 0, 0, 0, 2.7081313, 0, 0, 0, 1, -664.13855, 204.55779, 213.9447)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D6" type="CSGSphere3D" parent="map/Main Ground" unique_id=634620770]
+transform = Transform3D(1, 0, 0, 0, 3.1176565, 0, 0, 0, 1, -610.1387, 204.55779, 83.9447)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D8" type="CSGSphere3D" parent="map/Main Ground" unique_id=439470896]
+transform = Transform3D(1, 0, 0, 0, 1.6426291, 0, 0, 0, 1, -664.13855, 181.55775, -220.05534)
+radius = 145.0
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="map/Main Ground" unique_id=441683719]
+transform = Transform3D(1, 0, 0, 0, 1.6463478, 0, 0, 0, 1, -930.7991, 168.55775, 167.50414)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D3" type="CSGSphere3D" parent="map/Main Ground" unique_id=564105016]
+transform = Transform3D(1, 0, 0, 0, -1.8211972, -0.3202248, 0, 0.4879883, -1.1950951, -797.1386, 163.16124, -206.04594)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D4" type="CSGSphere3D" parent="map/Main Ground" unique_id=912018038]
+transform = Transform3D(1, 0, 0, 0, -1.5773327, -0.30271614, 0, 0.4226451, -1.1297519, -930.7991, 209.95428, -170.50528)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D7" type="CSGSphere3D" parent="map/Main Ground" unique_id=1075612975]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.0000669, 0, 0, 0, 1.0000669, -311.3348, 204.55779, 213.95998)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D9" type="CSGSphere3D" parent="map/Main Ground" unique_id=1067759431]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.0000669, 0, 0, 0, 1.0000669, -178.32587, 204.55779, 213.95998)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D10" type="CSGSphere3D" parent="map/Main Ground" unique_id=335143855]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.0000669, 0, 0, 0, 1.0000669, -30.584778, 204.55779, 206.5118)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D11" type="CSGSphere3D" parent="map/Main Ground" unique_id=355272057]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.5895708, 0, 0, 0, 1.0000669, -124.32233, 201.58104, -66.93062)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D12" type="CSGSphere3D" parent="map/Main Ground" unique_id=1979443915]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.6226406, 0, 0, 0, 1.0000669, -178.32587, 181.55623, -220.0691)
+radius = 145.0
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D18" type="CSGSphere3D" parent="map/Main Ground" unique_id=1887575109]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.6226406, 0, 0, 0, 1.0000669, 39.69757, 181.55623, -551.9859)
+radius = 372.46646
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D19" type="CSGSphere3D" parent="map/Main Ground" unique_id=1732208914]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.6226406, 0, 0, 0, 1.0000669, 532.325, 68.83592, -551.9859)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D20" type="CSGSphere3D" parent="map/Main Ground" unique_id=1394219636]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.6226406, 0, 0, 0, 1.0000669, 943.6641, 114.96019, -551.9859)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D27" type="CSGSphere3D" parent="map/Main Ground" unique_id=1050309351]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.6226406, 0, 0, 0, 1.0000669, 943.6641, 114.96019, 555.90436)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D28" type="CSGSphere3D" parent="map/Main Ground" unique_id=575974778]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.6226406, 0, 0, 0, 1.0000669, 497.36212, 8.203827, 555.90436)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D29" type="CSGSphere3D" parent="map/Main Ground" unique_id=1671776870]
+transform = Transform3D(0.81286895, -0.45411372, -0.5109262, 0.32557583, 1.5342451, 0, 0.48309267, -0.26988238, 0.8597025, 104.65399, 8.203827, 555.90436)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D21" type="CSGSphere3D" parent="map/Main Ground" unique_id=1070983554]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 1359.5212, 114.96019, -551.9859)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D23" type="CSGSphere3D" parent="map/Main Ground" unique_id=193708317]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 1359.5212, 114.96019, -551.9859)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D24" type="CSGSphere3D" parent="map/Main Ground" unique_id=1544740956]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 1788.6946, 669.73413, -551.9859)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D32" type="CSGSphere3D" parent="map/Main Ground" unique_id=1127662503]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 2182.6384, 936.0831, -551.9859)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D33" type="CSGSphere3D" parent="map/Main Ground" unique_id=589546696]
+transform = Transform3D(0.9013656, -0.6999933, 0.03937706, 0.43299827, 1.4603661, -0.05049529, -0.013655853, 0.10150679, 0.99801475, 2718.2148, 1411.4685, -551.9859)
+radius = 423.5537
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D34" type="CSGSphere3D" parent="map/Main Ground" unique_id=1377782338]
+transform = Transform3D(0.9013656, -0.6999933, 0.03937706, 0.43299827, 1.4603661, -0.05049529, -0.013655853, 0.10150679, 0.99801475, 3107.8013, 1910.9181, -386.2859)
+radius = 423.5537
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D35" type="CSGSphere3D" parent="map/Main Ground" unique_id=1680414059]
+transform = Transform3D(0.9013656, -0.6999933, 0.03937706, 0.43299827, 1.4603661, -0.05049529, -0.013655853, 0.10150679, 0.99801475, 3525.945, 2173.5396, -82.122604)
+radius = 423.5537
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D36" type="CSGSphere3D" parent="map/Main Ground" unique_id=2072126004]
+transform = Transform3D(0.9013656, -0.6999933, 0.03937706, 0.43299827, 1.4603661, -0.05049529, -0.013655853, 0.10150679, 0.99801475, 3525.945, 2173.5396, 424.26563)
+radius = 423.5537
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D25" type="CSGSphere3D" parent="map/Main Ground" unique_id=167524312]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 1788.6946, 669.73413, 638.84894)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D30" type="CSGSphere3D" parent="map/Main Ground" unique_id=459921972]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 2320.518, 953.0978, 638.84894)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D31" type="CSGSphere3D" parent="map/Main Ground" unique_id=2085026436]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 2633.1814, 1232.0144, 638.84894)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D37" type="CSGSphere3D" parent="map/Main Ground" unique_id=1593082811]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 2929.6543, 1709.3966, 638.84894)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D38" type="CSGSphere3D" parent="map/Main Ground" unique_id=354233363]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 3206.4255, 1929.7864, 638.84894)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D26" type="CSGSphere3D" parent="map/Main Ground" unique_id=12712138]
+transform = Transform3D(0.9770609, 0.3460446, 0, -0.21283677, 1.5820599, -0.0640338, -0.013655854, 0.1015068, 0.9980148, 1329.2422, 277.40173, 606.0614)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D22" type="CSGSphere3D" parent="map/Main Ground" unique_id=820618615]
+transform = Transform3D(0.100342676, 6.5420218, -0.049839426, -0.09313501, 7.0362196, -0.08434928, -0.0018695946, 0.602199, 1.5269874, 1581.1301, 434.9463, -35.857803)
+radius = 325.81104
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D13" type="CSGSphere3D" parent="map/Main Ground" unique_id=255478050]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.0000669, 0, 0, 0, 1.0000669, -445.00433, 168.55536, 209.3422)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D14" type="CSGSphere3D" parent="map/Main Ground" unique_id=1059517548]
+transform = Transform3D(1.0000669, 0, 0, 0, 1.0000669, 0, 0, 0, 1.0000669, -573.588, 168.55536, 209.3422)
+radius = 151.62587
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D15" type="CSGSphere3D" parent="map/Main Ground" unique_id=939856821]
+transform = Transform3D(1.0000669, 0, 0, 0, -0.9659904, -0.2588364, 0, 0.2588364, -0.9659904, -311.3348, 163.15845, -206.05876)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D16" type="CSGSphere3D" parent="map/Main Ground" unique_id=1140791425]
+transform = Transform3D(1.0000669, 0, 0, 0, -0.9659904, -0.2588364, 0, 0.2588364, -0.9659904, -425.64685, 209.95467, -204.39113)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGSphere3D17" type="CSGSphere3D" parent="map/Main Ground" unique_id=968516052]
+transform = Transform3D(1.0000669, 0, 0, 0, -0.9659904, -0.2588364, 0, 0.2588364, -0.9659904, -533.53644, 204.55476, -204.39113)
+radius = 91.44172
+material = ExtResource("1_pustc")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map/Main Ground" unique_id=83650489]
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="map/Main Ground" unique_id=761916193]
+transform = Transform3D(0.998235, 0, 0.059388332, 0, 1, 0, -0.059388332, 0, 0.998235, 982.582, 206.17691, 8.4449005)
+size = Vector3(613.2466, 1.2044126, 83.63226)
+material = SubResource("StandardMaterial3D_1xik1")
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="map/Main Ground" unique_id=986665811]
+transform = Transform3D(0.9950041, 0, 0.099835426, 0, 1, 0, -0.099835426, 0, 0.9950041, 558.38385, 206.17691, 38.537758)
+size = Vector3(280.54602, 1.2044126, 83.63226)
+material = SubResource("StandardMaterial3D_1xik1")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="map/Main Ground" unique_id=60130023]
+transform = Transform3D(0.9995599, 0, 0.029667154, 0, 1, 0, -0.029667154, 0, 0.9995599, 136.01416, 206.17691, 61.341442)
+size = Vector3(612.46, 1.2044126, 83.63226)
+material = SubResource("StandardMaterial3D_1xik1")
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="map" unique_id=1700924435]
+transform = Transform3D(-1.3113416e-07, 3, 0, -2.598076, -1.1356552e-07, 1.5, 1.5, 6.556708e-08, 2.598076, -509, 98, 63)
+material_override = ExtResource("3_ceomm")
+use_collision = true
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="map/CSGCombiner3D" unique_id=271348072]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -73.5, 0, -5)
+size = Vector3(4, 1, 25)
+material = ExtResource("3_ceomm")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="map/CSGCombiner3D" unique_id=1124856273]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -73.5, 0, -5)
+size = Vector3(4, 1, 25)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="map/CSGCombiner3D" unique_id=1967050969]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -84.5, 0, -9.5)
+size = Vector3(13, 1, 3)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="map/CSGCombiner3D" unique_id=1383089649]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -69, 0, -16.5)
+size = Vector3(13, 1, 3)
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="map/CSGCombiner3D" unique_id=747186944]
+transform = Transform3D(-1, 0, 8.742278e-08, 0, 1, 0, -8.742278e-08, 0, -1, -78.38541, 0, 6.4748635)
+size = Vector3(13, 1, 3)
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="map/CSGCombiner3D" unique_id=1840377621]
+transform = Transform3D(1.3113416e-07, 0, 1, 0, 1, 0, -1, 0, 1.3113416e-07, -62.5, 0, -0.6)
+size = Vector3(13, 1, 3)
+material = SubResource("StandardMaterial3D_f1tpq")
+
+[node name="CSGCombiner3D2" type="CSGCombiner3D" parent="map" unique_id=81750447]
+use_collision = true
+
+[node name="Pillar 1" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=929931786]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 53, 77)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+radius = 43.0
+height = 108.0
+material = ExtResource("4_fd7rs")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 1" unique_id=1827053518]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 66, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_fd7rs")
+
+[node name="Pillar 5" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1393956976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, 151)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("4_fd7rs")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 5" unique_id=1333672983]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_fd7rs")
+
+[node name="Pillar 6" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1422872118]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, -59)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("4_fd7rs")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 6" unique_id=355629901]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_fd7rs")
+
+[node name="Pillar 8" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=409267207]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, -251)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("4_fd7rs")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 8" unique_id=1785348134]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_fd7rs")
+
+[node name="Pillar 2" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=2011526246]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 53, -180)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+radius = 43.0
+height = 108.0
+material = ExtResource("4_fd7rs")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 2" unique_id=699154716]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 66, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_fd7rs")
+
+[node name="Pillar 3" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1441142678]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -547, 86.04614, -180)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+radius = 43.0
+height = 173.90771
+material = ExtResource("4_fd7rs")
+
+[node name="CSGTorus3D2" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 3" unique_id=319946039]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 98.95386, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_fd7rs")
+
+[node name="Pillar 4" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=53232206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -547, 84.15039, 73)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+radius = 43.0
+height = 177.69922
+material = ExtResource("4_fd7rs")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 4" unique_id=830178416]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100.84961, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_fd7rs")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map/CSGCombiner3D2" unique_id=802861458]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -413, 36.499996, -48.5)
+material_override = ExtResource("4_fd7rs")
+use_collision = true
+size = Vector3(239, 74, 204)
+material = ExtResource("4_fd7rs")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=1267443493]
+transform = Transform3D(-3.0685382e-07, 0, 204.30899, 0, 3.2399998, 0, -7.019996, 0, -8.93063e-06, 121.59219, -34.5667, 4.9818497)
+operation = 2
+polygon = PackedVector2Array(-2, -1, -1.3313069, 11.526212, 5.390447, 11.174288, 6.709599, -0.69376934)
+material = ExtResource("4_fd7rs")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=1915857474]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, -36, -48.5)
+size = Vector3(198, 1, 160)
+material = ExtResource("4_fd7rs")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=1325744572]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54, -17, 42)
+operation = 2
+size = Vector3(103, 37, 85)
+material = ExtResource("4_fd7rs")
+
+[node name="Node3D" parent="." unique_id=464369689 instance=ExtResource("5_c64uc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.86805, 0.9616232, -10.135738)
+
+[node name="Player" parent="." unique_id=865303889 instance=ExtResource("6_dmp6d")]
+transform = Transform3D(0.06181417, 0, -0.9980877, 0, 1, 0, 0.9980877, 0, 0.06181417, -1.6415441, -0.03837633, -8.678777)
+
+[node name="TitleScreenCamera" type="Camera3D" parent="." unique_id=1746445408]
+transform = Transform3D(0.25881907, 0, -0.9659258, 0, 1, 0, 0.9659258, 0, 0.25881907, 8.327702, 1.0825909, -6.91959)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="TitleScreenCamera" unique_id=180997454]
+libraries/ = SubResource("AnimationLibrary_qojg5")

@@ -1,0 +1,446 @@
+[gd_scene format=3 uid="uid://bic5h7bu4f7du"]
+
+[ext_resource type="AudioStream" uid="uid://dl0txq011nr2g" path="res://music/FIGHTHITLER.mp3" id="1_bccg1"]
+[ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="1_plli4"]
+[ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="2_d3c5d"]
+[ext_resource type="Material" uid="uid://bcwon06iq2a4j" path="res://mat/Grass.tres" id="3_7grl8"]
+[ext_resource type="Texture2D" uid="uid://cqck8p1j15ql0" path="res://textures/HITLEREXTREME.png" id="4_d3c5d"]
+[ext_resource type="PackedScene" uid="uid://h1anqjdif17d" path="res://ent/info_player_start.tscn" id="5_7grl8"]
+[ext_resource type="AudioStream" uid="uid://dpjtudapj3i7v" path="res://music/oh shit.mp3" id="6_1j1mj"]
+[ext_resource type="AudioStream" uid="uid://deoqrh5fvbbqy" path="res://sounds/sfx/gargamel10-screaming-man-falling-down-379130.mp3" id="8_4rh66"]
+[ext_resource type="AudioStream" uid="uid://df355ac58t34o" path="res://sounds/sfx/themediaguy-earthquake-rumble-amp-cracking-379298.mp3" id="9_py1o3"]
+[ext_resource type="Script" uid="uid://dfcsspglxvalm" path="res://maps/topcastle.gd" id="10_topcastle"]
+[ext_resource type="Script" uid="uid://bkbgob806cppg" path="res://ent/boss.gd" id="11_boss"]
+[ext_resource type="Texture2D" uid="uid://dmo4y4r2pcgn3" path="res://textures/light.jpg" id="12_s2kn5"]
+[ext_resource type="Script" uid="uid://c0g52qei1kh3p" path="res://maps/temporary_scene_change.gd" id="13_trigger"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7grl8"]
+transparency = 1
+albedo_texture = ExtResource("4_d3c5d")
+
+[sub_resource type="Animation" id="Animation_1j1mj"]
+resource_name = "BossCamAnim"
+length = 14.9
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 11.520573, 58.849735, -22.199472, 1.1666666, 1, 11.520573, 60.173965, -22.199472, 2.1333334, 1, 11.520573, 60.23914, -22.199472, 4.9666667, 1, 11.332948, 60.390198, -20.253296, 10.733334, 1, 11.520573, 60.23914, -22.199472, 13.266666, 1, 12.506255, 59.851177, -32.423683)
+tracks/1/type = "rotation_3d"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".")
+tracks/1/interp = 2
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0, 0, 0, 1, 3.2, 1, 0, 0, 0, 1, 4.1666665, 1, 0.007930446, 0.9920674, -0.08974739, -0.08766312, 4.9, 1, 0.01524542, 0.9959136, -0.08879789, -0.0062158457)
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:fov")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(3.6, 4.4333334, 5.9, 9.333333, 13.2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [39.7, 19.7, 19.7, 19.7, 50.2]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("AnimationPlayer/OhShit:playing")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(-0.26666668, 2.9333334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [false, true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("ThemediaguyEarthquakeRumbleAmpCracking379298:playing")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.26666665),
+"transitions": PackedFloat32Array(0.6155722),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_ucsa8"]
+resource_name = "DefeatAnimation"
+length = 6.4666667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:fov")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.06666667, 2.2333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [5.6, 42.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:h_offset")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.13333333, 4.633333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 1.0]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:v_offset")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.06666666),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../Boss:position:x")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(-0.8666666, 0.03333333, 0.19999999, 0.43333334, 1.008507, 1.508507, 1.879429, 2.0460956, 2.279429, 2.5127623, 2.8546028),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [15.0, 13.931358, 15.0, 13.931358, 13.931358, 15.0, 13.931358, 15.0, 13.931358, 15.0, 13.931358]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("../Boss:position:y")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(2.0333333, 5.5333333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [65.64853, 50.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("Gargamel10ScreamingManFallingDown379130:playing")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.26666665),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("ThemediaguyEarthquakeRumbleAmpCracking379298:playing")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0.03333334),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("Gargamel10ScreamingManFallingDown379130:volume_db")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(2.9, 6.0666666),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, -71.922]
+}
+
+[sub_resource type="Animation" id="Animation_bccg1"]
+length = 0.001
+tracks/0/type = "position_3d"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, 11.520573, 58.849735, -22.199472)
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:fov")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [39.7]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("AnimationPlayer/OhShit:playing")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".:h_offset")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:v_offset")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("../Boss:position:x")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [13.931358]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("../Boss:position:y")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [65.64853]
+}
+tracks/7/type = "value"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("ThemediaguyEarthquakeRumbleAmpCracking379298:playing")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("Gargamel10ScreamingManFallingDown379130:playing")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("Gargamel10ScreamingManFallingDown379130:volume_db")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_43tto"]
+_data = {
+&"BossCamAnim": SubResource("Animation_1j1mj"),
+&"DefeatAnimation": SubResource("Animation_ucsa8"),
+&"RESET": SubResource("Animation_bccg1")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wmhnv"]
+albedo_texture = ExtResource("12_s2kn5")
+metallic_specular = 1.0
+uv1_scale = Vector3(0.1, 0.1, 0.1)
+uv1_triplanar = true
+uv1_world_triplanar = true
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_teleport"]
+radius = 3.902832
+height = 245.7988
+
+[node name="Node3D" type="Node3D" unique_id=1120223679]
+script = ExtResource("10_topcastle")
+
+[node name="Fighthitler" type="AudioStreamPlayer" parent="." unique_id=1742296370]
+stream = ExtResource("1_bccg1")
+volume_db = -7.621
+bus = &"Music"
+parameters/looping = false
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=399191019]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 12.186523, 10.293728, 0)
+material_override = ExtResource("1_plli4")
+use_collision = true
+radius = 75.36377
+height = 193.80904
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="." unique_id=682476269]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.936089, 59.76939, -1.730442)
+material_override = ExtResource("1_plli4")
+inner_radius = 35.299683
+outer_radius = 43.426624
+
+[node name="Pillar 8" type="CSGCylinder3D" parent="." unique_id=134150693]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -267.73975, 49.783157, -251)
+material_override = ExtResource("1_plli4")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("1_plli4")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="Pillar 8" unique_id=545082342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("1_plli4")
+
+[node name="Pillar 9" type="CSGCylinder3D" parent="." unique_id=69482395]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -171.9909, 49.783157, 343.58862)
+material_override = ExtResource("1_plli4")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("1_plli4")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="Pillar 9" unique_id=1659669513]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("1_plli4")
+
+[node name="Pillar 10" type="CSGCylinder3D" parent="." unique_id=1133873856]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 197.39056, 49.783157, 343.58862)
+material_override = ExtResource("1_plli4")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("1_plli4")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="Pillar 10" unique_id=1856007538]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("1_plli4")
+
+[node name="Pillar 11" type="CSGCylinder3D" parent="." unique_id=1456089015]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 250.78903, 49.783157, -283.6712)
+material_override = ExtResource("1_plli4")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("1_plli4")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="Pillar 11" unique_id=157275351]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("1_plli4")
+
+[node name="Node3D" parent="." unique_id=464369689 instance=ExtResource("2_d3c5d")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.68396485, 103.33792, 1.2420406)
+
+[node name="CSGSphere3D6" type="CSGSphere3D" parent="." unique_id=1206182701]
+transform = Transform3D(1.6994383, 0, 0, 0, 1.590062, 0, 0, 0, 1, -1283.8484, -33.895576, 83.9447)
+radius = 115.05573
+material = ExtResource("3_7grl8")
+
+[node name="CSGSphere3D7" type="CSGSphere3D" parent="." unique_id=346256653]
+transform = Transform3D(1.6994383, 0, 0, 0, 1.590062, 0, 0, 0, 1, -1194.3062, 20.52037, 218.27509)
+radius = 101.56014
+material = ExtResource("3_7grl8")
+
+[node name="Boss" type="CSGBox3D" parent="." unique_id=509232157]
+transform = Transform3D(-1, 8.742278e-08, 0, -8.742278e-08, -1, 0, 0, 0, 1, 13.931358, 65.64853, 20.252083)
+material_override = SubResource("StandardMaterial3D_7grl8")
+size = Vector3(10.443481, 16.994873, 0.001)
+script = ExtResource("11_boss")
+required_returns = 8
+
+[node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_7grl8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.608045, 58.760124, -27.7486)
+
+[node name="BossCutscene" type="Camera3D" parent="." unique_id=995135709]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.520573, 58.849735, -22.199472)
+fov = 39.7
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="BossCutscene" unique_id=624237725]
+libraries/ = SubResource("AnimationLibrary_43tto")
+
+[node name="OhShit" type="AudioStreamPlayer" parent="BossCutscene/AnimationPlayer" unique_id=1494354342]
+stream = ExtResource("6_1j1mj")
+
+[node name="Gargamel10ScreamingManFallingDown379130" type="AudioStreamPlayer" parent="BossCutscene" unique_id=472676473]
+stream = ExtResource("8_4rh66")
+
+[node name="ThemediaguyEarthquakeRumbleAmpCracking379298" type="AudioStreamPlayer" parent="BossCutscene" unique_id=562377059]
+stream = ExtResource("9_py1o3")
+
+[node name="LightTeleport" type="CSGCylinder3D" parent="." unique_id=970105898]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.21932, 179.1087, 24.193735)
+material_override = SubResource("StandardMaterial3D_wmhnv")
+transparency = 0.48
+radius = 3.902832
+height = 245.7988
+sides = 3
+cone = true
+
+[node name="TeleportTrigger" type="Area3D" parent="LightTeleport" unique_id=1438424971]
+collision_layer = 0
+collision_mask = 59
+monitoring = false
+monitorable = false
+script = ExtResource("13_trigger")
+target_scene = "res://maps/EndCredits.tscn"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="LightTeleport/TeleportTrigger" unique_id=1062024979]
+shape = SubResource("CylinderShape3D_teleport")
