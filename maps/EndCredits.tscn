@@ -1,0 +1,328 @@
+[gd_scene format=3 uid="uid://dgrk0ym1yg6oq"]
+
+[ext_resource type="AudioStream" uid="uid://b0mfllmdnkgkl" path="res://music/Tobu - Candyland.mp3" id="1_86qim"]
+[ext_resource type="Material" uid="uid://bcwon06iq2a4j" path="res://mat/Grass.tres" id="1_co05e"]
+[ext_resource type="AudioStream" uid="uid://wbp2xr3jn71a" path="res://sounds/voicelines/no more hitler.wav" id="2_86qim"]
+[ext_resource type="Material" uid="uid://cgm5nsvnb1hgm" path="res://mat/neonsign.tres" id="3_86qim"]
+[ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="4_4hmcl"]
+[ext_resource type="Texture2D" uid="uid://br5qt6eqe8ctl" path="res://textures/newspaperhitler.jpg" id="5_cni5o"]
+[ext_resource type="PackedScene" uid="uid://gvh6bssvbdb1" path="res://atmospheres/outside_enviroment.tscn" id="6_5t6hs"]
+[ext_resource type="PackedScene" uid="uid://b0uuvnieqo8hi" path="res://player/player.tscn" id="8_4hmcl"]
+[ext_resource type="PackedScene" uid="uid://c4pngkufusksa" path="res://ent/EndScreen.tscn" id="7_endscreen"]
+[ext_resource type="Script" path="res://maps/end_credits.gd" id="9_script"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uppsi"]
+albedo_texture = ExtResource("5_cni5o")
+uv1_scale = Vector3(0.1, 0.1, 0.1)
+uv1_offset = Vector3(0.1, 0, 0)
+uv1_triplanar = true
+
+[sub_resource type="Animation" id="Animation_cni5o"]
+resource_name = "EndCreditsAnimation"
+length = 10.666667
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 2
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0.03333333, 6.6, 8),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(-28.372276, 3.2338755, -0.7367163), Vector3(-15.419439, 3.2338755, -0.7367163), Vector3(-15.419439, 3.2338755, -0.7367163)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0.03333333, 8, 9.766666),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 1.5707964, 0), Vector3(0, 1.5707964, 0), Vector3(0.68246835, 1.7111951, 3.5526515e-08)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:fov")
+tracks/2/interp = 2
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.033333335, 6.5333333, 7.633333, 9.833333),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [75.0, 26.1, 26.1, 66.2]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../NoMoreHitler:playing")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("../TobuCandyland:playing")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(5),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+
+[sub_resource type="Animation" id="Animation_5t6hs"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-28.372276, 3.2338755, -0.7367163)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 1.5707964, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:fov")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [75.0]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../NoMoreHitler:playing")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("../TobuCandyland:playing")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_o0nvx"]
+_data = {
+&"EndCreditsAnimation": SubResource("Animation_cni5o"),
+&"RESET": SubResource("Animation_5t6hs")
+}
+
+[node name="Node3D" type="Node3D" unique_id=979664300]
+script = ExtResource("9_script")
+
+[node name="TobuCandyland" type="AudioStreamPlayer" parent="." unique_id=1423853592]
+stream = ExtResource("1_86qim")
+
+[node name="NoMoreHitler" type="AudioStreamPlayer" parent="." unique_id=689603097]
+stream = ExtResource("2_86qim")
+
+[node name="map" type="Node3D" parent="." unique_id=1581142594]
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
+
+[node name="Main Ground" type="CSGBox3D" parent="map" unique_id=676253656]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 691.159, -206.86546, -54.0728)
+use_collision = true
+size = Vector3(2676.9453, 412.96457, 790.23175)
+material = ExtResource("1_co05e")
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="map/Main Ground" unique_id=654008954]
+transform = Transform3D(1, 0, 0, 0, 1.5561368, 0, 0, 0, 1, -797.1386, 204.55779, 213.9447)
+radius = 91.44172
+material = ExtResource("1_co05e")
+
+[node name="CSGSphere3D2" type="CSGSphere3D" parent="map/Main Ground" unique_id=2076796843]
+transform = Transform3D(1, 0, 0, 0, 1.6463478, 0, 0, 0, 1, -930.7991, 168.55775, 167.50414)
+radius = 91.44172
+material = ExtResource("1_co05e")
+
+[node name="CSGCombiner3D" type="CSGCombiner3D" parent="map" unique_id=326766880]
+transform = Transform3D(-1.3113416e-07, 3, 0, -2.598076, -1.1356552e-07, 1.5, 1.5, 6.556708e-08, 2.598076, -509, 98, 63)
+material_override = ExtResource("3_86qim")
+use_collision = true
+
+[node name="CSGCombiner3D2" type="CSGCombiner3D" parent="map" unique_id=1230509920]
+use_collision = true
+
+[node name="Pillar 1" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=97338069]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 53, 77)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+radius = 43.0
+height = 108.0
+material = ExtResource("4_4hmcl")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 1" unique_id=1008010724]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 66, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_4hmcl")
+
+[node name="Pillar 5" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1393809191]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, 151)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("4_4hmcl")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 5" unique_id=562360630]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_4hmcl")
+
+[node name="Pillar 6" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1555114856]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, -59)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("4_4hmcl")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 6" unique_id=1448101386]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_4hmcl")
+
+[node name="Pillar 8" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1284091206]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -552, 173.75, -251)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+radius = 43.0
+height = 349.5
+material = ExtResource("4_4hmcl")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 8" unique_id=54933945]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 172, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_4hmcl")
+
+[node name="Pillar 2" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=2066536845]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -305, 53, -180)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+radius = 43.0
+height = 108.0
+material = ExtResource("4_4hmcl")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 2" unique_id=85079735]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 66, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_4hmcl")
+
+[node name="Pillar 3" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=39379048]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -547, 86.04614, -180)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+radius = 43.0
+height = 173.90771
+material = ExtResource("4_4hmcl")
+
+[node name="CSGTorus3D2" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 3" unique_id=1759646393]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 98.95386, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_4hmcl")
+
+[node name="Pillar 4" type="CSGCylinder3D" parent="map/CSGCombiner3D2" unique_id=1498306]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -547, 84.15039, 73)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+radius = 43.0
+height = 177.69922
+material = ExtResource("4_4hmcl")
+
+[node name="CSGTorus3D" type="CSGTorus3D" parent="map/CSGCombiner3D2/Pillar 4" unique_id=115436185]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 100.84961, 0)
+inner_radius = 11.0
+outer_radius = 53.0
+material = ExtResource("4_4hmcl")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map/CSGCombiner3D2" unique_id=1507497959]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -413, 36.499996, -48.5)
+material_override = ExtResource("4_4hmcl")
+use_collision = true
+size = Vector3(239, 74, 204)
+material = ExtResource("4_4hmcl")
+
+[node name="CSGPolygon3D" type="CSGPolygon3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=1505511137]
+transform = Transform3D(-3.0685382e-07, 0, 204.30899, 0, 3.2399998, 0, -7.019996, 0, -8.93063e-06, 121.59219, -34.5667, 4.9818497)
+operation = 2
+polygon = PackedVector2Array(-2, -1, -1.3313069, 11.526212, 5.390447, 11.174288, 6.709599, -0.69376934)
+material = ExtResource("4_4hmcl")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=1536680793]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.5, -36, -48.5)
+size = Vector3(198, 1, 160)
+material = ExtResource("4_4hmcl")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="map/CSGCombiner3D2/CSGBox3D" unique_id=1335277853]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -54, -17, 42)
+operation = 2
+size = Vector3(103, 37, 85)
+material = ExtResource("4_4hmcl")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="map" unique_id=1021918756]
+transform = Transform3D(0.9998923, 0.009480463, -0.011216635, -0.008055251, 0.99263096, 0.12091168, 0.01228027, -0.12080833, 0.9926, -293.6241, 35.188976, -6.401801)
+material_override = SubResource("StandardMaterial3D_uppsi")
+size = Vector3(1.132458, 40.140503, 41.346924)
+
+[node name="OutsideEnviroment" parent="." unique_id=780237616 instance=ExtResource("6_5t6hs")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.3913, 1.3624958, -5.3992977)
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1351792807]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 0.99999994, 0, -1, 0, -4.371139e-08, -28.372276, 3.2338755, -0.7367163)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Camera3D" unique_id=39012359]
+libraries/ = SubResource("AnimationLibrary_o0nvx")
+
+[node name="Player" parent="." unique_id=865303889 instance=ExtResource("8_4hmcl")]
+transform = Transform3D(0.46135318, 0, -0.88721657, 0, 1, 0, 0.88721657, 0, 0.46135318, -27.549772, -0.038298726, -3.2451768)
+
+[node name="EndScreen" parent="." unique_id=984512374 instance=ExtResource("7_endscreen")]

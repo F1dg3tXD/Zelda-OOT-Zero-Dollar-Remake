@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://npt4jjbw5c5w"]
+
+[ext_resource type="Script" path="res://ent/chargeball.gd" id="1_ball"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_hit"]
+radius = 2.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ep77b"]
+blend_mode = 3
+albedo_color = Color(0.9999955, 0.4241921, 0.50716555, 1)
+emission_enabled = true
+emission = Color(0.7898294, 0.27907437, 0.23268604, 1)
+emission_energy_multiplier = 8.04
+
+[node name="ChargeBall" type="Node3D" unique_id=185778082]
+script = ExtResource("1_ball")
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+shape = SubResource("SphereShape3D_hit")
+
+[node name="OuterLayer" type="CSGSphere3D" parent="." unique_id=1482334006]
+radius = 2.1163592
+material = SubResource("StandardMaterial3D_ep77b")
+
+[node name="OuterLayer2" type="CSGSphere3D" parent="." unique_id=932122807]
+radius = 1.8375257
+material = SubResource("StandardMaterial3D_ep77b")

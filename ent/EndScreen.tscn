@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://c4pngkufusksa"]
+
+[node name="Node2D" type="Node2D" unique_id=15720117]
+
+[node name="TryAgainButton" type="Button" parent="." unique_id=1391198425]
+offset_left = 562.0
+offset_top = 361.0
+offset_right = 850.0
+offset_bottom = 448.0
+text = "try again"
+
+[node name="QuitButton" type="Button" parent="." unique_id=71620644]
+offset_left = 638.0
+offset_top = 476.0
+offset_right = 926.0
+offset_bottom = 563.0
+text = "Quit"
+
+[node name="Label" type="Label" parent="." unique_id=583358350]
+custom_minimum_size = Vector2(1, 0)
+offset_left = 669.00006
+offset_top = 134.0
+offset_right = 913.00006
+offset_bottom = 251.0
+rotation = -0.14486232
+scale = Vector2(2, 2)
+text = "YOU KILLED HITLER
+GOOD JOB"

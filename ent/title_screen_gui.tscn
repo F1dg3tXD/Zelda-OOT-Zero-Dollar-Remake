@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://cd3gglmaem6vy"]
+
+[ext_resource type="Texture2D" uid="uid://ogqjlx6p1c5o" path="res://textures/zelda.png" id="1_uiw8c"]
+
+[node name="TitleScreenGUI" type="Node2D" unique_id=1123225952]
+
+[node name="Zelda" type="Sprite2D" parent="." unique_id=266320368]
+position = Vector2(870.3895, 130.24994)
+scale = Vector2(0.13187228, 0.13187231)
+texture = ExtResource("1_uiw8c")
+
+[node name="Button" type="Button" parent="." unique_id=1498993702]
+offset_left = 669.0
+offset_top = 260.0
+offset_right = 1096.0
+offset_bottom = 334.0
+text = "Start Game"
