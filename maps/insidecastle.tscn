@@ -5,7 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://bs8jdqaeegnml" path="res://ent/swasticka.tscn" id="3_qc2dy"]
 [ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="4_h5w0v"]
 [ext_resource type="AudioStream" uid="uid://bsw5tqfab66y3" path="res://music/Necromancer - The Fuhrer (Original Mix).mp3" id="5_qc2dy"]
-[ext_resource type="Script" path="res://maps/temporary_scene_change.gd" id="6_trigger"]
+[ext_resource type="Script" uid="uid://c0g52qei1kh3p" path="res://maps/temporary_scene_change.gd" id="6_trigger"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jv70r"]
 albedo_color = Color(0.8213464, 0, 0.30790737, 1)
@@ -41,7 +41,7 @@ transform = Transform3D(0.21176314, 0.2657545, 0.36678454, -0.4330127, -1.892758
 transform = Transform3D(0.21176314, 0.2657545, 0.36678454, -0.4330127, -1.8927587e-08, 0.25, 0.13287726, -0.42352632, 0.23015013, -0.55714417, 30.331245, -5.7531786)
 
 [node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("2_h5w0v")]
-transform = Transform3D(0.15887749, 0, -0.9872983, 0, 1, 0, 0.9872983, 0, 0.15887749, -1.7294068, 11.445246, -37.22225)
+transform = Transform3D(0.10206783, 0, 0.99477744, 0, 1, 0, -0.99477744, 0, 0.10206783, -1.7294068, 11.445246, -37.22225)
 
 [node name="Node3D" parent="." unique_id=464369689 instance=ExtResource("4_h5w0v")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.700893, 12.282913, 24.29466)
@@ -187,11 +187,11 @@ material_override = SubResource("StandardMaterial3D_jv70r")
 use_collision = true
 size = Vector3(4.431488, 6.383316, 2.063446)
 
-[node name="ToTopCastleTrigger" type="Area3D" parent="totopcastle"]
+[node name="ToTopCastleTrigger" type="Area3D" parent="totopcastle" unique_id=1940114550]
 script = ExtResource("6_trigger")
 target_scene = "res://maps/topcastle.tscn"
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="totopcastle/ToTopCastleTrigger"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="totopcastle/ToTopCastleTrigger" unique_id=1602849513]
 shape = SubResource("BoxShape3D_totop")
 
 [node name="CSGBox3D13" type="CSGBox3D" parent="." unique_id=1518356545]

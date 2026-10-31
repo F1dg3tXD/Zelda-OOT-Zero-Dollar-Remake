@@ -18,6 +18,7 @@ var _starting := false
 func _ready() -> void:
 	# Keep the title GUI hidden while the camera animation plays.
 	title_screen_gui.visible = false
+	title_screen_gui.modulate = Color(1.0, 1.0, 1.0, 0.0)
 	start_button.pressed.connect(_on_start_pressed)
 
 	# The player scene provides the background shot, but Link must not walk
@@ -38,6 +39,7 @@ func _on_animation_finished(animation_name: StringName) -> void:
 		return
 
 	title_screen_gui.visible = true
+	animation_player.play("TitleScreenIdle")
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	start_button.grab_focus()
 

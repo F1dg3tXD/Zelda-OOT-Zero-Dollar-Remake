@@ -2,13 +2,33 @@
 
 [ext_resource type="PackedScene" uid="uid://cd3gglmaem6vy" path="res://ent/title_screen_gui.tscn" id="1_ceomm"]
 [ext_resource type="Material" uid="uid://bcwon06iq2a4j" path="res://mat/Grass.tres" id="1_pustc"]
-[ext_resource type="AudioStream" uid="uid://b1pdkx730l7x0" path="res://music/titlemusic.mp3" id="1_r2s7s"]
 [ext_resource type="Texture2D" uid="uid://28jb4cndlvrh" path="res://textures/path.png" id="2_r2s7s"]
+[ext_resource type="AudioStream" uid="uid://bnrqgndjs3507" path="res://music/titlemusicIntro.ogg" id="3_c64uc"]
 [ext_resource type="Material" uid="uid://cgm5nsvnb1hgm" path="res://mat/neonsign.tres" id="3_ceomm"]
+[ext_resource type="AudioStream" uid="uid://bm46cma5cr8kq" path="res://music/titlemusicLoop.ogg" id="4_dmp6d"]
 [ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="4_fd7rs"]
 [ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="5_c64uc"]
 [ext_resource type="PackedScene" uid="uid://b0uuvnieqo8hi" path="res://player/player.tscn" id="6_dmp6d"]
 [ext_resource type="Script" uid="uid://5iygd2nx1nf3" path="res://maps/title_screen.gd" id="7_title"]
+
+[sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_fd7rs"]
+clip_count = 2
+clip_0/name = &"TitlemusicIntro"
+clip_0/stream = ExtResource("3_c64uc")
+clip_0/auto_advance = 1
+clip_0/next_clip = 1
+clip_1/name = &"TitlemusicLoop"
+clip_1/stream = ExtResource("4_dmp6d")
+clip_1/auto_advance = 1
+clip_1/next_clip = 1
+_transitions = {
+Vector2i(0, 0): {
+"fade_beats": 1.0,
+"fade_mode": 4,
+"from_time": 0,
+"to_time": 0
+}
+}
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1xik1"]
 albedo_texture = ExtResource("2_r2s7s")
@@ -68,10 +88,87 @@ tracks/3/keys = {
 "update": 1,
 "values": [false]
 }
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("../TitleScreenGUI:modulate:r")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/5/type = "bezier"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("../TitleScreenGUI:modulate:g")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/6/type = "bezier"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("../TitleScreenGUI:modulate:b")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/7/type = "bezier"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("../TitleScreenGUI:modulate:a")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/8/type = "bezier"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath(".:rotation:x")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(0.6265672, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/9/type = "bezier"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath(".:rotation:y")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(1.5005577, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
+tracks/10/type = "bezier"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath(".:rotation:z")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"handle_modes": PackedInt32Array(0),
+"points": PackedFloat32Array(-0.0412301, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0)
+}
 
 [sub_resource type="Animation" id="Animation_44jlo"]
 resource_name = "TitleScreen"
-length = 7.3
+length = 6.699999999999999
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -108,11 +205,106 @@ tracks/2/keys = {
 "update": 0,
 "values": [75.0, 115.1]
 }
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../TitleScreenGUI:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(6.03),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("../TitleScreenGUI:modulate:r")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(0, 2),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.0783333, 0, 0, 0),
+"times": PackedFloat32Array(6.03, 6.5)
+}
+tracks/5/type = "bezier"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("../TitleScreenGUI:modulate:g")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"handle_modes": PackedInt32Array(0, 2),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.0783333, 0, 0, 0),
+"times": PackedFloat32Array(6.03, 6.5)
+}
+tracks/6/type = "bezier"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("../TitleScreenGUI:modulate:b")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"handle_modes": PackedInt32Array(0, 2),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.0783333, 0, 0, 0),
+"times": PackedFloat32Array(6.03, 6.5)
+}
+tracks/7/type = "bezier"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("../TitleScreenGUI:modulate:a")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"handle_modes": PackedInt32Array(0, 2),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 1, -0.0783333, -0.16666667, 0, 0),
+"times": PackedFloat32Array(6.03, 6.5)
+}
+
+[sub_resource type="Animation" id="Animation_fd7rs"]
+resource_name = "TitleScreenIdle"
+length = 20.0
+loop_mode = 1
+tracks/0/type = "bezier"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:rotation:x")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(0.6265672, -0.25, 0, 0.25, 0, 0.49392816, -0.20833334, 0.023730356, 0.20833334, -0.023730356, 0.34180292, -0.4166667, 0.047460712, 0, 0, 0.4956735, -0.20833334, -0.023730356, 0.20833334, 0.023730356, 0.6265672, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 5, 10, 15, 20)
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:rotation:y")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(1.5005577, -0.25, 0, 0.25, 0, 1.7662733, -0.20833334, -0.000821809, 0.20833334, 0.000821809, 1.5104194, -0.4166667, -0.001643618, 0, 0, 1.2426745, -0.20833334, 0.000821809, 0.20833334, -0.000821809, 1.5005577, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 5, 10, 15, 20)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:rotation:z")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
+"points": PackedFloat32Array(-0.0412301, -0.25, 0, 0.25, 0, -0.03141593, -0.20833334, -0.0017475636, 0.20833334, 0.0017475636, -0.020259337, -0.4166667, -0.0034951272, 0, 0, -0.03141593, -0.20833334, 0.0017475636, 0.20833334, -0.0017475636, -0.0412301, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 5, 10, 15, 20)
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_qojg5"]
 _data = {
 &"RESET": SubResource("Animation_bwqst"),
-&"TitleScreen": SubResource("Animation_44jlo")
+&"TitleScreen": SubResource("Animation_44jlo"),
+&"TitleScreenIdle": SubResource("Animation_fd7rs")
 }
 
 [node name="Node3D" type="Node3D" unique_id=241996780]
@@ -120,13 +312,14 @@ script = ExtResource("7_title")
 
 [node name="TitleScreenGUI" parent="." unique_id=1123225952 instance=ExtResource("1_ceomm")]
 visible = false
+modulate = Color(1, 1, 1, 0)
 position = Vector2(33, -22)
 
 [node name="Titlemusic" type="AudioStreamPlayer" parent="." unique_id=1669881056]
-stream = ExtResource("1_r2s7s")
+stream = SubResource("AudioStreamInteractive_fd7rs")
 volume_db = -3.165
 autoplay = true
-parameters/looping = true
+bus = &"Music"
 
 [node name="map" type="Node3D" parent="." unique_id=130803306]
 transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0, 0, 0)
@@ -507,7 +700,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.86805, 0.9616232, -10.1357
 transform = Transform3D(0.06181417, 0, -0.9980877, 0, 1, 0, 0.9980877, 0, 0.06181417, -1.6415441, -0.03837633, -8.678777)
 
 [node name="TitleScreenCamera" type="Camera3D" parent="." unique_id=1746445408]
-transform = Transform3D(0.25881907, 0, -0.9659258, 0, 1, 0, 0.9659258, 0, 0.25881907, 8.327702, 1.0825909, -6.91959)
+transform = Transform3D(0.04601174, 0.5873173, 0.80804783, -0.033388786, 0.80935675, -0.5863675, -0.99838275, 5.2154064e-08, 0.056849726, 8.327702, 1.0825909, -6.91959)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="TitleScreenCamera" unique_id=180997454]
 libraries/ = SubResource("AnimationLibrary_qojg5")

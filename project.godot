@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Zelda-OOT-Zero-Dollar-Remake"
-run/main_scene="res://maps/outsidecastle.tscn"
+run/main_scene="uid://cxfdpqr7gmoie"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="OneDollarOOTRemake"
 config/features=PackedStringArray("4.7", "Forward Plus")
