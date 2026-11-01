@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://by4c30xws1gmu"
+path="res://.godot/imported/uh oh its tyrone.mp3-ae7c83162da03400ff17966b700536d2.mp3str"
+
+[deps]
+
+source_file="res://music/uh oh its tyrone.mp3"
+dest_files=["res://.godot/imported/uh oh its tyrone.mp3-ae7c83162da03400ff17966b700536d2.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

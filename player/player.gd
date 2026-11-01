@@ -45,11 +45,11 @@ var _fly_mode := false
 var _moving := false
 var _move_dir := Vector2.ZERO
 var _move_to_target: Vector3 = Vector3(INF, INF, INF)
-var _move_to_speed := 5.0
+var _move_to_speed := 100.0
 
 var _path_points: Array[Vector3] = []
 var _path_index := 0
-var _path_speed := 5.0
+var _path_speed := 100.0
 var _path_active := false
 
 @export var max_health := 100
@@ -57,6 +57,7 @@ var health := 100
 
 # (voice already declared above)
 var _sword_sounds: Array = []
+var _die_sounds: Array = []
 
 func lock_input() -> void:
 	_movement_locked = true
@@ -67,12 +68,12 @@ func unlock_input() -> void:
 func set_cutscene_velocity(new_velocity: Vector3) -> void:
 	cutscene_velocity = new_velocity
 
-func move_to(move_to_position: Vector3, speed: float = walk_speed) -> void:
+func move_to(move_to_position: Vector3, speed: float = 15.0) -> void:
 	lock_input()
 	_move_to_target = move_to_position
 	_move_to_speed = speed
 
-func follow_path_points(points: Array[Vector3], speed: float = walk_speed) -> void:
+func follow_path_points(points: Array[Vector3], speed: float = 15.0) -> void:
 	if points.is_empty():
 		return
 	lock_input()
@@ -114,7 +115,12 @@ func take_damage(amount: float) -> void:
 	health_changed.emit(health, max_health)
 	damaged.emit()
 	if health <= 0:
+		AudioServer.set_bus_mute(AudioServer.get_bus_index("Music"), true)
+		animation_tree.set("parameters/Die/request", 1)
+		player_voice.stream = _die_sounds[randi() % _die_sounds.size()]
+		player_voice.play()
 		died.emit()
+		
 
 func heal(amount: float) -> void:
 	if amount <= 0.0 or health >= max_health:
@@ -202,11 +208,13 @@ const TURN_SPEED := 10.0
 const MOUSE_SENSITIVITY := 0.005
 
 func _ready() -> void:
+	AudioServer.set_bus_mute(AudioServer.get_bus_index("Music"), false)
 	add_to_group("player")
 	spring_arm_3d.spring_length = camera_distance
 	camera_root.top_level = true
 	camera_root.global_position = global_position + Vector3(0, 1, 0)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	animation_tree.set("parameters/Crouch/add_amount", 0)
 	_sync_sword()
 	if death_handler != null and is_instance_valid(death_handler):
 		died.connect(death_handler.die)
@@ -217,6 +225,9 @@ func _ready() -> void:
 		load("res://sounds/sword grunts/grunt2.mp3"),
 		load("res://sounds/sword grunts/grunt3.mp3"),
 		load("res://sounds/sword grunts/grunt4.mp3"),
+	]
+	_die_sounds = [
+		load("res://sounds/sfx/ouch_dead.wav")
 	]
 	var _xmb: Node = get_node_or_null("/root/XMBSave")
 	if _xmb != null and _xmb.has_method("register_save_adapter"):

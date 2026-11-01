@@ -9,7 +9,7 @@ position = Vector2(870.3895, 130.24994)
 scale = Vector2(0.13187228, 0.13187231)
 texture = ExtResource("1_uiw8c")
 
-[node name="Button" type="Button" parent="." unique_id=1498993702]
+[node name="Start Button" type="Button" parent="." unique_id=1498993702]
 offset_left = 669.0
 offset_top = 260.0
 offset_right = 1096.0

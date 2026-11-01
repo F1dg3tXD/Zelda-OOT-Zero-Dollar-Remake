@@ -20,6 +20,9 @@ extends Node3D
 # Fire raycast for projectile weapon
 @onready var ray_cast_3d: RayCast3D = $Soilder/Armature/Skeleton3D/BoneAttachment3D/RayCast3D
 
+# Eyes to see player
+@onready var visual_area: Area3D = $Soilder/Armature/Skeleton3D/BoneAttachment3D/VisualArea
+
 # Hitbox
 @onready var collision_shape_3d: CollisionShape3D = $CollisionShape3D
 

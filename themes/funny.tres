@@ -1,0 +1,7 @@
+[gd_resource type="Theme" format=3 uid="uid://dgr2w4xejlndg"]
+
+[ext_resource type="FontFile" uid="uid://b66vfa6bjmlop" path="res://fonts/Comic.TTF" id="1_ku0s7"]
+
+[resource]
+default_font = ExtResource("1_ku0s7")
+Label/fonts/font = ExtResource("1_ku0s7")

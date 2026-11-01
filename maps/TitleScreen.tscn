@@ -646,7 +646,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.86805, 0.9616232, -10.1357
 transform = Transform3D(0.06181417, 0, -0.9980877, 0, 1, 0, 0.9980877, 0, 0.06181417, -1.6415441, -0.03837633, -8.678777)
 
 [node name="TitleScreenCamera" type="Camera3D" parent="." unique_id=1746445408]
-transform = Transform3D(0.25881904, 0, -0.9659258, 0, 1, 0, 0.96592575, 0, 0.25881907, 8.327702, 1.0825909, -6.91959)
+transform = Transform3D(0.258819, 0, -0.9659258, 0, 1, 0, 0.96592563, 0, 0.25881907, 8.327702, 1.0825909, -6.91959)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="TitleScreenCamera" unique_id=180997454]
 libraries/ = SubResource("AnimationLibrary_qojg5")
+
+[connection signal="pressed" from="TitleScreenGUI/Start Button" to="." method="_on_start_pressed"]
+
+[editable path="TitleScreenGUI"]

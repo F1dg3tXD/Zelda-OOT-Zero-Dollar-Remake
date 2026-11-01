@@ -100,7 +100,7 @@ tracks/2/keys = {
 
 [sub_resource type="Animation" id="Animation_dj55w"]
 resource_name = "hurt"
-length = 0.39999999999999997
+length = 0.4
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -168,7 +168,7 @@ animation = &"hurt"
 animation = &"idle"
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_5d25b"]
-graph_offset = Vector2(-311.4855, 71.581635)
+graph_offset = Vector2(-349.462, -31.732422)
 nodes/output/position = Vector2(400, 140)
 nodes/idle/node = SubResource("AnimationNodeAnimation_o1rey")
 nodes/idle/position = Vector2(-260, 60)
@@ -192,7 +192,6 @@ debug_color = Color(0.99215686, 0, 0, 0.41960785)
 [node name="BossSprite" type="Sprite3D" parent="." unique_id=1708569411]
 pixel_size = 0.015
 billboard = 2
-shaded = true
 texture_filter = 0
 texture = ExtResource("1_o1rey")
 
@@ -208,3 +207,6 @@ parameters/Attack/request = 0
 parameters/Hurt/active = false
 parameters/Hurt/internal_active = false
 parameters/Hurt/request = 0
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1093084763]
+avoidance_enabled = true

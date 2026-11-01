@@ -3,6 +3,9 @@
 [ext_resource type="Script" uid="uid://bdpkod2xa25ya" path="res://npc/soilder.gd" id="1_6l3xi"]
 [ext_resource type="PackedScene" uid="uid://ce1pq5x6qtntr" path="res://models/soilder/soilder_mdl.tscn" id="2_qitif"]
 
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_5d25b"]
+length = 10.0
+
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qitif"]
 
 [node name="SoilderNPC" type="CharacterBody3D" unique_id=1063131750 groups=["Enemy"]]
@@ -20,8 +23,17 @@ target_position = Vector3(0, 0, 10)
 hit_back_faces = false
 debug_shape_custom_color = Color(1, 0, 0, 1)
 
+[node name="VisualArea" type="Area3D" parent="Soilder/Armature/Skeleton3D/BoneAttachment3D" unique_id=2110720340]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Soilder/Armature/Skeleton3D/BoneAttachment3D/VisualArea" unique_id=1082533858]
+shape = SubResource("SeparationRayShape3D_5d25b")
+debug_color = Color(1, 0, 0, 0.41960785)
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1684567596]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_qitif")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=461112841]
+avoidance_enabled = true
 
 [editable path="Soilder"]

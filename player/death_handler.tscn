@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://6vmjq08niva1"]
 
 [ext_resource type="Shader" uid="uid://by0chbkmp2nff" path="res://shaders/simple_circle_transition.gdshader" id="1_65hu2"]
-[ext_resource type="Script" uid="uid://cjdpf0aoxa6n8" path="res://player/death_handler.gd" id="1_n13qm"]
-
+[ext_resource type="Script" uid="uid://brf4jnpr4r1cn" path="res://player/death_handler.gd" id="1_n13qm"]
 
 [sub_resource type="Animation" id="Animation_hkm54"]
 length = 0.001
@@ -32,7 +31,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.5, 1, 1.4999),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [0.0, 0.749999983236, 0.749999983236, 0.999999977648]
+"values": [0.0, 0.6499999854712, 0.6499999854712, 0.999999977648]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_txvsd"]
@@ -84,7 +83,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-
 [node name="VBoxContainer" type="VBoxContainer" parent="MenuLayer/death_menu" unique_id=538562741]
 layout_mode = 0
 offset_left = 103.0
@@ -98,12 +96,10 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Try Again"
 
-
 [node name="menu" type="Button" parent="MenuLayer/death_menu/VBoxContainer" unique_id=1350721605]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "Quit to Menu"
-
 
 [connection signal="pressed" from="MenuLayer/death_menu/VBoxContainer/retry_btn" to="." method="_on_retry_btn_pressed"]
 [connection signal="pressed" from="MenuLayer/death_menu/VBoxContainer/menu" to="." method="_on_menu_pressed"]

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://ch1wfnqmxlgpy"]
 
-[ext_resource type="Script" uid="uid://nfiml03de7uy" path="res://player/respawn_handler.gd" id="1_8ynb7"]
+[ext_resource type="Script" uid="uid://drd37hti863j3" path="res://player/respawn_handler.gd" id="1_8ynb7"]
 [ext_resource type="Shader" uid="uid://by0chbkmp2nff" path="res://shaders/simple_circle_transition.gdshader" id="2_7oytx"]
 
 [sub_resource type="Animation" id="Animation_hkm54"]
@@ -20,7 +20,6 @@ tracks/0/keys = {
 
 [sub_resource type="Animation" id="Animation_dugi4"]
 resource_name = "transition_out"
-length = 1.0
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
@@ -28,7 +27,7 @@ tracks/0/path = NodePath("transition/ColorRect:material:shader_parameter/_Progre
 tracks/0/interp = 1
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 1.0),
+"times": PackedFloat32Array(0, 1),
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [1.0, 0.0]

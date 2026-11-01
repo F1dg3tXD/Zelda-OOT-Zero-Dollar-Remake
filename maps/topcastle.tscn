@@ -2,9 +2,9 @@
 
 [ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="1_plli4"]
 [ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="2_d3c5d"]
-[ext_resource type="AudioStream" uid="uid://du5mjinn2ukt0" path="res://music/FIGHTHITLER_Intro.ogg" id="2_wmhnv"]
 [ext_resource type="Material" uid="uid://bcwon06iq2a4j" path="res://mat/Grass.tres" id="3_7grl8"]
-[ext_resource type="AudioStream" uid="uid://dkwwmtql4kvor" path="res://music/FIGHTHITLER_Loop.ogg" id="3_rqgm3"]
+[ext_resource type="AudioStream" uid="uid://by4c30xws1gmu" path="res://music/uh oh its tyrone.mp3" id="4_ltd8w"]
+[ext_resource type="AudioStream" uid="uid://41lwu4ghio4b" path="res://music/tyronesmusic.mp3" id="5_5layo"]
 [ext_resource type="PackedScene" uid="uid://h1anqjdif17d" path="res://ent/info_player_start.tscn" id="5_7grl8"]
 [ext_resource type="AudioStream" uid="uid://dpjtudapj3i7v" path="res://music/oh shit.mp3" id="6_1j1mj"]
 [ext_resource type="PackedScene" uid="uid://btxbgg7tjjjfq" path="res://npc/boss.tscn" id="6_s2kn5"]
@@ -16,12 +16,12 @@
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_78jfb"]
 clip_count = 2
-clip_0/name = &"Fighthitler Intro"
-clip_0/stream = ExtResource("2_wmhnv")
+clip_0/name = &"Uh Oh Its Tyrone"
+clip_0/stream = ExtResource("4_ltd8w")
 clip_0/auto_advance = 1
 clip_0/next_clip = 1
-clip_1/name = &"Fighthitler Loop"
-clip_1/stream = ExtResource("3_rqgm3")
+clip_1/name = &"Tyronesmusic"
+clip_1/stream = ExtResource("5_5layo")
 clip_1/auto_advance = 1
 clip_1/next_clip = 1
 
@@ -315,10 +315,20 @@ uv1_world_triplanar = true
 height = 245.7988
 radius = 3.902832
 
+[sub_resource type="NavigationMesh" id="NavigationMesh_wmhnv"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_wmhnv"]
+data = PackedVector3Array(-53.290237, -96.90452, -53.290226, -75.36377, -96.90452, -6.58851e-06, 0, -96.90452, 0, -75.36377, -96.90452, -6.58851e-06, -53.290237, -96.90452, -53.290226, -53.290237, 96.90452, -53.290226, 8.9870395e-07, -96.90452, -75.36377, -53.290237, -96.90452, -53.290226, 0, -96.90452, 0, -53.290237, -96.90452, -53.290226, 8.9870395e-07, -96.90452, -75.36377, 8.9870395e-07, 96.90452, -75.36377, -75.36377, -96.90452, -6.58851e-06, -53.29023, -96.90452, 53.29023, 0, -96.90452, 0, -53.29023, -96.90452, 53.29023, -75.36377, -96.90452, -6.58851e-06, -75.36377, 96.90452, -6.58851e-06, -53.29023, -96.90452, 53.29023, -3.294255e-06, -96.90452, 75.36377, 0, -96.90452, 0, -3.294255e-06, -96.90452, 75.36377, -53.29023, -96.90452, 53.29023, -53.29023, 96.90452, 53.29023, -53.290237, 96.90452, -53.290226, -75.36377, 96.90452, -6.58851e-06, -75.36377, -96.90452, -6.58851e-06, -75.36377, 96.90452, -6.58851e-06, -53.290237, 96.90452, -53.290226, 0, 96.90452, 0, 8.9870395e-07, 96.90452, -75.36377, -53.290237, 96.90452, -53.290226, -53.290237, -96.90452, -53.290226, -53.290237, 96.90452, -53.290226, 8.9870395e-07, 96.90452, -75.36377, 0, 96.90452, 0, -75.36377, 96.90452, -6.58851e-06, -53.29023, 96.90452, 53.29023, -53.29023, -96.90452, 53.29023, -53.29023, 96.90452, 53.29023, -75.36377, 96.90452, -6.58851e-06, 0, 96.90452, 0, -53.29023, 96.90452, 53.29023, -3.294255e-06, 96.90452, 75.36377, -3.294255e-06, -96.90452, 75.36377, -3.294255e-06, 96.90452, 75.36377, -53.29023, 96.90452, 53.29023, 0, 96.90452, 0, 53.290222, -96.90452, -53.29024, 8.9870395e-07, -96.90452, -75.36377, 0, -96.90452, 0, 8.9870395e-07, -96.90452, -75.36377, 53.290222, -96.90452, -53.29024, 53.290222, 96.90452, -53.29024, 75.36377, -96.90452, 0, 53.290222, -96.90452, -53.29024, 0, -96.90452, 0, 53.290222, -96.90452, -53.29024, 75.36377, -96.90452, 0, 75.36377, 96.90452, 0, -3.294255e-06, -96.90452, 75.36377, 53.29023, -96.90452, 53.29023, 0, -96.90452, 0, 53.29023, -96.90452, 53.29023, -3.294255e-06, -96.90452, 75.36377, -3.294255e-06, 96.90452, 75.36377, 53.29023, -96.90452, 53.29023, 75.36377, -96.90452, 0, 0, -96.90452, 0, 75.36377, -96.90452, 0, 53.29023, -96.90452, 53.29023, 53.29023, 96.90452, 53.29023, 53.290222, 96.90452, -53.29024, 8.9870395e-07, 96.90452, -75.36377, 8.9870395e-07, -96.90452, -75.36377, 8.9870395e-07, 96.90452, -75.36377, 53.290222, 96.90452, -53.29024, 0, 96.90452, 0, 75.36377, 96.90452, 0, 53.290222, 96.90452, -53.29024, 53.290222, -96.90452, -53.29024, 53.290222, 96.90452, -53.29024, 75.36377, 96.90452, 0, 0, 96.90452, 0, -3.294255e-06, 96.90452, 75.36377, 53.29023, 96.90452, 53.29023, 53.29023, -96.90452, 53.29023, 53.29023, 96.90452, 53.29023, -3.294255e-06, 96.90452, 75.36377, 0, 96.90452, 0, 53.29023, 96.90452, 53.29023, 75.36377, 96.90452, 0, 75.36377, -96.90452, 0, 75.36377, 96.90452, 0, 53.29023, 96.90452, 53.29023, 0, 96.90452, 0)
+
 [node name="Node3D" type="Node3D" unique_id=1120223679]
 script = ExtResource("10_topcastle")
 
 [node name="Fighthitler" type="AudioStreamPlayer" parent="." unique_id=1742296370]
+stream = SubResource("AudioStreamInteractive_78jfb")
+volume_db = -7.621
+bus = &"Music"
+
+[node name="Fighttyrone" type="AudioStreamPlayer" parent="." unique_id=1932599929]
 stream = SubResource("AudioStreamInteractive_78jfb")
 volume_db = -7.621
 bus = &"Music"
@@ -449,3 +459,10 @@ target_scene = "res://maps/EndCredits.tscn"
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LightTeleport/TeleportTrigger" unique_id=1062024979]
 shape = SubResource("CylinderShape3D_teleport")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=823794325]
+navigation_mesh = SubResource("NavigationMesh_wmhnv")
+
+[node name="CSGBakedCollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D" unique_id=124032490]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 12.186523, 10.293728, 0)
+shape = SubResource("ConcavePolygonShape3D_wmhnv")

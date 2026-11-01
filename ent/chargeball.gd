@@ -60,6 +60,7 @@ func reset_rally() -> void:
 	_heading_toward_player = true
 	_time = 0.0
 	_active = true
+	_player.take_damage(10.0)
 
 	if is_instance_valid(_boss):
 		_base_position = _boss.global_position

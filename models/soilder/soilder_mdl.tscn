@@ -115,12 +115,12 @@ filter_enabled = true
 filters = ["Armature/Skeleton3D:mixamorig_Hips", "Armature/Skeleton3D:mixamorig_LeftFoot", "Armature/Skeleton3D:mixamorig_LeftLeg", "Armature/Skeleton3D:mixamorig_LeftToeBase", "Armature/Skeleton3D:mixamorig_LeftUpLeg", "Armature/Skeleton3D:mixamorig_RightFoot", "Armature/Skeleton3D:mixamorig_RightLeg", "Armature/Skeleton3D:mixamorig_RightToeBase", "Armature/Skeleton3D:mixamorig_RightUpLeg", "Armature/Skeleton3D:mixamorig_Spine"]
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_5j6ff"]
-graph_offset = Vector2(-563, 89)
+graph_offset = Vector2(-283.68665, -92.04611)
 nodes/output/position = Vector2(860, 380)
 nodes/dieState/node = SubResource("AnimationNodeStateMachine_bg0k1")
 nodes/dieState/position = Vector2(420, 680)
 nodes/Running/node = SubResource("AnimationNodeBlendSpace2D_nuuxn")
-nodes/Running/position = Vector2(-380, 320)
+nodes/Running/position = Vector2(-360, 280)
 nodes/jumpFrontAnim/node = SubResource("AnimationNodeAnimation_8nror")
 nodes/jumpFrontAnim/position = Vector2(-140, 360)
 nodes/jumpBackAnim/node = SubResource("AnimationNodeAnimation_u2jsq")
@@ -138,7 +138,7 @@ nodes/fire/position = Vector2(460, 380)
 nodes/die/node = SubResource("AnimationNodeOneShot_xtbls")
 nodes/die/position = Vector2(660, 440)
 nodes/Walking/node = SubResource("AnimationNodeBlendSpace2D_ecb2x")
-nodes/Walking/position = Vector2(-380, 40)
+nodes/Walking/position = Vector2(-360, 40)
 node_connections = [&"output", 0, &"die", &"walkRunBlend", 0, &"Walking", &"walkRunBlend", 1, &"Running", &"jumpForward", 0, &"walkRunBlend", &"jumpForward", 1, &"jumpFrontAnim", &"jumpBackward", 0, &"jumpForward", &"jumpBackward", 1, &"jumpBackAnim", &"fire", 0, &"jumpBackward", &"fire", 1, &"fireAnim", &"die", 0, &"fire", &"die", 1, &"dieState"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_f7rmg"]
@@ -182,7 +182,7 @@ callback_mode_process = 0
 tree_root = SubResource("AnimationNodeBlendTree_5j6ff")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Running/blend_position = Vector2(0, 0)
-parameters/walkRunBlend/blend_amount = 1.0
+parameters/walkRunBlend/blend_amount = 0.0
 parameters/jumpForward/active = false
 parameters/jumpForward/internal_active = false
 parameters/jumpForward/request = 0
