@@ -1,0 +1,109 @@
+[gd_scene format=3 uid="uid://6vmjq08niva1"]
+
+[ext_resource type="Shader" uid="uid://by0chbkmp2nff" path="res://shaders/simple_circle_transition.gdshader" id="1_65hu2"]
+[ext_resource type="Script" uid="uid://cjdpf0aoxa6n8" path="res://player/death_handler.gd" id="1_n13qm"]
+
+
+[sub_resource type="Animation" id="Animation_hkm54"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("transition/ColorRect:material:shader_parameter/_Progress")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_dugi4"]
+resource_name = "transition_in"
+length = 1.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("transition/ColorRect:material:shader_parameter/_Progress")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1, 1.4999),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.749999983236, 0.749999983236, 0.999999977648]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_txvsd"]
+_data = {
+&"RESET": SubResource("Animation_hkm54"),
+&"transition_in": SubResource("Animation_dugi4")
+}
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_65hu2"]
+load_path = "res://.godot/imported/crosshair-171.svg-7fcee40d57ff2618a78ea0d4cc89c636.ctex"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_n13qm"]
+shader = ExtResource("1_65hu2")
+shader_parameter/_CirclePosition = Vector2(0.5, 0.5)
+shader_parameter/_Progress = 0.0
+shader_parameter/_Smoothness = 0.0
+shader_parameter/_Background = Color(0, 0, 0, 1)
+shader_parameter/_EdgeTexture = SubResource("CompressedTexture2D_65hu2")
+shader_parameter/_EdgeWidth = 0.15000000596046
+shader_parameter/_EdgeColor = Color(1, 0, 0, 1)
+shader_parameter/_EdgeOpacity = 0.999999977648
+
+[node name="death_handler" type="Node3D" unique_id=75823988]
+script = ExtResource("1_n13qm")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=336784290]
+libraries/ = SubResource("AnimationLibrary_txvsd")
+
+[node name="transition" type="CanvasLayer" parent="." unique_id=952035022]
+visible = false
+
+[node name="ColorRect" type="ColorRect" parent="transition" unique_id=1807753020]
+material = SubResource("ShaderMaterial_n13qm")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="MenuLayer" type="CanvasLayer" parent="." unique_id=595992399]
+layer = 2
+
+[node name="death_menu" type="Control" parent="MenuLayer" unique_id=1975422023]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MenuLayer/death_menu" unique_id=538562741]
+layout_mode = 0
+offset_left = 103.0
+offset_top = 252.0
+offset_right = 340.0
+offset_bottom = 388.0
+theme_override_constants/separation = 24
+
+[node name="retry_btn" type="Button" parent="MenuLayer/death_menu/VBoxContainer" unique_id=1744149577]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Try Again"
+
+
+[node name="menu" type="Button" parent="MenuLayer/death_menu/VBoxContainer" unique_id=1350721605]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "Quit to Menu"
+
+
+[connection signal="pressed" from="MenuLayer/death_menu/VBoxContainer/retry_btn" to="." method="_on_retry_btn_pressed"]
+[connection signal="pressed" from="MenuLayer/death_menu/VBoxContainer/menu" to="." method="_on_menu_pressed"]

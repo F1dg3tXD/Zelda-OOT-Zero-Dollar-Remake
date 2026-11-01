@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://lhjech787u7i"]
+
+[ext_resource type="Script" uid="uid://dndv0st0v1t3y" path="res://ent/autosave_trigger_3d.gd" id="1_u4t22"]
+
+[node name="autosave_trigger_3D" type="Area3D" unique_id=1825605848]
+collision_layer = 0
+script = ExtResource("1_u4t22")

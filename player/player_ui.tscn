@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://bfe3rlm8ys2k5"]
+
+[ext_resource type="Script" uid="uid://cbw1t4rmm3t6u" path="res://player/player_ui.gd" id="1_a6il4"]
+[ext_resource type="Texture2D" uid="uid://cjeojtxkuhtie" path="res://textures/HealthUnder.png" id="1_n215f"]
+[ext_resource type="Texture2D" uid="uid://c67lqdnn7c2fb" path="res://textures/HealthOver.png" id="2_f7moa"]
+[ext_resource type="Texture2D" uid="uid://pw7hjd48kc4n" path="res://textures/HealthProgress.png" id="3_tpwqs"]
+
+[node name="PlayerUI" type="Control" unique_id=222090527]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_a6il4")
+
+[node name="healthBar" type="TextureProgressBar" parent="." unique_id=237638705]
+texture_filter = 1
+layout_mode = 1
+offset_left = 17.999998
+offset_top = 15.999999
+offset_right = 178.0
+offset_bottom = 32.0
+scale = Vector2(2.5, 2.5)
+step = 5.0
+value = 100.0
+texture_under = ExtResource("1_n215f")
+texture_over = ExtResource("2_f7moa")
+texture_progress = ExtResource("3_tpwqs")

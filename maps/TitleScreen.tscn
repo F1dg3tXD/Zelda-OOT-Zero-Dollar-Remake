@@ -44,7 +44,7 @@ tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
 tracks/0/path = NodePath(".:position")
-tracks/0/interp = 1
+tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
 "times": PackedFloat32Array(0),
@@ -56,7 +56,7 @@ tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/path = NodePath(".:rotation")
-tracks/1/interp = 1
+tracks/1/interp = 2
 tracks/1/loop_wrap = true
 tracks/1/keys = {
 "times": PackedFloat32Array(0),
@@ -68,7 +68,7 @@ tracks/2/type = "value"
 tracks/2/imported = false
 tracks/2/enabled = true
 tracks/2/path = NodePath(".:fov")
-tracks/2/interp = 1
+tracks/2/interp = 2
 tracks/2/loop_wrap = true
 tracks/2/keys = {
 "times": PackedFloat32Array(0),
@@ -130,39 +130,6 @@ tracks/7/loop_wrap = true
 tracks/7/keys = {
 "handle_modes": PackedInt32Array(0),
 "points": PackedFloat32Array(0, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/8/type = "bezier"
-tracks/8/imported = false
-tracks/8/enabled = true
-tracks/8/path = NodePath(".:rotation:x")
-tracks/8/interp = 1
-tracks/8/loop_wrap = true
-tracks/8/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(0.6265672, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/9/type = "bezier"
-tracks/9/imported = false
-tracks/9/enabled = true
-tracks/9/path = NodePath(".:rotation:y")
-tracks/9/interp = 1
-tracks/9/loop_wrap = true
-tracks/9/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(1.5005577, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0)
-}
-tracks/10/type = "bezier"
-tracks/10/imported = false
-tracks/10/enabled = true
-tracks/10/path = NodePath(".:rotation:z")
-tracks/10/interp = 1
-tracks/10/loop_wrap = true
-tracks/10/keys = {
-"handle_modes": PackedInt32Array(0),
-"points": PackedFloat32Array(-0.0412301, -0.25, 0, 0.25, 0),
 "times": PackedFloat32Array(0)
 }
 
@@ -266,38 +233,17 @@ tracks/7/keys = {
 resource_name = "TitleScreenIdle"
 length = 20.0
 loop_mode = 1
-tracks/0/type = "bezier"
+tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath(".:rotation:x")
-tracks/0/interp = 1
+tracks/0/path = NodePath(".:rotation")
+tracks/0/interp = 2
 tracks/0/loop_wrap = true
 tracks/0/keys = {
-"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
-"points": PackedFloat32Array(0.6265672, -0.25, 0, 0.25, 0, 0.49392816, -0.20833334, 0.023730356, 0.20833334, -0.023730356, 0.34180292, -0.4166667, 0.047460712, 0, 0, 0.4956735, -0.20833334, -0.023730356, 0.20833334, 0.023730356, 0.6265672, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 5, 10, 15, 20)
-}
-tracks/1/type = "bezier"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath(".:rotation:y")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
-"points": PackedFloat32Array(1.5005577, -0.25, 0, 0.25, 0, 1.7662733, -0.20833334, -0.000821809, 0.20833334, 0.000821809, 1.5104194, -0.4166667, -0.001643618, 0, 0, 1.2426745, -0.20833334, 0.000821809, 0.20833334, -0.000821809, 1.5005577, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 5, 10, 15, 20)
-}
-tracks/2/type = "bezier"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath(".:rotation:z")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"handle_modes": PackedInt32Array(0, 0, 0, 0, 0),
-"points": PackedFloat32Array(-0.0412301, -0.25, 0, 0.25, 0, -0.03141593, -0.20833334, -0.0017475636, 0.20833334, 0.0017475636, -0.020259337, -0.4166667, -0.0034951272, 0, 0, -0.03141593, -0.20833334, 0.0017475636, 0.20833334, -0.0017475636, -0.0412301, -0.25, 0, 0.25, 0),
-"times": PackedFloat32Array(0, 5, 10, 15, 20)
+"times": PackedFloat32Array(0, 5, 10, 15, 20),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.6265672, 1.5005577, -0.0412301), Vector3(0.38397244, 1.2444198, -0.0034906585), Vector3(0.14097571, 1.5133454, 0.03314905), Vector3(0.3630285, 1.813397, -0.0017453292), Vector3(0.6265672, 1.5005577, -0.0412301)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_qojg5"]
@@ -700,7 +646,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.86805, 0.9616232, -10.1357
 transform = Transform3D(0.06181417, 0, -0.9980877, 0, 1, 0, 0.9980877, 0, 0.06181417, -1.6415441, -0.03837633, -8.678777)
 
 [node name="TitleScreenCamera" type="Camera3D" parent="." unique_id=1746445408]
-transform = Transform3D(0.04601174, 0.5873173, 0.80804783, -0.033388786, 0.80935675, -0.5863675, -0.99838275, 5.2154064e-08, 0.056849726, 8.327702, 1.0825909, -6.91959)
+transform = Transform3D(0.25881904, 0, -0.9659258, 0, 1, 0, 0.96592575, 0, 0.25881907, 8.327702, 1.0825909, -6.91959)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="TitleScreenCamera" unique_id=180997454]
 libraries/ = SubResource("AnimationLibrary_qojg5")

@@ -1,6 +1,10 @@
 extends CharacterBody3D
 class_name player
 
+signal damaged
+signal health_changed(health: int, max_health: int)
+signal died
+
 # Camera
 @onready var camera_root: Node3D = $CameraRoot
 @onready var spring_arm_3d: SpringArm3D = $CameraRoot/SpringArm3D
@@ -29,8 +33,144 @@ class_name player
 # Sword
 @onready var sword: Node3D = $Link/Armature/Skeleton3D/BoneAttachment3D/Sword
 
+# Health / death / respawn
+@onready var death_handler: Node3D = $death_handler
+@onready var respawn_handler: Node3D = $respawn_handler
+@onready var player_ui: Control = $CameraRoot/SpringArm3D/Camera3D/PlayerUI
+
+# Movement state for cutscenes / transitions
+var cutscene_velocity := Vector3.ZERO
+var _movement_locked := false
+var _fly_mode := false
+var _moving := false
+var _move_dir := Vector2.ZERO
+var _move_to_target: Vector3 = Vector3(INF, INF, INF)
+var _move_to_speed := 5.0
+
+var _path_points: Array[Vector3] = []
+var _path_index := 0
+var _path_speed := 5.0
+var _path_active := false
+
+@export var max_health := 100
+var health := 100
+
 # (voice already declared above)
 var _sword_sounds: Array = []
+
+func lock_input() -> void:
+	_movement_locked = true
+
+func unlock_input() -> void:
+	_movement_locked = false
+
+func set_cutscene_velocity(new_velocity: Vector3) -> void:
+	cutscene_velocity = new_velocity
+
+func move_to(move_to_position: Vector3, speed: float = walk_speed) -> void:
+	lock_input()
+	_move_to_target = move_to_position
+	_move_to_speed = speed
+
+func follow_path_points(points: Array[Vector3], speed: float = walk_speed) -> void:
+	if points.is_empty():
+		return
+	lock_input()
+	_path_points = points
+	_path_index = 0
+	_path_speed = speed
+	_path_active = true
+	_move_to_target = points[0]
+	_move_to_speed = speed
+
+func set_inside_camera_volume(inside: bool) -> void:
+	pass
+
+func enable_phantom_camera_host() -> void:
+	pass
+
+func disable_phantom_camera_host() -> void:
+	pass
+
+func is_camera_static() -> bool:
+	return false
+
+func set_ui_visible(is_visible: bool) -> void:
+	if player_ui != null and is_instance_valid(player_ui):
+		player_ui.visible = is_visible
+
+func place_at_spawn_point(spawn: Node3D) -> void:
+	if spawn == null:
+		return
+	global_position = spawn.global_position
+	global_rotation = Vector3(0.0, spawn.global_rotation.y, 0.0)
+	if self is CharacterBody3D:
+		velocity = Vector3.ZERO
+
+func take_damage(amount: float) -> void:
+	if amount <= 0.0 or health <= 0:
+		return
+	health = maxi(health - int(round(amount)), 0)
+	health_changed.emit(health, max_health)
+	damaged.emit()
+	if health <= 0:
+		died.emit()
+
+func heal(amount: float) -> void:
+	if amount <= 0.0 or health >= max_health:
+		return
+	health = mini(health + int(round(amount)), max_health)
+	health_changed.emit(health, max_health)
+
+func capture_save_state() -> Dictionary:
+	return {
+		"position": global_position,
+		"health": health,
+		"max_health": max_health,
+	}
+
+func _on_scene_spawn() -> void:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return
+	if not _in_gameplay_scene():
+		set_ui_visible(false)
+		return
+	if LevelTransition.arriving_from_transition:
+		# Arrival transition handles positioning and UI.
+		return
+	var start := _find_info_player_start()
+	if start != null:
+		global_position = start.global_position
+	set_ui_visible(true)
+
+func _in_gameplay_scene() -> bool:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return false
+	return not scene.find_children("*", "info_player_start", true, false).is_empty() \
+		or not scene.find_children("*", "PlayerMoveOutLocation", true, false).is_empty()
+
+func _find_info_player_start() -> Node3D:
+	var scene := get_tree().current_scene
+	if scene == null:
+		return null
+	for n in scene.find_children("*", "info_player_start", true, false):
+		if n is Node3D:
+			return n
+	return null
+
+func apply_save_state(payload: Dictionary) -> void:
+	var state: Dictionary = payload.get("state", {})
+	if state.is_empty():
+		return
+	if state.has("position"):
+		global_position = state["position"]
+	if state.has("max_health"):
+		max_health = maxi(int(state["max_health"]), 1)
+	if state.has("health"):
+		health = clampi(int(state["health"]), 0, max_health)
+	health_changed.emit(health, max_health)
 
 # Exported (configurable) stats
 @export var walk_speed: float = 5.0
@@ -62,17 +202,29 @@ const TURN_SPEED := 10.0
 const MOUSE_SENSITIVITY := 0.005
 
 func _ready() -> void:
+	add_to_group("player")
 	spring_arm_3d.spring_length = camera_distance
 	camera_root.top_level = true
 	camera_root.global_position = global_position + Vector3(0, 1, 0)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	_sync_sword()
+	if death_handler != null and is_instance_valid(death_handler):
+		died.connect(death_handler.die)
+	if respawn_handler != null and is_instance_valid(respawn_handler):
+		pass
 	_sword_sounds = [
 		load("res://sounds/sword grunts/grunt1.mp3"),
 		load("res://sounds/sword grunts/grunt2.mp3"),
 		load("res://sounds/sword grunts/grunt3.mp3"),
 		load("res://sounds/sword grunts/grunt4.mp3"),
 	]
+	var _xmb: Node = get_node_or_null("/root/XMBSave")
+	if _xmb != null and _xmb.has_method("register_save_adapter"):
+		_xmb.register_save_adapter(self)
+	if player_ui != null and is_instance_valid(player_ui):
+		health_changed.connect(player_ui.update_health)
+	get_tree().scene_changed.connect(_on_scene_spawn)
+	_on_scene_spawn.call_deferred()
 
 func _sync_sword() -> void:
 	if sword != null:
@@ -168,11 +320,12 @@ func _physics_process(delta: float) -> void:
 		0.0)
 
 	# Gravity
-	if not is_on_floor():
+	if not is_on_floor() and not _fly_mode:
 		velocity += get_gravity() * delta
 
 	# Crouch toggle
 	if Input.is_action_just_pressed("crouch"):
+		animation_player.play("addPlayer/crouch+")
 		_crouching = not _crouching
 	# Lerp crouch amount between 0 and 0.69
 	var crouch_target := 0.69 if _crouching else 0.0
@@ -180,7 +333,7 @@ func _physics_process(delta: float) -> void:
 	standing_hitbox.disabled = false
 
 	# Jump
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	if (not _fly_mode) and Input.is_action_just_pressed("jump") and is_on_floor():
 		velocity.y = jump_force
 		animation_tree.set("parameters/Jump/request", 1)
 
@@ -201,6 +354,8 @@ func _physics_process(delta: float) -> void:
 
 	# Input direction (camera relative)
 	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
+	if _movement_locked:
+		input_dir = Vector2.ZERO
 	var direction := Vector3.ZERO
 	if input_dir.length() > 0.0:
 		direction = (camera_root.global_transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
@@ -221,6 +376,42 @@ func _physics_process(delta: float) -> void:
 	_velocity_smooth = _velocity_smooth.lerp(desired_velocity, clampf(delta * 10.0, 0.0, 1.0))
 	velocity.x = _velocity_smooth.x
 	velocity.z = _velocity_smooth.z
+
+	if _fly_mode:
+		if Input.is_action_pressed("jump"):
+			velocity.y = walk_speed
+		elif Input.is_action_pressed("sprint"):
+			velocity.y = -walk_speed
+		else:
+			velocity.y = 0.0
+
+	# Cutscene / scripted movement overrides.
+	if cutscene_velocity != Vector3.ZERO:
+		velocity = cutscene_velocity
+	if _move_to_target.x != INF:
+		var to_target := _move_to_target - global_position
+		to_target.y = 0.0
+		if to_target.length() < 0.1:
+			velocity = Vector3.ZERO
+			_move_to_target = Vector3(INF, INF, INF)
+			if _path_active:
+				_path_index += 1
+				if _path_index < _path_points.size():
+					_move_to_target = _path_points[_path_index]
+					_move_to_speed = _path_speed
+				else:
+					_path_active = false
+					unlock_input()
+			else:
+				unlock_input()
+		else:
+			var dir := to_target.normalized()
+			velocity.x = dir.x * _move_to_speed
+			velocity.z = dir.z * _move_to_speed
+			_moving = true
+			_move_dir = Vector2(dir.x, dir.z)
+			var target_angle := atan2(dir.x, dir.z)
+			rotation.y = lerp_angle(rotation.y, target_angle, TURN_SPEED * delta)
 
 	# Rotation handling
 	if _strafe_lock or _locked_target != null:
@@ -253,10 +444,19 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
+	# Bind animations to actual movement, not just input, so cutscene/transition
+	# walks animate correctly.
+	_moving = velocity.length() > 0.1
+	if not _moving:
+		_move_dir = Vector2.ZERO
+
 	# Bind animation parameters based on actual character facing direction
 	var local_dir := Vector3.ZERO
-	if direction != Vector3.ZERO:
-		local_dir = transform.basis.inverse() * direction
+	var anim_dir := direction
+	if _movement_locked and velocity.length() > 0.1:
+		anim_dir = velocity.normalized()
+	if anim_dir != Vector3.ZERO:
+		local_dir = transform.basis.inverse() * anim_dir
 	var target_blend := Vector2(local_dir.x, local_dir.z)
 	_anim_blend = _anim_blend.lerp(target_blend, clampf(delta * 8.0, 0.0, 1.0))
 	animation_tree.set("parameters/Walk/blend_position", _anim_blend)

@@ -29,6 +29,8 @@ func disable() -> void:
 func _on_body_entered(body: Node3D) -> void:
 	if body in _hit_targets:
 		return
+	if body.is_in_group("Player") or body == get_parent():
+		return
 	_hit_targets.append(body)
 	if body.has_method("take_damage"):
 		body.take_damage(damage)
@@ -37,11 +39,13 @@ func _on_body_entered(body: Node3D) -> void:
 
 func _on_area_entered(area: Area3D) -> void:
 	var parent := area.get_parent()
+	if parent != null and (parent.is_in_group("Player") or parent == get_parent()):
+		return
 	if parent != null and parent in _hit_targets:
 		return
 	if parent != null:
 		_hit_targets.append(parent)
-	if area.has_method("take_damage"):
+	if area.has_method("take_damage") and not (area.is_in_group("Player") or area == get_parent()):
 		area.take_damage(damage)
 	elif parent != null and parent.has_method("take_damage"):
 		parent.take_damage(damage)

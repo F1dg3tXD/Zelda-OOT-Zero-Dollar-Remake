@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://h1anqjdif17d" path="res://ent/info_player_start.tscn" id="5_mnpkl"]
 [ext_resource type="AudioStream" uid="uid://ccjjahu3lyqsu" path="res://music/hyrule feild but youre having a terrible benadryl trip.mp3" id="5_vbdtl"]
 [ext_resource type="Texture2D" uid="uid://cy3uawupirbvr" path="res://textures/image.png" id="7_83f10"]
+[ext_resource type="PackedScene" uid="uid://dqwx057lhado0" path="res://ent/level_transition.tscn" id="9_e0mew"]
+[ext_resource type="PackedScene" uid="uid://uwpnuovpq6ch" path="res://ent/ent_phantom_camera_volume.tscn" id="10_tpc4q"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8prpk"]
 albedo_texture = ExtResource("7_83f10")
@@ -23,6 +25,26 @@ uv1_triplanar = true
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dwenk"]
 albedo_texture = ExtResource("2_tpc4q")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5d25b"]
+size = Vector3(1.892334, 4.019043, 9.176758)
+
+[sub_resource type="Curve3D" id="Curve3D_jv70r"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -10.37, 0, 0, 0, 0, 0, 0, 0, 0, -12.86367, -2.3841858e-07, 7.225215),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="Curve3D" id="Curve3D_tpc4q"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2.6165123, 0, -4.618658, 0, 0, 0, 0, 0, 0, 19.470667, 0, -5.1818805),
+"tilts": PackedFloat32Array(0, 0, 0)
+}
+point_count = 3
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7ix2u"]
+size = Vector3(21.603027, 6.232422, 19.029785)
 
 [node name="Node3D" type="Node3D" unique_id=274387360]
 
@@ -411,4 +433,50 @@ volume_db = -20.0
 autoplay = true
 bus = &"Music"
 
+[node name="toInsideCastle" parent="." unique_id=1191875629 instance=ExtResource("9_e0mew")]
+unique_name_in_owner = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.490795, 0.41400385, -6.213111)
+target_scene = "res://maps/insidecastle.tscn"
+target_transition_name = "toOutsideCastle"
+enter_path = NodePath("EnterPath")
+exit_path = NodePath("ExitPath")
+
+[node name="player_move_in_location" parent="toInsideCastle" index="2" unique_id=1497165615]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.861378, 0, 7.335825)
+
+[node name="level_load_trigger" parent="toInsideCastle/player_move_in_location" index="0" unique_id=19668482]
+visible = true
+
+[node name="player_move_out_location" parent="toInsideCastle" index="3" unique_id=1392794707]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1209145, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="toInsideCastle" unique_id=709450587]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.4312744, 1.5095215, 0)
+shape = SubResource("BoxShape3D_5d25b")
+
+[node name="ExitPath" type="Path3D" parent="toInsideCastle" unique_id=1603776040]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5510674, 0.15680802, 0.22379255)
+curve = SubResource("Curve3D_jv70r")
+
+[node name="EnterPath" type="Path3D" parent="toInsideCastle" unique_id=1951921928]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.12642, 0.15680802, 5.3596783)
+curve = SubResource("Curve3D_tpc4q")
+
+[node name="PhantomCameraVolume" parent="." unique_id=393058475 instance=ExtResource("10_tpc4q")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.572926, 1.5992489, -5.7071977)
+
+[node name="PhantomCamera3D" parent="PhantomCameraVolume" index="0" unique_id=1954499593 node_paths=PackedStringArray("look_at_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+look_at_mode = 2
+look_at_target = NodePath("../PhantomCameraTarget3D")
+tween_on_load = true
+align_transform_with_view = Callable()
+align_rotation_with_view = Callable()
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PhantomCameraVolume" unique_id=1438843481]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.252651, 0, 0.66625977)
+shape = SubResource("BoxShape3D_7ix2u")
+
 [editable path="map/OutsideEnviroment"]
+[editable path="toInsideCastle"]
+[editable path="PhantomCameraVolume"]

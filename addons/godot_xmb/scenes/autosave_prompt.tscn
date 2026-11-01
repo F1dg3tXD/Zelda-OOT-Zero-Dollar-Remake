@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://c7vp1rahlpnrs"]
+
+[ext_resource type="Script" path="res://addons/godot_xmb/scripts/autosave_prompt.gd" id="1_ap"]
+[ext_resource type="FontFile" uid="uid://bjhbalmlbt4ty" path="res://addons/godot_xmb/assets/fonts/SCE-PS3 Rodin LATIN Regular/SCE-PS3 Rodin LATIN Regular.ttf" id="2_font"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.08, 0.08, 0.09, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.85, 0.85, 0.85, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="AutosavePrompt" type="CanvasLayer"]
+layer = 16
+script = ExtResource("1_ap")
+
+[node name="Dim" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.45)
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -110.0
+offset_right = 280.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="MarginContainer" type="MarginContainer" parent="Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/MarginContainer"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 28
+text = "Autosaving"
+horizontal_alignment = 1
+
+[node name="Body" type="Label" parent="Panel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+text = "How should autosaves be saved?"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Panel/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 8)
+layout_mode = 2
+
+[node name="OverwriteButton" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+text = "Overwrite my save slot"
+
+[node name="SeparateButton" type="Button" parent="Panel/MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_font")
+theme_override_font_sizes/font_size = 16
+text = "Save to new autosave slots"
+
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/OverwriteButton" to="." method="_on_overwrite_button_pressed"]
+[connection signal="pressed" from="Panel/MarginContainer/VBoxContainer/SeparateButton" to="." method="_on_separate_button_pressed"]

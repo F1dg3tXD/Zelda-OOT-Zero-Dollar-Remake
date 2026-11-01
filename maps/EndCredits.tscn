@@ -7,9 +7,9 @@
 [ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="4_4hmcl"]
 [ext_resource type="Texture2D" uid="uid://br5qt6eqe8ctl" path="res://textures/newspaperhitler.jpg" id="5_cni5o"]
 [ext_resource type="PackedScene" uid="uid://gvh6bssvbdb1" path="res://atmospheres/outside_enviroment.tscn" id="6_5t6hs"]
-[ext_resource type="PackedScene" uid="uid://b0uuvnieqo8hi" path="res://player/player.tscn" id="8_4hmcl"]
 [ext_resource type="PackedScene" uid="uid://c4pngkufusksa" path="res://ent/EndScreen.tscn" id="7_endscreen"]
-[ext_resource type="Script" path="res://maps/end_credits.gd" id="9_script"]
+[ext_resource type="PackedScene" uid="uid://b0uuvnieqo8hi" path="res://player/player.tscn" id="8_4hmcl"]
+[ext_resource type="Script" uid="uid://ci48xu3capjj1" path="res://maps/end_credits.gd" id="9_script"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_uppsi"]
 albedo_texture = ExtResource("5_cni5o")

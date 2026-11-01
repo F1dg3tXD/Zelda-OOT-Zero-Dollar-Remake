@@ -11,6 +11,7 @@ export.cfg
 export_credentials.cfg
 *.tmp
 build/
+GunswordStuff/
 
 # Imported translations (automatically generated from CSV files)
 *.translation

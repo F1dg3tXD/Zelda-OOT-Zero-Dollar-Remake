@@ -1,3 +1,27 @@
 [gd_scene format=3 uid="uid://by3rxd7ottm57"]
 
-[node name="Soilder" type="CharacterBody3D" unique_id=1942033303]
+[ext_resource type="Script" uid="uid://bdpkod2xa25ya" path="res://npc/soilder.gd" id="1_6l3xi"]
+[ext_resource type="PackedScene" uid="uid://ce1pq5x6qtntr" path="res://models/soilder/soilder_mdl.tscn" id="2_qitif"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qitif"]
+
+[node name="SoilderNPC" type="CharacterBody3D" unique_id=1063131750 groups=["Enemy"]]
+script = ExtResource("1_6l3xi")
+
+[node name="Soilder" parent="." unique_id=1979529484 instance=ExtResource("2_qitif")]
+
+[node name="BoneAttachment3D" type="BoneAttachment3D" parent="Soilder/Armature/Skeleton3D" parent_id_path=PackedInt32Array(1979529484, 2087329908) index="5" unique_id=1484290245]
+transform = Transform3D(1, -5.960352e-10, 9.313105e-10, 5.9603517e-10, 0.99999994, 1.3053376e-07, -9.3131525e-10, -1.3053375e-07, 1, -5.7234933e-10, 1.611511, -0.0044788485)
+bone_name = "mixamorig_Head"
+bone_idx = 32
+
+[node name="RayCast3D" type="RayCast3D" parent="Soilder/Armature/Skeleton3D/BoneAttachment3D" unique_id=807856317]
+target_position = Vector3(0, 0, 10)
+hit_back_faces = false
+debug_shape_custom_color = Color(1, 0, 0, 1)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1684567596]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_qitif")
+
+[editable path="Soilder"]

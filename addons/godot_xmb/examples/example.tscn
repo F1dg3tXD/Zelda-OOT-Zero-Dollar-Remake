@@ -1,0 +1,41 @@
+[gd_scene format=3 uid="uid://bgi12tnxjfr0h"]
+
+[ext_resource type="Script" uid="uid://11d57gqn5tbm" path="res://addons/godot_xmb/examples/example.gd" id="1_0kuog"]
+
+[node name="Main" type="Control" unique_id=551783086]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0kuog")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=764950083]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer" unique_id=1049867555]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 371.0
+offset_top = 274.0
+offset_right = -371.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="newGame" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=568703818]
+layout_mode = 2
+text = "New Game"
+
+[node name="loadGame" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=165638794]
+layout_mode = 2
+text = "Load Game"
+
+[node name="exit" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=750152712]
+layout_mode = 2
+text = "Exit"
+
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/newGame" to="." method="_on_new_game_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/loadGame" to="." method="_on_load_game_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/exit" to="." method="_on_exit_pressed"]

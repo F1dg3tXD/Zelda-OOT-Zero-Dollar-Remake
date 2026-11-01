@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bs5cf55fdlvtv"]
+
+[ext_resource type="Script" path="res://addons/godot_xmb/scripts/savable.gd" id="1_savable"]
+
+[node name="Savable" type="Node"]
+script = ExtResource("1_savable")

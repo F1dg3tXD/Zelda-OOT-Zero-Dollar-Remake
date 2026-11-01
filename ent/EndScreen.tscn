@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c4pngkufusksa"]
 
-[node name="Node2D" type="Node2D" unique_id=15720117]
+[node name="EndScreenMenu" type="Node2D" unique_id=15720117]
 
 [node name="TryAgainButton" type="Button" parent="." unique_id=1391198425]
 offset_left = 562.0

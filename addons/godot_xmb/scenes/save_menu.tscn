@@ -1,0 +1,152 @@
+[gd_scene format=3 uid="uid://cxwksh7co5sxm"]
+
+[ext_resource type="Script" uid="uid://cnbhrggvq2q8" path="res://addons/godot_xmb/scripts/save_menu.gd" id="1_5041v"]
+[ext_resource type="FontFile" uid="uid://bjhbalmlbt4ty" path="res://addons/godot_xmb/assets/fonts/SCE-PS3 Rodin LATIN Regular/SCE-PS3 Rodin LATIN Regular.ttf" id="1_httj4"]
+
+[ext_resource type="AudioStream" uid="uid://bcipfxqg3h8vt" path="res://addons/godot_xmb/assets/sounds/Cursor.mp3" id="3_s656k"]
+[ext_resource type="AudioStream" uid="uid://xfgk6t52ujo0" path="res://addons/godot_xmb/assets/sounds/Confirm.mp3" id="4_juohi"]
+[ext_resource type="AudioStream" uid="uid://cfqjqdvbwu8lh" path="res://addons/godot_xmb/assets/sounds/Cancel.mp3" id="5_6j3np"]
+
+[sub_resource type="InputEventAction" id="InputEventAction_juohi"]
+device = -1
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_cancel"]
+resource_local_to_scene = true
+events = [SubResource("InputEventAction_juohi")]
+
+[sub_resource type="InputEventAction" id="InputEventAction_6j3np"]
+device = -1
+action = &"ui_cancel"
+
+[sub_resource type="Shortcut" id="Shortcut_back_cancel"]
+resource_local_to_scene = true
+events = [SubResource("InputEventAction_6j3np")]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=1984123271]
+process_mode = 3
+layer = 200
+script = ExtResource("1_5041v")
+
+[node name="root" type="Control" parent="." unique_id=2044530686]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+
+[node name="ColorRect" type="ColorRect" parent="root" unique_id=548864601]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0788149, 0.078815006, 0.078814976, 0.9019608)
+
+[node name="saveList" type="Control" parent="root" unique_id=1151109396]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 47.0
+offset_bottom = -81.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="mode" type="Label" parent="root" unique_id=994635648]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -210.5
+offset_right = 210.5
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_fonts/font = ExtResource("1_httj4")
+theme_override_font_sizes/font_size = 32
+text = "Save/Load"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CursorSound" type="AudioStreamPlayer" parent="root" unique_id=1263939848]
+unique_name_in_owner = true
+stream = ExtResource("3_s656k")
+
+[node name="ConfirmSound" type="AudioStreamPlayer" parent="root" unique_id=1873340502]
+unique_name_in_owner = true
+stream = ExtResource("4_juohi")
+
+[node name="CancelSound" type="AudioStreamPlayer" parent="root" unique_id=1917464516]
+unique_name_in_owner = true
+stream = ExtResource("5_6j3np")
+
+[node name="onSlotSelected" type="Control" parent="root" unique_id=1636468591]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="root/onSlotSelected" unique_id=1566103251]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 491.0
+offset_top = 170.0
+offset_right = 1109.0
+offset_bottom = 204.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="confirmSave" type="Button" parent="root/onSlotSelected/HBoxContainer" unique_id=852558250]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_httj4")
+theme_override_font_sizes/font_size = 32
+text = "$loadCreate"
+
+[node name="deleteSave" type="Button" parent="root/onSlotSelected/HBoxContainer" unique_id=1781522877]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_httj4")
+theme_override_font_sizes/font_size = 32
+text = "Delete"
+
+[node name="copySave" type="Button" parent="root/onSlotSelected/HBoxContainer" unique_id=1991743376]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_httj4")
+theme_override_font_sizes/font_size = 32
+text = "Copy"
+
+[node name="cancel" type="Button" parent="root/onSlotSelected/HBoxContainer" unique_id=1517699284]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_httj4")
+theme_override_font_sizes/font_size = 32
+shortcut = SubResource("Shortcut_cancel")
+text = "Cancel"
+
+[node name="back" type="Button" parent="root" unique_id=899538592]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 26.0
+offset_top = 584.0
+offset_right = 166.0
+offset_bottom = 624.0
+theme_override_fonts/font = ExtResource("1_httj4")
+theme_override_font_sizes/font_size = 32
+shortcut = SubResource("Shortcut_back_cancel")
+text = "Back"
+
+[connection signal="pressed" from="root/onSlotSelected/HBoxContainer/confirmSave" to="." method="_on_confirm_save_pressed"]
+[connection signal="pressed" from="root/onSlotSelected/HBoxContainer/deleteSave" to="." method="_on_delete_save_pressed"]
+[connection signal="pressed" from="root/onSlotSelected/HBoxContainer/copySave" to="." method="_on_copy_save_pressed"]
+[connection signal="pressed" from="root/onSlotSelected/HBoxContainer/cancel" to="." method="_on_cancel_pressed"]
+[connection signal="pressed" from="root/back" to="." method="_on_back_pressed"]

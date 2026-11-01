@@ -28,6 +28,8 @@ buses/default_bus_layout="uid://2tj2tuqiysaa"
 
 Console="*uid://ouiu5xh1cs8n"
 DevConsole="*res://globals/dev_console.gd"
+PhantomCameraManager="*uid://duq6jhf6unyis"
+XMBSave="*uid://l0v1uvul8mvx"
 
 [display]
 
@@ -36,12 +38,13 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/console/plugin.cfg", "res://addons/godot_collab/plugin.cfg")
+enabled=PackedStringArray("res://addons/PointMaker/plugin.cfg", "res://addons/console/plugin.cfg", "res://addons/godot_collab/plugin.cfg", "res://addons/godot_xmb/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
 [global_group]
 
 Player="the player character"
 SpawnPoint="where the player respawns"
+Enemy=""
 
 [input]
 

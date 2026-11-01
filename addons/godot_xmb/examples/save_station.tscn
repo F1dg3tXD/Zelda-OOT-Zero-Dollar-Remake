@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://byeyujrel4tb2"]
+
+[ext_resource type="Script" uid="uid://dfb122fiy1hev" path="res://addons/godot_xmb/examples/save_station.gd" id="1_ldbbd"]
+[ext_resource type="Texture2D" uid="uid://c3pcleyxehtd" path="res://addons/godot_xmb/assets/sheet.png" id="2_svdxi"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p2ty0"]
+atlas = ExtResource("2_svdxi")
+region = Rect2(256, 0, 16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ldbbd"]
+size = Vector2(72, 80)
+
+[node name="SaveStation" type="Node2D" unique_id=30995725]
+script = ExtResource("1_ldbbd")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1042823865]
+texture = SubResource("AtlasTexture_p2ty0")
+
+[node name="interactionZone" type="Area2D" parent="." unique_id=693379417]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="interactionZone" unique_id=335949933]
+position = Vector2(0, -8)
+shape = SubResource("RectangleShape2D_ldbbd")

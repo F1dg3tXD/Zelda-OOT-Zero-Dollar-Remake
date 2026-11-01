@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://bkdj2toqcjdfg"]
+
+[ext_resource type="Script" uid="uid://igjirutaqolt" path="res://addons/godot_xmb/scripts/save_entry.gd" id="1_41dpy"]
+
+[ext_resource type="FontFile" uid="uid://bjhbalmlbt4ty" path="res://addons/godot_xmb/assets/fonts/SCE-PS3 Rodin LATIN Regular/SCE-PS3 Rodin LATIN Regular.ttf" id="1_bhe2t"]
+[ext_resource type="Texture2D" uid="uid://dw3sxro0h6ee2" path="res://addons/godot_xmb/assets/placeholder_icon.png" id="2_y1rgt"]
+
+[node name="save_entry" type="PanelContainer" unique_id=1020595445]
+custom_minimum_size = Vector2(640, 80)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -123.0
+offset_top = -40.0
+offset_right = 123.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+script = ExtResource("1_41dpy")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1613516434]
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="HBoxContainer" unique_id=655568165]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(144, 80)
+layout_mode = 2
+texture = ExtResource("2_y1rgt")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=980845431]
+layout_mode = 2
+
+[node name="titleLabel" type="Label" parent="HBoxContainer/VBoxContainer" unique_id=235708577]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_bhe2t")
+theme_override_font_sizes/font_size = 32
+text = "$title: $saveType"
+
+[node name="timeLabel" type="Label" parent="HBoxContainer/VBoxContainer" unique_id=698715686]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_bhe2t")
+text = "%timestamp"
