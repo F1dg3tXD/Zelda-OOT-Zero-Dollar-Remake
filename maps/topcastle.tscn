@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://bic5h7bu4f7du"]
 
 [ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="1_plli4"]
+[ext_resource type="AudioStream" uid="uid://du5mjinn2ukt0" path="res://music/FIGHTHITLER_Intro.ogg" id="2_bornp"]
 [ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="2_d3c5d"]
 [ext_resource type="Material" uid="uid://bcwon06iq2a4j" path="res://mat/Grass.tres" id="3_7grl8"]
+[ext_resource type="AudioStream" uid="uid://dkwwmtql4kvor" path="res://music/FIGHTHITLER_Loop.ogg" id="3_ywn2m"]
 [ext_resource type="AudioStream" uid="uid://by4c30xws1gmu" path="res://music/uh oh its tyrone.mp3" id="4_ltd8w"]
 [ext_resource type="AudioStream" uid="uid://41lwu4ghio4b" path="res://music/tyronesmusic.mp3" id="5_5layo"]
 [ext_resource type="PackedScene" uid="uid://h1anqjdif17d" path="res://ent/info_player_start.tscn" id="5_7grl8"]
@@ -15,6 +17,17 @@
 [ext_resource type="Script" uid="uid://c0g52qei1kh3p" path="res://maps/temporary_scene_change.gd" id="13_trigger"]
 [ext_resource type="PackedScene" uid="uid://dqwx057lhado0" path="res://ent/level_transition.tscn" id="14_rqgm3"]
 [ext_resource type="PackedScene" uid="uid://uwpnuovpq6ch" path="res://ent/ent_phantom_camera_volume.tscn" id="15_ltd8w"]
+
+[sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_qitif"]
+clip_count = 2
+clip_0/name = &"Fighthitler Intro"
+clip_0/stream = ExtResource("2_bornp")
+clip_0/auto_advance = 1
+clip_0/next_clip = 1
+clip_1/name = &"Fighthitler Loop"
+clip_1/stream = ExtResource("3_ywn2m")
+clip_1/auto_advance = 1
+clip_1/next_clip = 1
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_78jfb"]
 clip_count = 2
@@ -417,7 +430,7 @@ size = Vector3(24.445313, 15.271454, 43.79236)
 script = ExtResource("10_topcastle")
 
 [node name="Fighthitler" type="AudioStreamPlayer" parent="." unique_id=1742296370]
-stream = SubResource("AudioStreamInteractive_78jfb")
+stream = SubResource("AudioStreamInteractive_qitif")
 volume_db = -7.621
 bus = &"Music"
 
@@ -465,6 +478,7 @@ use_3d_avoidance = true
 [node name="CSGTorus3D" type="CSGTorus3D" parent="." unique_id=682476269]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.936089, 59.76939, -1.730442)
 material_override = ExtResource("1_plli4")
+use_collision = true
 inner_radius = 35.299683
 outer_radius = 43.426624
 
@@ -538,7 +552,7 @@ radius = 101.56014
 material = ExtResource("3_7grl8")
 
 [node name="Boss" parent="." unique_id=299121570 instance=ExtResource("6_s2kn5")]
-transform = Transform3D(-1, 1.509958e-07, 0, -1.509958e-07, -1, 0, 0, 0, 1, 13.931358, 65.64853, 20.252083)
+transform = Transform3D(-1, 1.509958e-07, 0, -1.509958e-07, -1, 0, 0, 0, 1, 13.931358, 65.64853, 19.658335)
 
 [node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("5_7grl8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.608045, 58.760124, -27.7486)

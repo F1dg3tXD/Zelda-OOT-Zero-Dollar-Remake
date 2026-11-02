@@ -3,8 +3,8 @@
 [ext_resource type="Script" uid="uid://bxfda8h6o8fau" path="res://ent/health_pot.gd" id="1_0u38h"]
 [ext_resource type="Texture2D" uid="uid://b15nupsl0t504" path="res://textures/HealthPot.png" id="1_gbxwo"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_5d25b"]
-size = Vector3(0.4, 0.4, 0.4)
+[sub_resource type="SphereShape3D" id="SphereShape3D_f7rmg"]
+radius = 0.23362884
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_5d25b"]
 radius = 0.30393893
@@ -13,7 +13,7 @@ radius = 0.30393893
 script = ExtResource("1_0u38h")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1517718096]
-shape = SubResource("BoxShape3D_5d25b")
+shape = SubResource("SphereShape3D_f7rmg")
 
 [node name="Sprite3D" type="Sprite3D" parent="." unique_id=696630109]
 pixel_size = 0.03

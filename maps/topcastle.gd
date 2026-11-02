@@ -26,6 +26,7 @@ var _defeat_playing := false
 func _ready() -> void:
 	animation_player.animation_finished.connect(_on_animation_finished)
 	boss.defeated.connect(_on_boss_defeated)
+	boss.phase2_started.connect(_on_phase2_started)
 
 	# The escape beam only appears after Hitler is defeated.
 	light_teleport.visible = false
@@ -80,9 +81,16 @@ func _finish_cutscene() -> void:
 		boss.start_fight(_player)
 
 
+func _on_phase2_started() -> void:
+	if fighthitler.playing:
+		fighthitler.stop()
+	fighttyrone.play()
+
 func _on_boss_defeated() -> void:
 	if fighthitler.playing:
 		fighthitler.stop()
+	if fighttyrone.playing:
+		fighttyrone.stop()
 
 	_set_player_control(false)
 	_defeat_playing = true

@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cqck8p1j15ql0"
-path.s3tc="res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.s3tc.ctex"
-path.etc2="res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.etc2.ctex"
+path.s3tc="res://.godot/imported/boss_THE GHOST OF HITLER.png-42c98b5a70099c056a7e846033cc8650.s3tc.ctex"
+path.etc2="res://.godot/imported/boss_THE GHOST OF HITLER.png-42c98b5a70099c056a7e846033cc8650.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://textures/boss_HITLEREXTREME.png"
-dest_files=["res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.s3tc.ctex", "res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.etc2.ctex"]
+source_file="res://textures/boss_THE GHOST OF HITLER.png"
+dest_files=["res://.godot/imported/boss_THE GHOST OF HITLER.png-42c98b5a70099c056a7e846033cc8650.s3tc.ctex", "res://.godot/imported/boss_THE GHOST OF HITLER.png-42c98b5a70099c056a7e846033cc8650.etc2.ctex"]
 
 [params]
 

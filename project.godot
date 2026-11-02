@@ -38,7 +38,7 @@ window/stretch/aspect="expand"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/PointMaker/plugin.cfg", "res://addons/console/plugin.cfg", "res://addons/godot_collab/plugin.cfg", "res://addons/godot_xmb/plugin.cfg", "res://addons/markdownlabel/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
+enabled=PackedStringArray("res://addons/PointMaker/plugin.cfg", "res://addons/console/plugin.cfg", "res://addons/godot_collab/plugin.cfg", "res://addons/godot_xmb/plugin.cfg", "res://addons/markdownlabel/plugin.cfg", "res://addons/phantom_camera/plugin.cfg", "res://addons/surface_snap/plugin.cfg")
 
 [global_group]
 

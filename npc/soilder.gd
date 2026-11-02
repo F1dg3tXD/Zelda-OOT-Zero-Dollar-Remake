@@ -27,8 +27,14 @@ const WALK_SPEED := 2.5
 const RUN_SPEED := 4.0
 const ATTACK_RANGE := 1.8
 const VISION_RANGE := 12.0
+
+@export var vision_range := 10.0
+@export var chase_radius := 30.0
+@export var wander_radius := 8.0
 const DAMAGE := 5.0
 const HEALTH := 15.0
+
+@export var drop_chance: float = 1.0
 const THINK_INTERVAL := 0.15
 
 var health := HEALTH
@@ -38,12 +44,20 @@ var _think_offset := 0.0
 var _attack_cooldown := 0.0
 var _jump_cooldown := 0.0
 var _seeing_player := false
+var _home_position := Vector3.ZERO
+var _wander_target := Vector3.ZERO
+var _has_wander_target := false
+var _wander_idle := false
+var _wander_wait_timer := 0.0
+var _look_yaw := 0.0
+var _look_timer := 0.0
 var _dying := false
 
 
 func _ready() -> void:
 	add_to_group("enemy")
 	collision_layer = 8
+	_home_position = global_position
 	if health_bar != null:
 		health_bar.max_value = HEALTH
 		health_bar.value = health
@@ -75,18 +89,44 @@ func _physics_process(delta: float) -> void:
 	if _jump_cooldown > 0.0:
 		_jump_cooldown -= delta
 
-	# Move toward target via navigation
-	if target != null and is_instance_valid(target):
-		navigation_agent_3d.target_position = target.global_position
+	# Determine movement target.
+	var move_target: Vector3 = global_position
+	var chasing := target != null and is_instance_valid(target) and _seeing_player
+	if chasing:
+		move_target = target.global_position
+		_wander_idle = false
+	else:
+		# Wander around home position.
+		if _wander_idle:
+			_wander_wait_timer -= delta
+			if _wander_wait_timer <= 0.0:
+				_wander_idle = false
+				_has_wander_target = false
+			move_target = global_position
+		elif not _has_wander_target or global_position.distance_to(_wander_target) < 0.5:
+			# Reached spot: idle and look around before moving on.
+			_wander_idle = true
+			_wander_wait_timer = randf_range(1.0, 3.0)
+			move_target = global_position
+		else:
+			move_target = _wander_target
+		if not _wander_idle and not _has_wander_target:
+			var angle := randf() * TAU
+			var dist := randf() * wander_radius
+			_wander_target = _home_position + Vector3(cos(angle) * dist, 0.0, sin(angle) * dist)
+			_has_wander_target = true
+			move_target = _wander_target
+
+	if navigation_agent_3d != null:
+		navigation_agent_3d.target_position = move_target
 		var next_pos := navigation_agent_3d.get_next_path_position()
 		var dir := (next_pos - global_position)
 		dir.y = 0.0
 		if dir.length() > 0.1:
 			dir = dir.normalized()
-			var speed := RUN_SPEED if _seeing_player else WALK_SPEED
+			var speed := RUN_SPEED if chasing else WALK_SPEED
 			velocity.x = dir.x * speed
 			velocity.z = dir.z * speed
-			# Face movement
 			var target_yaw := atan2(dir.x, dir.z)
 			rotation.y = lerp_angle(rotation.y, target_yaw, 8.0 * delta)
 		else:
@@ -94,28 +134,35 @@ func _physics_process(delta: float) -> void:
 			velocity.z = move_toward(velocity.z, 0.0, RUN_SPEED * delta)
 
 		# Jump gaps
-		if is_on_floor() and _jump_cooldown <= 0.0:
-			if navigation_agent_3d.is_navigation_finished() == false:
-				var next := navigation_agent_3d.get_next_path_position()
-				var height_diff := next.y - global_position.y
-				if height_diff > 0.5:
-					velocity.y = 5.0
-					_jump_cooldown = 1.0
+		if chasing and is_on_floor() and _jump_cooldown <= 0.0:
+			var next := navigation_agent_3d.get_next_path_position()
+			var height_diff := next.y - global_position.y
+			if height_diff > 0.3:
+				velocity.y = 8.0
+				_jump_cooldown = 0.8
+				if animation_tree != null:
+					animation_tree.set("parameters/jumpForward/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 
 		# Attack
-		var dist := global_position.distance_to(target.global_position)
-		if dist <= ATTACK_RANGE and _attack_cooldown <= 0.0:
-			_attack()
-			_attack_cooldown = 1.0
-	else:
-		velocity.x = move_toward(velocity.x, 0.0, RUN_SPEED * delta)
-		velocity.z = move_toward(velocity.z, 0.0, RUN_SPEED * delta)
+		if chasing:
+			var dist := global_position.distance_to(target.global_position)
+			if dist <= ATTACK_RANGE and _attack_cooldown <= 0.0:
+				_attack()
+				_attack_cooldown = 1.0
 
 	move_and_slide()
 
-	# Look at player
-	if target != null and is_instance_valid(target) and aim_point != null:
+	# Look at player or look around while wandering.
+	if target != null and is_instance_valid(target) and _seeing_player and aim_point != null:
 		aim_point.look_at(target.global_position + Vector3.UP * 1.2, Vector3.UP)
+	elif aim_point != null:
+		_look_timer -= delta
+		if _look_timer <= 0.0:
+			_look_timer = randf_range(1.0, 3.0)
+			_look_yaw = randf_range(-0.8, 0.8)
+		aim_point.rotation.y = lerp(aim_point.rotation.y, _look_yaw, 2.0 * delta)
+		if head_point != null:
+			head_point.rotation.y = lerp(head_point.rotation.y, -_look_yaw * 0.5, 2.0 * delta)
 
 	_update_animation()
 
@@ -124,11 +171,11 @@ func _think() -> void:
 	# Find player if none
 	if target == null or not is_instance_valid(target):
 		target = get_tree().get_first_node_in_group("Player")
-	# Visibility check
+	# Visibility / chase radius check
 	if target != null and is_instance_valid(target):
-		var dist := global_position.distance_to(target.global_position)
-		_seeing_player = dist <= VISION_RANGE
-		# Line of sight
+		var dist_to_player := global_position.distance_to(target.global_position)
+		var dist_home_to_player := _home_position.distance_to(target.global_position)
+		_seeing_player = dist_to_player <= vision_range and dist_home_to_player <= chase_radius
 		if _seeing_player:
 			var space := get_world_3d().direct_space_state
 			var q := PhysicsRayQueryParameters3D.create(global_position + Vector3.UP * 1.2, target.global_position + Vector3.UP * 1.2)
@@ -136,6 +183,10 @@ func _think() -> void:
 			var res := space.intersect_ray(q)
 			if res.size() > 0 and res["collider"] != target:
 				_seeing_player = false
+		if dist_home_to_player > chase_radius:
+			target = null
+			_seeing_player = false
+			_has_wander_target = false
 	else:
 		_seeing_player = false
 
@@ -179,6 +230,10 @@ func _die() -> void:
 	if animation_tree != null:
 		animation_tree.set("parameters/die/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 	# Drop health pot at head height so it doesn't fall through the ground.
+	if randf() > drop_chance:
+		await get_tree().create_timer(2.0).timeout
+		queue_free()
+		return
 	var spawn_pos := global_position + Vector3.UP * 1.6
 	if head_point != null and is_instance_valid(head_point):
 		spawn_pos = head_point.global_position

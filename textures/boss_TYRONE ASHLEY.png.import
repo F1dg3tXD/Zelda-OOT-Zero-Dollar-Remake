@@ -3,8 +3,8 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bkdy7djx7ktdc"
-path.s3tc="res://.godot/imported/boss_TYRONE.png-9b48ad2ef8f699e6bc1dd539eb32de17.s3tc.ctex"
-path.etc2="res://.godot/imported/boss_TYRONE.png-9b48ad2ef8f699e6bc1dd539eb32de17.etc2.ctex"
+path.s3tc="res://.godot/imported/boss_TYRONE ASHLEY.png-8904645831749732157e9524b494b6b1.s3tc.ctex"
+path.etc2="res://.godot/imported/boss_TYRONE ASHLEY.png-8904645831749732157e9524b494b6b1.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://textures/boss_TYRONE.png"
-dest_files=["res://.godot/imported/boss_TYRONE.png-9b48ad2ef8f699e6bc1dd539eb32de17.s3tc.ctex", "res://.godot/imported/boss_TYRONE.png-9b48ad2ef8f699e6bc1dd539eb32de17.etc2.ctex"]
+source_file="res://textures/boss_TYRONE ASHLEY.png"
+dest_files=["res://.godot/imported/boss_TYRONE ASHLEY.png-8904645831749732157e9524b494b6b1.s3tc.ctex", "res://.godot/imported/boss_TYRONE ASHLEY.png-8904645831749732157e9524b494b6b1.etc2.ctex"]
 
 [params]
 
