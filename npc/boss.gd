@@ -66,6 +66,7 @@ func _on_reached_boss() -> void:
 
 	# The Boss hits the ball back.
 	_busy = true
+	animation_tree.set("parameters/Hurt/request", 1)
 	await get_tree().create_timer(0.25).timeout
 	_busy = false
 

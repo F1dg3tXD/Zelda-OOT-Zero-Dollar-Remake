@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://uwpnuovpq6ch"]
 
-[ext_resource type="Script" uid="uid://xgb06ntesrpe" path="res://ent/phantom_camera_volume.gd" id="1_dc3ls"]
+[ext_resource type="Script" uid="uid://2ewqv8tuyo2o" path="res://ent/phantom_camera_volume.gd" id="1_dc3ls"]
 [ext_resource type="Script" uid="uid://csjccrhj5wnx7" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_3d.gd" id="2_i35tv"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="3_3nsd2"]
 
@@ -12,7 +12,6 @@ script = ExtResource("1_dc3ls")
 
 [node name="PhantomCamera3D" type="Node3D" parent="." unique_id=1954499593]
 visible = false
-tween_on_load = false
 script = ExtResource("2_i35tv")
 tween_resource = SubResource("Resource_emmlu")
 metadata/_custom_type_script = "uid://csjccrhj5wnx7"

@@ -138,6 +138,10 @@ sprint={
 3d_physics/layer_5="Projectile"
 3d_physics/layer_6="EnemyAttack"
 
+[navigation]
+
+baking/use_crash_prevention_checks=false
+
 [physics]
 
 3d/physics_engine="Jolt Physics"

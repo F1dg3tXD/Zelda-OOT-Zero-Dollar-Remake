@@ -13,6 +13,8 @@
 [ext_resource type="Script" uid="uid://dfcsspglxvalm" path="res://maps/topcastle.gd" id="10_topcastle"]
 [ext_resource type="Texture2D" uid="uid://dmo4y4r2pcgn3" path="res://textures/light.jpg" id="12_s2kn5"]
 [ext_resource type="Script" uid="uid://c0g52qei1kh3p" path="res://maps/temporary_scene_change.gd" id="13_trigger"]
+[ext_resource type="PackedScene" uid="uid://dqwx057lhado0" path="res://ent/level_transition.tscn" id="14_rqgm3"]
+[ext_resource type="PackedScene" uid="uid://uwpnuovpq6ch" path="res://ent/ent_phantom_camera_volume.tscn" id="15_ltd8w"]
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_78jfb"]
 clip_count = 2
@@ -24,6 +26,10 @@ clip_1/name = &"Tyronesmusic"
 clip_1/stream = ExtResource("5_5layo")
 clip_1/auto_advance = 1
 clip_1/next_clip = 1
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_wmhnv"]
+vertices = PackedVector3Array(16.004639, 59.09147, -29.431885, 18.004639, 59.09147, -29.181885, 19.504639, 59.09147, -34.181885, 12.754639, 59.09147, -37.181885, 10.754639, 59.09147, -36.681885, 13.004639, 59.09147, -28.931885, 11.504639, 59.09147, 37.068115, 13.004639, 59.09147, 37.068115, 17.504639, 59.09147, 35.068115, 13.254639, 59.09147, -21.681885, -14.245361, 59.09147, -26.431885, -24.745361, 59.09147, -1.1818848, -24.995361, 59.09147, 0.56811523, -13.995361, 59.09147, 26.568115, 17.254639, 59.09147, -21.931885, 38.75464, 59.09147, -26.181885, 49.25464, 59.09147, 0.81811523, 49.00464, 59.09147, -1.4318848, 38.75464, 59.09147, 26.068115)
+polygons = [PackedInt32Array(2, 1, 0), PackedInt32Array(0, 5, 2), PackedInt32Array(2, 5, 3), PackedInt32Array(3, 5, 4), PackedInt32Array(8, 7, 6), PackedInt32Array(5, 9, 4), PackedInt32Array(4, 9, 10), PackedInt32Array(10, 9, 11), PackedInt32Array(11, 9, 12), PackedInt32Array(6, 13, 8), PackedInt32Array(8, 13, 12), PackedInt32Array(8, 12, 9), PackedInt32Array(8, 9, 14), PackedInt32Array(1, 2, 14), PackedInt32Array(14, 2, 15), PackedInt32Array(17, 16, 15), PackedInt32Array(15, 16, 14), PackedInt32Array(14, 16, 18), PackedInt32Array(14, 18, 8)]
 
 [sub_resource type="Animation" id="Animation_1j1mj"]
 resource_name = "BossCamAnim"
@@ -77,6 +83,30 @@ tracks/4/keys = {
 "transitions": PackedFloat32Array(0.6155722),
 "update": 1,
 "values": [true]
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("%toInsideCastle:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/6/type = "value"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("../PhantomCameraVolume:visible")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
 }
 
 [sub_resource type="Animation" id="Animation_ucsa8"]
@@ -177,6 +207,30 @@ tracks/7/keys = {
 "transitions": PackedFloat32Array(1, 1),
 "update": 0,
 "values": [0.0, -71.922]
+}
+tracks/8/type = "value"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("%toInsideCastle:visible")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/9/type = "value"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("../PhantomCameraVolume:visible")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="Animation" id="Animation_bccg1"]
@@ -296,6 +350,30 @@ tracks/9/keys = {
 "update": 0,
 "values": [0.0]
 }
+tracks/10/type = "value"
+tracks/10/imported = false
+tracks/10/enabled = true
+tracks/10/path = NodePath("%toInsideCastle:visible")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/11/type = "value"
+tracks/11/imported = false
+tracks/11/enabled = true
+tracks/11/path = NodePath("../PhantomCameraVolume:visible")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_43tto"]
 _data = {
@@ -315,10 +393,25 @@ uv1_world_triplanar = true
 height = 245.7988
 radius = 3.902832
 
-[sub_resource type="NavigationMesh" id="NavigationMesh_wmhnv"]
+[sub_resource type="Curve3D" id="Curve3D_5layo"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0.38087463, -0.611866, 0, 0, 0, 0, 0, 0, 0, -7.4253464, 17.078161),
+"tilts": PackedFloat32Array(0, 0)
+}
+point_count = 2
 
-[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_wmhnv"]
-data = PackedVector3Array(-53.290237, -96.90452, -53.290226, -75.36377, -96.90452, -6.58851e-06, 0, -96.90452, 0, -75.36377, -96.90452, -6.58851e-06, -53.290237, -96.90452, -53.290226, -53.290237, 96.90452, -53.290226, 8.9870395e-07, -96.90452, -75.36377, -53.290237, -96.90452, -53.290226, 0, -96.90452, 0, -53.290237, -96.90452, -53.290226, 8.9870395e-07, -96.90452, -75.36377, 8.9870395e-07, 96.90452, -75.36377, -75.36377, -96.90452, -6.58851e-06, -53.29023, -96.90452, 53.29023, 0, -96.90452, 0, -53.29023, -96.90452, 53.29023, -75.36377, -96.90452, -6.58851e-06, -75.36377, 96.90452, -6.58851e-06, -53.29023, -96.90452, 53.29023, -3.294255e-06, -96.90452, 75.36377, 0, -96.90452, 0, -3.294255e-06, -96.90452, 75.36377, -53.29023, -96.90452, 53.29023, -53.29023, 96.90452, 53.29023, -53.290237, 96.90452, -53.290226, -75.36377, 96.90452, -6.58851e-06, -75.36377, -96.90452, -6.58851e-06, -75.36377, 96.90452, -6.58851e-06, -53.290237, 96.90452, -53.290226, 0, 96.90452, 0, 8.9870395e-07, 96.90452, -75.36377, -53.290237, 96.90452, -53.290226, -53.290237, -96.90452, -53.290226, -53.290237, 96.90452, -53.290226, 8.9870395e-07, 96.90452, -75.36377, 0, 96.90452, 0, -75.36377, 96.90452, -6.58851e-06, -53.29023, 96.90452, 53.29023, -53.29023, -96.90452, 53.29023, -53.29023, 96.90452, 53.29023, -75.36377, 96.90452, -6.58851e-06, 0, 96.90452, 0, -53.29023, 96.90452, 53.29023, -3.294255e-06, 96.90452, 75.36377, -3.294255e-06, -96.90452, 75.36377, -3.294255e-06, 96.90452, 75.36377, -53.29023, 96.90452, 53.29023, 0, 96.90452, 0, 53.290222, -96.90452, -53.29024, 8.9870395e-07, -96.90452, -75.36377, 0, -96.90452, 0, 8.9870395e-07, -96.90452, -75.36377, 53.290222, -96.90452, -53.29024, 53.290222, 96.90452, -53.29024, 75.36377, -96.90452, 0, 53.290222, -96.90452, -53.29024, 0, -96.90452, 0, 53.290222, -96.90452, -53.29024, 75.36377, -96.90452, 0, 75.36377, 96.90452, 0, -3.294255e-06, -96.90452, 75.36377, 53.29023, -96.90452, 53.29023, 0, -96.90452, 0, 53.29023, -96.90452, 53.29023, -3.294255e-06, -96.90452, 75.36377, -3.294255e-06, 96.90452, 75.36377, 53.29023, -96.90452, 53.29023, 75.36377, -96.90452, 0, 0, -96.90452, 0, 75.36377, -96.90452, 0, 53.29023, -96.90452, 53.29023, 53.29023, 96.90452, 53.29023, 53.290222, 96.90452, -53.29024, 8.9870395e-07, 96.90452, -75.36377, 8.9870395e-07, -96.90452, -75.36377, 8.9870395e-07, 96.90452, -75.36377, 53.290222, 96.90452, -53.29024, 0, 96.90452, 0, 75.36377, 96.90452, 0, 53.290222, 96.90452, -53.29024, 53.290222, -96.90452, -53.29024, 53.290222, 96.90452, -53.29024, 75.36377, 96.90452, 0, 0, 96.90452, 0, -3.294255e-06, 96.90452, 75.36377, 53.29023, 96.90452, 53.29023, 53.29023, -96.90452, 53.29023, 53.29023, 96.90452, 53.29023, -3.294255e-06, 96.90452, 75.36377, 0, 96.90452, 0, 53.29023, 96.90452, 53.29023, 75.36377, 96.90452, 0, 75.36377, -96.90452, 0, 75.36377, 96.90452, 0, 53.29023, 96.90452, 53.29023, 0, 96.90452, 0)
+[sub_resource type="Curve3D" id="Curve3D_ltd8w"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 5.5338745, -13.532272, 0, 0, 0, 0, 0, 0, 0, 13.233192, -31.066402, 0, 0, 0, 0, 0, 0, -2.3669014, 12.865265, -34.85913, 0, 0, 0, 0, 0, 0, -7.6586533, 12.865265, -28.023216),
+"tilts": PackedFloat32Array(0, 0, 0, 0)
+}
+point_count = 4
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5d25b"]
+size = Vector3(5.5078125, 5.562256, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7ix2u"]
+size = Vector3(24.445313, 15.271454, 43.79236)
 
 [node name="Node3D" type="Node3D" unique_id=1120223679]
 script = ExtResource("10_topcastle")
@@ -333,12 +426,41 @@ stream = SubResource("AudioStreamInteractive_78jfb")
 volume_db = -7.621
 bus = &"Music"
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=399191019]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=823794325]
+navigation_mesh = SubResource("NavigationMesh_wmhnv")
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="NavigationRegion3D" unique_id=399191019]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 12.186523, 10.293728, 0)
 material_override = ExtResource("1_plli4")
 use_collision = true
 radius = 75.36377
 height = 193.80904
+
+[node name="inside2" type="CSGBox3D" parent="NavigationRegion3D/CSGCylinder3D" unique_id=1431765593]
+transform = Transform3D(1, 0, 0, 0, 0.912008, -0.41017246, 0, 0.41017246, 0.912008, 6.5783157, 92.25419, -40.990295)
+operation = 2
+size = Vector3(5.4003906, 5.394165, 34.772957)
+
+[node name="hole" type="CSGBox3D" parent="NavigationRegion3D/CSGCylinder3D" unique_id=655637311]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.601021, 97.00334, -51.64929)
+operation = 2
+size = Vector3(4.9492188, 0.13867188, 13.180542)
+
+[node name="NavigationObstacle3D" type="NavigationObstacle3D" parent="NavigationRegion3D" unique_id=263011599]
+transform = Transform3D(1, 0, 0, 0, 0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 16.261631, 43.512676, -25.364124)
+height = 28.91
+vertices = PackedVector3Array(1.274517, 0, 3.3849869, -3.0696688, 0, 3.6732445, -3.3340206, 0, -3.8233757, 1.6790428, 0, -4.012787)
+affect_navigation_mesh = true
+carve_navigation_mesh = true
+use_3d_avoidance = true
+
+[node name="NavigationObstacle3D2" type="NavigationObstacle3D" parent="NavigationRegion3D" unique_id=877398157]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.261631, 43.512676, -18.364124)
+height = 12.93
+vertices = PackedVector3Array(1.0797615, 0, 6.5058184, 1.3806992, 0, -3.8534966, -3.1517706, 0, -3.3533115, -4.807808, 0, 8.681998)
+affect_navigation_mesh = true
+carve_navigation_mesh = true
+use_3d_avoidance = true
 
 [node name="CSGTorus3D" type="CSGTorus3D" parent="." unique_id=682476269]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.936089, 59.76939, -1.730442)
@@ -460,9 +582,40 @@ target_scene = "res://maps/EndCredits.tscn"
 [node name="CollisionShape3D" type="CollisionShape3D" parent="LightTeleport/TeleportTrigger" unique_id=1062024979]
 shape = SubResource("CylinderShape3D_teleport")
 
-[node name="NavigationRegion3D" type="NavigationRegion3D" parent="." unique_id=823794325]
-navigation_mesh = SubResource("NavigationMesh_wmhnv")
+[node name="toInsideCastle" parent="." unique_id=1191875629 instance=ExtResource("14_rqgm3")]
+unique_name_in_owner = true
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 15.487034, 52.46681, -13.773233)
+target_scene = "res://maps/insidecastle.tscn"
+target_transition_name = "toTopCastle"
+enter_path = NodePath("ExitPath3D")
+exit_path = NodePath("EnterPath3D")
+use_sprint_speed = true
+speed_override = 10.0
+pause_at = 0.65
 
-[node name="CSGBakedCollisionShape3D" type="CollisionShape3D" parent="NavigationRegion3D" unique_id=124032490]
-transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 12.186523, 10.293728, 0)
-shape = SubResource("ConcavePolygonShape3D_wmhnv")
+[node name="level_load_trigger" parent="toInsideCastle/player_move_in_location" parent_id_path=PackedInt32Array(1191875629, 1497165615) index="0" unique_id=19668482]
+visible = true
+
+[node name="EnterPath3D" type="Path3D" parent="toInsideCastle" unique_id=789666317]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.427147, -12.985924)
+curve = SubResource("Curve3D_5layo")
+
+[node name="ExitPath3D" type="Path3D" parent="toInsideCastle" unique_id=72458376]
+curve = SubResource("Curve3D_ltd8w")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="toInsideCastle" unique_id=1454951505]
+transform = Transform3D(1, 0, 0, 0, 0.9086952, -0.41746014, 0, 0.41746014, 0.9086952, 0, 8.407271, -14.676842)
+shape = SubResource("BoxShape3D_5d25b")
+
+[node name="PhantomCameraVolume" parent="." unique_id=393058475 instance=ExtResource("15_ltd8w")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 15.487034, 52.46681, -13.773233)
+
+[node name="PhantomCamera3D" parent="PhantomCameraVolume" index="0" unique_id=1954499593]
+transform = Transform3D(-0.3076804, 0.41777015, -1.9315282, 0, 1.9547986, 0.42280334, 1.9761915, 0.06504414, -0.3007266, -16.844975, 16.583534, -30.505013)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PhantomCameraVolume" unique_id=1575217978]
+transform = Transform3D(1, 0, 0, 0, 0.9081765, -0.41858748, 0, 0.41858748, 0.9081765, 1.9073486e-06, 6.7924957, -16.689823)
+shape = SubResource("BoxShape3D_7ix2u")
+
+[editable path="toInsideCastle"]
+[editable path="PhantomCameraVolume"]

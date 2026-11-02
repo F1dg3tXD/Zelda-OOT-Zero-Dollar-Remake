@@ -21,6 +21,8 @@ signal transition_finished
 @export var target_transition_name: String = ""
 @export var enter_path: NodePath
 @export var exit_path: NodePath
+@export var use_sprint_speed: bool = false
+@export var speed_override: float = 0.0
 @export_range(0.0, 1.5, 0.01) var pause_at: float = 0.75
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
@@ -130,13 +132,14 @@ func _on_body_entered(body: Node3D) -> void:
 	body.set_ui_visible(false)
 
 	var path: Path3D = get_exit_path()
+	var speed: float = speed_override if speed_override > 0.0 else (body.sprint_speed if use_sprint_speed else body.walk_speed)
 	if path != null and path.curve != null:
 		var pts: Array[Vector3] = []
 		for p in path.curve.get_baked_points():
 			pts.append(path.to_global(p))
-		body.follow_path_points(pts, body.walk_speed)
+		body.follow_path_points(pts, speed)
 	elif player_move_in_location != null:
-		body.move_to(player_move_in_location.global_position)
+		body.move_to(player_move_in_location.global_position, speed)
 
 	# Play the circle-closes-on-player animation to the pause point.
 	transition_layer.visible = true

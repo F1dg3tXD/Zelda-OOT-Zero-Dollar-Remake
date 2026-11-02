@@ -4,6 +4,7 @@ class_name player
 signal damaged
 signal health_changed(health: int, max_health: int)
 signal died
+signal _not_locked
 
 # Camera
 @onready var camera_root: Node3D = $CameraRoot
@@ -12,6 +13,7 @@ signal died
 
 # World Hitboxes
 @onready var standing_hitbox: CollisionShape3D = $StandingHitbox
+@onready var step_over_rays: Node3D = $StepOverRays
 
 # Step Over Rays
 @onready var step_front: RayCast3D = $StepOverRays/StepFront
@@ -45,12 +47,15 @@ var _fly_mode := false
 var _moving := false
 var _move_dir := Vector2.ZERO
 var _move_to_target: Vector3 = Vector3(INF, INF, INF)
-var _move_to_speed := 100.0
+var move_to_speed := 5.0
 
 var _path_points: Array[Vector3] = []
 var _path_index := 0
-var _path_speed := 100.0
+var path_travel_speed := 5.0
 var _path_active := false
+
+var _inside_camera_volume := false
+@onready var phantom_camera_host: Node = get_node_or_null("CameraRoot/SpringArm3D/Camera3D/PhantomCameraHost")
 
 @export var max_health := 100
 var health := 100
@@ -62,6 +67,9 @@ var _die_sounds: Array = []
 func lock_input() -> void:
 	_movement_locked = true
 
+func is_movement_locked() -> bool:
+	return _movement_locked
+
 func unlock_input() -> void:
 	_movement_locked = false
 
@@ -71,7 +79,7 @@ func set_cutscene_velocity(new_velocity: Vector3) -> void:
 func move_to(move_to_position: Vector3, speed: float = 15.0) -> void:
 	lock_input()
 	_move_to_target = move_to_position
-	_move_to_speed = speed
+	move_to_speed = speed
 
 func follow_path_points(points: Array[Vector3], speed: float = 15.0) -> void:
 	if points.is_empty():
@@ -79,19 +87,23 @@ func follow_path_points(points: Array[Vector3], speed: float = 15.0) -> void:
 	lock_input()
 	_path_points = points
 	_path_index = 0
-	_path_speed = speed
+	path_travel_speed = speed
 	_path_active = true
 	_move_to_target = points[0]
-	_move_to_speed = speed
+	move_to_speed = speed
 
 func set_inside_camera_volume(inside: bool) -> void:
-	pass
+	_inside_camera_volume = inside
 
 func enable_phantom_camera_host() -> void:
-	pass
+	if phantom_camera_host != null and is_instance_valid(phantom_camera_host):
+		phantom_camera_host.set_process(true)
+		phantom_camera_host.set_physics_process(true)
 
 func disable_phantom_camera_host() -> void:
-	pass
+	if phantom_camera_host != null and is_instance_valid(phantom_camera_host):
+		phantom_camera_host.set_process(false)
+		phantom_camera_host.set_physics_process(false)
 
 func is_camera_static() -> bool:
 	return false
@@ -211,6 +223,8 @@ func _ready() -> void:
 	AudioServer.set_bus_mute(AudioServer.get_bus_index("Music"), false)
 	add_to_group("player")
 	spring_arm_3d.spring_length = camera_distance
+	floor_snap_length = 0.5
+	floor_max_angle = deg_to_rad(60.0)
 	camera_root.top_level = true
 	camera_root.global_position = global_position + Vector3(0, 1, 0)
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -340,6 +354,8 @@ func _physics_process(delta: float) -> void:
 		_crouching = not _crouching
 	# Lerp crouch amount between 0 and 0.69
 	var crouch_target := 0.69 if _crouching else 0.0
+	if step_over_rays != null:
+		step_over_rays.position.y = 0.8 if _crouching else 0.0
 	_crouch_amount = lerpf(_crouch_amount, crouch_target, clampf(delta * 8.0, 0.0, 1.0))
 	standing_hitbox.disabled = false
 
@@ -409,16 +425,18 @@ func _physics_process(delta: float) -> void:
 				_path_index += 1
 				if _path_index < _path_points.size():
 					_move_to_target = _path_points[_path_index]
-					_move_to_speed = _path_speed
+					move_to_speed = path_travel_speed
 				else:
 					_path_active = false
 					unlock_input()
+					_not_locked.emit()
 			else:
 				unlock_input()
+				_not_locked.emit()
 		else:
 			var dir := to_target.normalized()
-			velocity.x = dir.x * _move_to_speed
-			velocity.z = dir.z * _move_to_speed
+			velocity.x = dir.x * move_to_speed
+			velocity.z = dir.z * move_to_speed
 			_moving = true
 			_move_dir = Vector2(dir.x, dir.z)
 			var target_angle := atan2(dir.x, dir.z)
@@ -442,7 +460,7 @@ func _physics_process(delta: float) -> void:
 	standing_hitbox.position = Vector3(0, lerpf(0.92163086, 1.0922852, t), 0)
 
 	# Step climbing for small ledges using Step Over Rays
-	if is_on_floor() and direction != Vector3.ZERO:
+	if is_on_floor() and direction != Vector3.ZERO and not _movement_locked:
 		var rays := [step_front, step_back, step_left, step_right, step_front_left, step_back_right, step_back_left, step_front_right]
 		for ray in rays:
 			if ray != null and ray.is_colliding():

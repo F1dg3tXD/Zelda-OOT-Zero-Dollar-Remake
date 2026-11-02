@@ -109,14 +109,20 @@ func _play_entrance() -> void:
 	_update_circle_position()
 
 	# Start the player walking toward the move-out point.
+	var speed: float = _player().walk_speed
+	if level_transition != null:
+		if level_transition.speed_override > 0.0:
+			speed = level_transition.speed_override
+		elif level_transition.use_sprint_speed:
+			speed = _player().sprint_speed
 	var path: Path3D = level_transition.get_enter_path() if level_transition != null else null
 	if path != null and path.curve != null:
 		var pts: Array[Vector3] = []
 		for p in path.curve.get_baked_points():
 			pts.append(path.to_global(p))
-		_player().follow_path_points(pts, _player().walk_speed)
+		_player().follow_path_points(pts, speed)
 	else:
-		_player().move_to(player_move_out_location.global_position)
+		_player().move_to(player_move_out_location.global_position, speed)
 
 	# Play reverse animation to the pause point (circle partially open).
 	animation_player.play("transition_in", -1, -1.0, true)

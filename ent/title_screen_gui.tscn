@@ -15,3 +15,10 @@ offset_top = 260.0
 offset_right = 1096.0
 offset_bottom = 334.0
 text = "Start Game"
+
+[node name="Load Button" type="Button" parent="." unique_id=1151714637]
+offset_left = 669.0
+offset_top = 260.0
+offset_right = 1096.0
+offset_bottom = 334.0
+text = "Load Game"

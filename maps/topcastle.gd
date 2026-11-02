@@ -38,6 +38,8 @@ func _start_cutscene() -> void:
 	await get_tree().process_frame
 
 	_player = _find_player()
+	if is_instance_valid(_player) and _player.has_method("is_movement_locked") and _player.is_movement_locked():
+		await _player._not_locked
 	_set_player_control(false)
 
 	_cutscene_playing = true
