@@ -18,6 +18,8 @@ var _returns := 0
 var _fighting := false
 var _busy := false
 
+var _bossPhaseSprites: Array = []
+
 
 func start_fight(player: Node3D) -> void:
 	if _fighting or not is_instance_valid(player):

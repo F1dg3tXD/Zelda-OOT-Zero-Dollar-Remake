@@ -8,6 +8,12 @@ length = 10.0
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qitif"]
 
+[sub_resource type="ViewportTexture" id="ViewportTexture_qitif"]
+viewport_path = NodePath("HealthBar/CanvasLayer/SubViewport")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qitif"]
+bg_color = Color(1, 0, 0, 1)
+
 [node name="SoilderNPC" type="CharacterBody3D" unique_id=1063131750 groups=["Enemy"]]
 script = ExtResource("1_6l3xi")
 
@@ -35,5 +41,46 @@ shape = SubResource("CapsuleShape3D_qitif")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=461112841]
 avoidance_enabled = true
+
+[node name="HealthBar" type="Node3D" parent="." unique_id=1414774091]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1045291, 0)
+
+[node name="Sprite3D" type="Sprite3D" parent="HealthBar" unique_id=751157472]
+pixel_size = 0.002
+billboard = 1
+texture = SubResource("ViewportTexture_qitif")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="HealthBar" unique_id=33113547]
+
+[node name="SubViewport" type="SubViewport" parent="HealthBar/CanvasLayer" unique_id=1757587732]
+transparent_bg = true
+
+[node name="Control" type="Control" parent="HealthBar/CanvasLayer/SubViewport" unique_id=682043355]
+custom_minimum_size = Vector2(512, 512)
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HealthBar" type="ProgressBar" parent="HealthBar/CanvasLayer/SubViewport/Control" unique_id=363264067]
+custom_minimum_size = Vector2(512, 85)
+custom_maximum_size = Vector2(-1, 85)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -275.0
+offset_top = -27.0
+offset_right = 275.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_qitif")
+value = 100.0
+show_percentage = false
 
 [editable path="Soilder"]

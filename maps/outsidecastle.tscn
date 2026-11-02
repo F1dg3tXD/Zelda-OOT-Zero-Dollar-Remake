@@ -9,6 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://ccjjahu3lyqsu" path="res://music/hyrule feild but youre having a terrible benadryl trip.mp3" id="5_vbdtl"]
 [ext_resource type="Texture2D" uid="uid://cy3uawupirbvr" path="res://textures/image.png" id="7_83f10"]
 [ext_resource type="PackedScene" uid="uid://dqwx057lhado0" path="res://ent/level_transition.tscn" id="9_e0mew"]
+[ext_resource type="PackedScene" uid="uid://by3rxd7ottm57" path="res://npc/soilder.tscn" id="9_jv70r"]
 [ext_resource type="PackedScene" uid="uid://uwpnuovpq6ch" path="res://ent/ent_phantom_camera_volume.tscn" id="10_tpc4q"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8prpk"]
@@ -471,6 +472,18 @@ material = SubResource("StandardMaterial3D_ccalk")
 transform = Transform3D(0.9995599, 0, 0.029667154, 0, 1, 0, -0.029667154, 0, 0.9995599, 136.01416, 206.17691, 61.341442)
 size = Vector3(612.46, 1.2044126, 83.63226)
 material = SubResource("StandardMaterial3D_ccalk")
+
+[node name="SoilderNPC" parent="map" unique_id=1063131750 instance=ExtResource("9_jv70r")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1265.2943, -0.38370132, -151.68898)
+
+[node name="SoilderNPC2" parent="map" unique_id=760970317 instance=ExtResource("9_jv70r")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1294.7922, -0.38373947, 121.71393)
+
+[node name="SoilderNPC3" parent="map" unique_id=123624173 instance=ExtResource("9_jv70r")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1142.6517, -0.38366318, -122.83354)
+
+[node name="SoilderNPC4" parent="map" unique_id=1553328075 instance=ExtResource("9_jv70r")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 1194.2153, -0.38373947, 104.331665)
 
 [node name="toInsideCastle" parent="." unique_id=1191875629 instance=ExtResource("9_e0mew")]
 unique_name_in_owner = true

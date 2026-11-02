@@ -13,6 +13,7 @@ extends Node3D
 @onready var light_teleport: CSGCylinder3D = $LightTeleport
 @onready var light_teleport_trigger: Area3D = $LightTeleport/TeleportTrigger
 @onready var phantom_camera_volume: Area3D = $PhantomCameraVolume
+@onready var fighttyrone: AudioStreamPlayer = $Fighttyrone
 
 const LIGHT_TELEPORT_OPACITY := 0.48
 const LIGHT_TELEPORT_FADE_TIME := 1.2

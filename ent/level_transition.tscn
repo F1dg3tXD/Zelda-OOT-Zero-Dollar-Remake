@@ -1,8 +1,7 @@
 [gd_scene format=3 uid="uid://dqwx057lhado0"]
 
 [ext_resource type="Script" uid="uid://dqac484h0lsuq" path="res://ent/level_transition.gd" id="1_lng3o"]
-[ext_resource type="Shader" uid="uid://by0chbkmp2nff" path="res://shaders/simple_circle_transition.gdshader" id="2_hkm54"]
-[ext_resource type="Texture2D" uid="uid://cae1npadm3330" path="res://addons/kenney_crosshair-pack/Vector/Light/crosshair-171.svg" id="3_dugi4"]
+[ext_resource type="Shader" uid="uid://dik0eeoy11ofg" path="res://shaders/simple_cenematic_transition.gdshader" id="2_m1nxg"]
 [ext_resource type="Script" uid="uid://tu5sqfuunih3" path="res://ent/player_move_out_location.gd" id="4_ict55"]
 
 [sub_resource type="Animation" id="Animation_hkm54"]
@@ -33,7 +32,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.5, 1, 1.4999),
 "transitions": PackedFloat32Array(1, 1, 1, 1),
 "update": 0,
-"values": [0.0, 0.749999983236, 0.749999983236, 0.999999977648]
+"values": [0.0, 0.249999994412, 0.249999994412, 0.999999977648]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_ict55"]
@@ -43,15 +42,10 @@ _data = {
 }
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2s5nj"]
-shader = ExtResource("2_hkm54")
-shader_parameter/_CirclePosition = Vector2(0.27, 0.37)
+shader = ExtResource("2_m1nxg")
 shader_parameter/_Progress = 0.0
 shader_parameter/_Smoothness = 0.0
 shader_parameter/_Background = Color(0, 0, 0, 1)
-shader_parameter/_EdgeTexture = ExtResource("3_dugi4")
-shader_parameter/_EdgeWidth = 0.15000000596046
-shader_parameter/_EdgeColor = Color(1, 1, 1, 1)
-shader_parameter/_EdgeOpacity = 0.999999977648
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_yxyn3"]
 

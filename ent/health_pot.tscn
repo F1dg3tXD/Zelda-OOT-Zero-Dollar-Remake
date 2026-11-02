@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bcjuix2tgmmjo"]
+
+[ext_resource type="Script" uid="uid://bxfda8h6o8fau" path="res://ent/health_pot.gd" id="1_0u38h"]
+[ext_resource type="Texture2D" uid="uid://b15nupsl0t504" path="res://textures/HealthPot.png" id="1_gbxwo"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5d25b"]
+size = Vector3(0.4, 0.4, 0.4)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_5d25b"]
+radius = 0.30393893
+
+[node name="HealthPot" type="RigidBody3D" unique_id=1153557248]
+script = ExtResource("1_0u38h")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1517718096]
+shape = SubResource("BoxShape3D_5d25b")
+
+[node name="Sprite3D" type="Sprite3D" parent="." unique_id=696630109]
+pixel_size = 0.03
+billboard = 1
+texture_filter = 0
+texture = ExtResource("1_gbxwo")
+
+[node name="PickupArea3D" type="Area3D" parent="." unique_id=670811892]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupArea3D" unique_id=2064407879]
+shape = SubResource("SphereShape3D_5d25b")

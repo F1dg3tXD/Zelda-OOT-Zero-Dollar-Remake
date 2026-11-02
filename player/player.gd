@@ -445,7 +445,8 @@ func _physics_process(delta: float) -> void:
 	# Rotation handling
 	if _strafe_lock or _locked_target != null:
 		var cam_forward := -camera_root.global_transform.basis.z
-		var target_angle := atan2(cam_forward.x, cam_forward.z)
+		# Face the target; reverse the yaw so the character looks at the enemy.
+		var target_angle := atan2(-cam_forward.x, -cam_forward.z)
 		rotation.y = lerp_angle(rotation.y, target_angle, TURN_SPEED * delta)
 	elif direction != Vector3.ZERO:
 		var target_angle := atan2(direction.x, direction.z)

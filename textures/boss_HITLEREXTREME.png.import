@@ -2,9 +2,9 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bkdy7djx7ktdc"
-path.s3tc="res://.godot/imported/TYRONE.png-7d21167b6e60f87904c14725dcdc8c41.s3tc.ctex"
-path.etc2="res://.godot/imported/TYRONE.png-7d21167b6e60f87904c14725dcdc8c41.etc2.ctex"
+uid="uid://cqck8p1j15ql0"
+path.s3tc="res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.s3tc.ctex"
+path.etc2="res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.etc2.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
@@ -12,8 +12,8 @@ metadata={
 
 [deps]
 
-source_file="res://textures/TYRONE.png"
-dest_files=["res://.godot/imported/TYRONE.png-7d21167b6e60f87904c14725dcdc8c41.s3tc.ctex", "res://.godot/imported/TYRONE.png-7d21167b6e60f87904c14725dcdc8c41.etc2.ctex"]
+source_file="res://textures/boss_HITLEREXTREME.png"
+dest_files=["res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.s3tc.ctex", "res://.godot/imported/boss_HITLEREXTREME.png-f2d45da300aadbdb9f3f8bfde4a29759.etc2.ctex"]
 
 [params]
 
