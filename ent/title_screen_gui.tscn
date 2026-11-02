@@ -175,7 +175,7 @@ grow_horizontal = 2
 grow_vertical = 2
 bbcode_enabled = true
 script = ExtResource("2_bqt75")
-markdown_text = "## Stuff Used
+markdown_text = "## Stuff Used: Godot Engine
 ---
 ### Models:
 \"Heavy Nazi Soldier\" (https://skfb.ly/6UIMx) by DJMaesen is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
@@ -184,7 +184,8 @@ markdown_text = "## Stuff Used
 
 \"Link (The Legend Of Zelda Ocarina Of Time)\" (https://skfb.ly/pMvFI) by Berunas is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
 ---
-## Music:"
+## Music: 
+Jonah, link music here"
 h1 = SubResource("Resource_puq65")
 h2 = SubResource("Resource_goy3h")
 h3 = SubResource("Resource_nc7dr")
