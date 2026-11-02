@@ -395,7 +395,7 @@ radius = 3.902832
 
 [sub_resource type="Curve3D" id="Curve3D_5layo"]
 _data = {
-"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0.38087463, -0.611866, 0, 0, 0, 0, 0, 0, 0, -7.4253464, 17.078161),
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, 0, 0.38087463, -0.611866, 0, 0, 0, 0, 0, 0, 0, -5.5892963, 12.917405),
 "tilts": PackedFloat32Array(0, 0)
 }
 point_count = 2

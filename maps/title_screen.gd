@@ -9,7 +9,6 @@ const GAME_SCENE := "res://maps/outsidecastle.tscn"
 @onready var animation_player: AnimationPlayer = $TitleScreenCamera/AnimationPlayer
 @onready var title_music: AudioStreamPlayer = $Titlemusic
 @onready var title_screen_gui: Node2D = $TitleScreenGUI
-@onready var start_button: Button = $"TitleScreenGUI/Start Button"
 @onready var player: CharacterBody3D = $Player
 
 var _starting := false
@@ -40,13 +39,5 @@ func _on_animation_finished(animation_name: StringName) -> void:
 	title_screen_gui.visible = true
 	animation_player.play("TitleScreenIdle")
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	start_button.grab_focus()
-
-
-func _on_start_pressed() -> void:
-	if _starting:
-		return
-	_starting = true
-
-	title_music.stop()
-	get_tree().change_scene_to_file(GAME_SCENE)
+	if title_screen_gui.has_method("grab_start_focus"):
+		title_screen_gui.grab_start_focus()

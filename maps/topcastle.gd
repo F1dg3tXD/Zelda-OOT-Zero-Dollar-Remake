@@ -12,6 +12,7 @@ extends Node3D
 @onready var boss = $Boss
 @onready var light_teleport: CSGCylinder3D = $LightTeleport
 @onready var light_teleport_trigger: Area3D = $LightTeleport/TeleportTrigger
+@onready var phantom_camera_volume: Area3D = $PhantomCameraVolume
 
 const LIGHT_TELEPORT_OPACITY := 0.48
 const LIGHT_TELEPORT_FADE_TIME := 1.2
@@ -40,6 +41,11 @@ func _start_cutscene() -> void:
 	_player = _find_player()
 	if is_instance_valid(_player) and _player.has_method("is_movement_locked") and _player.is_movement_locked():
 		await _player._not_locked
+	# Disable the phantom camera volume once the player has arrived and stopped.
+	if phantom_camera_volume != null and is_instance_valid(phantom_camera_volume):
+		phantom_camera_volume.set_deferred("monitoring", false)
+		if phantom_camera_volume.has_method("_deactivate"):
+			phantom_camera_volume._deactivate()
 	_set_player_control(false)
 
 	_cutscene_playing = true
@@ -50,15 +56,18 @@ func _start_cutscene() -> void:
 func _on_animation_finished(animation_name: StringName) -> void:
 	if animation_name == "BossCamAnim" and _cutscene_playing:
 		_cutscene_playing = false
+		phantom_camera_volume.visible = false
 		_finish_cutscene()
 	elif animation_name == "DefeatAnimation" and _defeat_playing:
 		_defeat_playing = false
+		phantom_camera_volume.visible = true
 		_finish_defeat()
 
 
 func _finish_cutscene() -> void:
 	_show_player_camera()
 	_set_player_control(true)
+	phantom_camera_volume.visible = false
 	fighthitler.play()
 
 	# Give the song a moment before the first ball is launched.
@@ -83,9 +92,13 @@ func _on_boss_defeated() -> void:
 func _finish_defeat() -> void:
 	if is_instance_valid(boss):
 		boss.queue_free()
+		phantom_camera_volume.visible = true
 
 	_show_player_camera()
 	_set_player_control(true)
+	if phantom_camera_volume != null and is_instance_valid(phantom_camera_volume):
+		phantom_camera_volume.set_deferred("monitoring", true)
+		phantom_camera_volume.visible = true
 	_reveal_light_teleport()
 
 

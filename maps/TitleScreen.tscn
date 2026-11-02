@@ -5,11 +5,41 @@
 [ext_resource type="Texture2D" uid="uid://28jb4cndlvrh" path="res://textures/path.png" id="2_r2s7s"]
 [ext_resource type="AudioStream" uid="uid://bnrqgndjs3507" path="res://music/titlemusicIntro.ogg" id="3_c64uc"]
 [ext_resource type="Material" uid="uid://cgm5nsvnb1hgm" path="res://mat/neonsign.tres" id="3_ceomm"]
+[ext_resource type="Script" uid="uid://dcx7crs23nf4" path="res://addons/markdownlabel/header_formats/h1_format.gd" id="3_qojg5"]
 [ext_resource type="AudioStream" uid="uid://bm46cma5cr8kq" path="res://music/titlemusicLoop.ogg" id="4_dmp6d"]
 [ext_resource type="Material" uid="uid://skomhu3rpbtr" path="res://mat/Stone.tres" id="4_fd7rs"]
+[ext_resource type="Script" uid="uid://d0sin64i4v3op" path="res://addons/markdownlabel/header_formats/h2_format.gd" id="4_yc0bs"]
 [ext_resource type="PackedScene" uid="uid://ct5wf8r7cbv57" path="res://atmospheres/hitlerstankair.tscn" id="5_c64uc"]
+[ext_resource type="Script" uid="uid://dlok0dv1tq2bf" path="res://addons/markdownlabel/header_formats/h3_format.gd" id="5_v0iaj"]
 [ext_resource type="PackedScene" uid="uid://b0uuvnieqo8hi" path="res://player/player.tscn" id="6_dmp6d"]
+[ext_resource type="Script" uid="uid://bayuh2vafablg" path="res://addons/markdownlabel/header_formats/h4_format.gd" id="6_vt21n"]
+[ext_resource type="Script" uid="uid://dfr1w7u3jgni3" path="res://addons/markdownlabel/header_formats/h5_format.gd" id="7_nqibe"]
 [ext_resource type="Script" uid="uid://5iygd2nx1nf3" path="res://maps/title_screen.gd" id="7_title"]
+[ext_resource type="Script" uid="uid://bsi6dexoofpe6" path="res://addons/markdownlabel/header_formats/h6_format.gd" id="8_rjtrd"]
+
+[sub_resource type="Resource" id="Resource_qojg5"]
+resource_local_to_scene = true
+script = ExtResource("3_qojg5")
+
+[sub_resource type="Resource" id="Resource_yc0bs"]
+resource_local_to_scene = true
+script = ExtResource("4_yc0bs")
+
+[sub_resource type="Resource" id="Resource_v0iaj"]
+resource_local_to_scene = true
+script = ExtResource("5_v0iaj")
+
+[sub_resource type="Resource" id="Resource_vt21n"]
+resource_local_to_scene = true
+script = ExtResource("6_vt21n")
+
+[sub_resource type="Resource" id="Resource_nqibe"]
+resource_local_to_scene = true
+script = ExtResource("7_nqibe")
+
+[sub_resource type="Resource" id="Resource_rjtrd"]
+resource_local_to_scene = true
+script = ExtResource("8_rjtrd")
 
 [sub_resource type="AudioStreamInteractive" id="AudioStreamInteractive_fd7rs"]
 clip_count = 2
@@ -260,6 +290,23 @@ script = ExtResource("7_title")
 visible = false
 modulate = Color(1, 1, 1, 0)
 position = Vector2(33, -22)
+
+[node name="TabContainer" parent="TitleScreenGUI/Menu/Options" parent_id_path=PackedInt32Array(1123225952, 2083964068) index="0" unique_id=1206513149]
+current_tab = 0
+
+[node name="Audio" parent="TitleScreenGUI/Menu/Options/TabContainer" index="1" unique_id=1021813517]
+visible = true
+
+[node name="Credits" parent="TitleScreenGUI/Menu/Options/TabContainer" index="3" unique_id=1278673861]
+visible = false
+
+[node name="MarkdownLabel" parent="TitleScreenGUI/Menu/Options/TabContainer/Credits" index="1" unique_id=1842150555]
+h1 = SubResource("Resource_qojg5")
+h2 = SubResource("Resource_yc0bs")
+h3 = SubResource("Resource_v0iaj")
+h4 = SubResource("Resource_vt21n")
+h5 = SubResource("Resource_nqibe")
+h6 = SubResource("Resource_rjtrd")
 
 [node name="Titlemusic" type="AudioStreamPlayer" parent="." unique_id=1669881056]
 stream = SubResource("AudioStreamInteractive_fd7rs")
@@ -646,11 +693,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.86805, 0.9616232, -10.1357
 transform = Transform3D(0.06181417, 0, -0.9980877, 0, 1, 0, 0.9980877, 0, 0.06181417, -1.6415441, -0.03837633, -8.678777)
 
 [node name="TitleScreenCamera" type="Camera3D" parent="." unique_id=1746445408]
-transform = Transform3D(0.258819, 0, -0.9659258, 0, 1, 0, 0.9659256, 0, 0.25881907, 8.327702, 1.0825909, -6.91959)
+transform = Transform3D(0.25881898, 0, -0.9659258, 0, 1, 0, 0.9659255, 0, 0.25881907, 8.327702, 1.0825909, -6.91959)
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="TitleScreenCamera" unique_id=180997454]
 libraries/ = SubResource("AnimationLibrary_qojg5")
-
-[connection signal="pressed" from="TitleScreenGUI/Start Button" to="." method="_on_start_pressed"]
 
 [editable path="TitleScreenGUI"]

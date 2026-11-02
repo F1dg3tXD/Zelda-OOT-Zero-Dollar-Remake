@@ -265,6 +265,7 @@ carve_navigation_mesh = true
 
 [node name="CSGBakedMeshInstance3D" parent="NavigationRegion3D" unique_id=1360479969 instance=ExtResource("4_x83ja")]
 transform = Transform3D(0.85554016, 0, 0.51773655, 0.07956123, 0.98812205, -0.13147193, -0.51158684, 0.15367126, 0.84537804, -9.391277, 35.93569, -46.774303)
+surface_material_override/0 = null
 
 [node name="info_player_start" parent="." unique_id=375073552 instance=ExtResource("2_h5w0v")]
 transform = Transform3D(0.10206783, 0, 0.99477744, 0, 1, 0, -0.99477744, 0, 0.10206783, -1.7294068, 11.445246, -37.22225)

@@ -1,24 +1,197 @@
 [gd_scene format=3 uid="uid://cd3gglmaem6vy"]
 
+[ext_resource type="Script" uid="uid://bx4be7a4s3tir" path="res://ent/title_screen_gui.gd" id="1_s0qi4"]
 [ext_resource type="Texture2D" uid="uid://ogqjlx6p1c5o" path="res://textures/zelda.png" id="1_uiw8c"]
+[ext_resource type="Script" uid="uid://dbap0gqox0ty1" path="res://addons/markdownlabel/markdownlabel.gd" id="2_bqt75"]
+[ext_resource type="Script" uid="uid://dcx7crs23nf4" path="res://addons/markdownlabel/header_formats/h1_format.gd" id="3_s0qi4"]
+[ext_resource type="Theme" uid="uid://dgr2w4xejlndg" path="res://themes/funny.tres" id="3_sho67"]
+[ext_resource type="Script" uid="uid://d0sin64i4v3op" path="res://addons/markdownlabel/header_formats/h2_format.gd" id="4_sho67"]
+[ext_resource type="Script" uid="uid://dlok0dv1tq2bf" path="res://addons/markdownlabel/header_formats/h3_format.gd" id="5_3w106"]
+[ext_resource type="Script" uid="uid://bayuh2vafablg" path="res://addons/markdownlabel/header_formats/h4_format.gd" id="6_0tvdf"]
+[ext_resource type="Script" uid="uid://dfr1w7u3jgni3" path="res://addons/markdownlabel/header_formats/h5_format.gd" id="7_o00pg"]
+[ext_resource type="Script" uid="uid://bsi6dexoofpe6" path="res://addons/markdownlabel/header_formats/h6_format.gd" id="8_xk66b"]
+
+[sub_resource type="Resource" id="Resource_puq65"]
+resource_local_to_scene = true
+script = ExtResource("3_s0qi4")
+
+[sub_resource type="Resource" id="Resource_goy3h"]
+resource_local_to_scene = true
+script = ExtResource("4_sho67")
+
+[sub_resource type="Resource" id="Resource_nc7dr"]
+resource_local_to_scene = true
+script = ExtResource("5_3w106")
+
+[sub_resource type="Resource" id="Resource_k1y6r"]
+resource_local_to_scene = true
+script = ExtResource("6_0tvdf")
+
+[sub_resource type="Resource" id="Resource_71b7j"]
+resource_local_to_scene = true
+script = ExtResource("7_o00pg")
+
+[sub_resource type="Resource" id="Resource_715kj"]
+resource_local_to_scene = true
+script = ExtResource("8_xk66b")
 
 [node name="TitleScreenGUI" type="Node2D" unique_id=1123225952]
+script = ExtResource("1_s0qi4")
 
 [node name="Zelda" type="Sprite2D" parent="." unique_id=266320368]
 position = Vector2(870.3895, 130.24994)
 scale = Vector2(0.13187228, 0.13187231)
 texture = ExtResource("1_uiw8c")
 
-[node name="Start Button" type="Button" parent="." unique_id=1498993702]
+[node name="Menu" type="Control" parent="." unique_id=197860356]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+theme = ExtResource("3_sho67")
+
+[node name="Start Button" type="Button" parent="Menu" unique_id=1498993702]
+layout_mode = 0
 offset_left = 669.0
 offset_top = 260.0
 offset_right = 1096.0
 offset_bottom = 334.0
+theme = ExtResource("3_sho67")
+theme_override_font_sizes/font_size = 32
 text = "Start Game"
 
-[node name="Load Button" type="Button" parent="." unique_id=1151714637]
+[node name="Options Button" type="Button" parent="Menu" unique_id=1151714637]
+layout_mode = 0
 offset_left = 669.0
-offset_top = 260.0
+offset_top = 352.0
 offset_right = 1096.0
-offset_bottom = 334.0
-text = "Load Game"
+offset_bottom = 426.0
+theme_override_font_sizes/font_size = 32
+text = "Options"
+
+[node name="Options" type="Control" parent="Menu" unique_id=2083964068]
+custom_minimum_size = Vector2(600, 400)
+anchors_preset = 0
+offset_left = 23.0
+offset_top = 101.0
+offset_right = 623.0
+offset_bottom = 501.0
+
+[node name="TabContainer" type="TabContainer" parent="Menu/Options" unique_id=1206513149]
+custom_minimum_size = Vector2(600, 400)
+layout_mode = 0
+offset_right = 387.0
+offset_bottom = 318.0
+current_tab = 2
+
+[node name="Audio" type="TabBar" parent="Menu/Options/TabContainer" unique_id=1021813517]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/Options/TabContainer/Audio" unique_id=411861478]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 28.0
+offset_right = 425.0
+offset_bottom = 162.0
+
+[node name="MusicSlider" type="VBoxContainer" parent="Menu/Options/TabContainer/Audio/VBoxContainer" unique_id=1431780447]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/Options/TabContainer/Audio/VBoxContainer/MusicSlider" unique_id=68471772]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Music Volume"
+
+[node name="HSlider" type="HSlider" parent="Menu/Options/TabContainer/Audio/VBoxContainer/MusicSlider" unique_id=1622409702]
+layout_mode = 2
+value = 100.0
+
+[node name="SFXSlider" type="VBoxContainer" parent="Menu/Options/TabContainer/Audio/VBoxContainer" unique_id=1490973038]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/Options/TabContainer/Audio/VBoxContainer/SFXSlider" unique_id=1937709038]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "SFX Volume"
+
+[node name="HSlider" type="HSlider" parent="Menu/Options/TabContainer/Audio/VBoxContainer/SFXSlider" unique_id=174961098]
+layout_mode = 2
+value = 100.0
+
+[node name="Controls" type="TabBar" parent="Menu/Options/TabContainer" unique_id=162870798]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Menu/Options/TabContainer/Controls" unique_id=308968984]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 28.0
+offset_right = 425.0
+offset_bottom = 162.0
+
+[node name="MouseSensitivitySlider" type="VBoxContainer" parent="Menu/Options/TabContainer/Controls/VBoxContainer" unique_id=2041571408]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/Options/TabContainer/Controls/VBoxContainer/MouseSensitivitySlider" unique_id=1533521563]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Mouse Sensitivity"
+
+[node name="HSlider" type="HSlider" parent="Menu/Options/TabContainer/Controls/VBoxContainer/MouseSensitivitySlider" unique_id=705491279]
+layout_mode = 2
+
+[node name="StickSensitivitySlider" type="VBoxContainer" parent="Menu/Options/TabContainer/Controls/VBoxContainer" unique_id=829783994]
+custom_minimum_size = Vector2(400, 50)
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Menu/Options/TabContainer/Controls/VBoxContainer/StickSensitivitySlider" unique_id=1647694429]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "Stick Sensitivity"
+
+[node name="HSlider" type="HSlider" parent="Menu/Options/TabContainer/Controls/VBoxContainer/StickSensitivitySlider" unique_id=1177845996]
+layout_mode = 2
+
+[node name="Credits" type="TabBar" parent="Menu/Options/TabContainer" unique_id=1278673861]
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="MarkdownLabel" type="RichTextLabel" parent="Menu/Options/TabContainer/Credits" unique_id=1842150555]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 9.0
+offset_top = 9.0
+offset_right = -9.0
+offset_bottom = -9.0
+grow_horizontal = 2
+grow_vertical = 2
+bbcode_enabled = true
+script = ExtResource("2_bqt75")
+markdown_text = "## Stuff Used
+---
+### Models:
+\"Heavy Nazi Soldier\" (https://skfb.ly/6UIMx) by DJMaesen is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+\"Link Master Sword\" (https://skfb.ly/orTzD) by KangaroOz 3D is licensed under Creative Commons Attribution-NonCommercial (http://creativecommons.org/licenses/by-nc/4.0/).
+
+\"Link (The Legend Of Zelda Ocarina Of Time)\" (https://skfb.ly/pMvFI) by Berunas is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+---
+## Music:"
+h1 = SubResource("Resource_puq65")
+h2 = SubResource("Resource_goy3h")
+h3 = SubResource("Resource_nc7dr")
+h4 = SubResource("Resource_k1y6r")
+h5 = SubResource("Resource_71b7j")
+h6 = SubResource("Resource_715kj")
+metadata/_custom_type_script = "uid://dbap0gqox0ty1"
+
+[connection signal="pressed" from="Menu/Start Button" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Menu/Options Button" to="." method="_on_options_button_pressed"]
