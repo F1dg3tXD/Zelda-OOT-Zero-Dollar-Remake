@@ -5,6 +5,9 @@ extends Control
 @onready var progress_bar: ProgressBar = $BossHeath/VBoxContainer/ProgressBar
 @onready var boss_heath: Control = %BossHeath
 
+# Enable Speedrun timer when in speedrun mode.
+@onready var speedrun_timer: Control = $SpeedrunTimer
+
 func _ready() -> void:
 	add_to_group("player_ui")
 	health_bar.value = 100

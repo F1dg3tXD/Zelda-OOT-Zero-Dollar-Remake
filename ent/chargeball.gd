@@ -5,6 +5,8 @@ extends Node3D
 ## The sword's hitbox calls take_damage() while the ball is travelling toward
 ## the player, which sends it back to the Boss and speeds it up. If it reaches
 ## the player without being hit, the Boss resets the rally.
+@onready var outer_layer: CSGSphere3D = $OuterLayer
+@onready var outer_layer2: CSGSphere3D = $OuterLayer2
 
 signal returned
 signal reached_player
@@ -24,6 +26,21 @@ var _heading_toward_player := true
 var _active := false
 var _base_position := Vector3.ZERO
 var _time := 0.0
+
+
+func set_phase2_colors() -> void:
+	if outer_layer != null:
+		var mat := StandardMaterial3D.new()
+		mat.blend_mode = BaseMaterial3D.BLEND_MODE_MUL
+		mat.albedo_color = Color(0.6, 0.0, 1.0, 0.314)
+		mat.emission_enabled = true
+		mat.emission = Color(0.6, 0.0, 1.0, 1.0)
+		outer_layer.material_override = mat
+	if outer_layer2 != null:
+		var mat2 := StandardMaterial3D.new()
+		mat2.blend_mode = BaseMaterial3D.BLEND_MODE_MUL
+		mat2.albedo_color = Color(0.0, 0.0, 0.0, 1.0)
+		outer_layer2.material_override = mat2
 
 
 func launch(player: Node3D, boss: Node3D, spawn_position: Vector3) -> void:

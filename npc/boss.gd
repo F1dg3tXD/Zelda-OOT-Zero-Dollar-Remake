@@ -90,6 +90,8 @@ func _launch_ball() -> void:
 	_chargeball.reached_player.connect(_on_reached_player)
 	_chargeball.reached_boss.connect(_on_reached_boss)
 	_chargeball.launch(_player, self, global_position)
+	if _phase == 2 and _chargeball.has_method("set_phase2_colors"):
+		_chargeball.set_phase2_colors()
 
 
 func _on_returned() -> void:

@@ -61,3 +61,11 @@ func _on_stick_sensitivity_changed(value: float) -> void:
 	var pc: Node = get_node_or_null("/root/PlayerConfig")
 	if pc != null and pc.has_method("set_config"):
 		pc.set_config("GameSettings", "StickSensitivity", value)
+
+
+func _on_start_speedrun_button_pressed() -> void:
+	# Enable the speedrun timer, then start the game.
+	var st = load("res://player/speedrun_timer.gd")
+	if st != null and st.has_method("enable_speedrun"):
+		st.enable_speedrun()
+	get_tree().change_scene_to_file(GAME_SCENE)

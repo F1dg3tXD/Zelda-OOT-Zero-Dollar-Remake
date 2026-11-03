@@ -54,11 +54,21 @@ theme = ExtResource("3_sho67")
 layout_mode = 0
 offset_left = 669.0
 offset_top = 260.0
-offset_right = 1096.0
+offset_right = 873.0
 offset_bottom = 334.0
 theme = ExtResource("3_sho67")
 theme_override_font_sizes/font_size = 32
-text = "Start Game"
+text = "Start"
+
+[node name="Start Speedrun Button" type="Button" parent="Menu" unique_id=2100846811]
+layout_mode = 0
+offset_left = 887.0
+offset_top = 260.0
+offset_right = 1094.0
+offset_bottom = 334.0
+theme = ExtResource("3_sho67")
+theme_override_font_sizes/font_size = 32
+text = "Speedrun"
 
 [node name="Options Button" type="Button" parent="Menu" unique_id=1151714637]
 layout_mode = 0
@@ -195,4 +205,5 @@ h6 = SubResource("Resource_715kj")
 metadata/_custom_type_script = "uid://dbap0gqox0ty1"
 
 [connection signal="pressed" from="Menu/Start Button" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="Menu/Start Speedrun Button" to="." method="_on_start_speedrun_button_pressed"]
 [connection signal="pressed" from="Menu/Options Button" to="." method="_on_options_button_pressed"]

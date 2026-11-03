@@ -14,6 +14,7 @@ extends Node3D
 @onready var light_teleport_trigger: Area3D = $LightTeleport/TeleportTrigger
 @onready var phantom_camera_volume: Area3D = $PhantomCameraVolume
 @onready var fighttyrone: AudioStreamPlayer = $Fighttyrone
+@onready var teleport_ending: Area3D = $LightTeleport/TeleportTrigger
 
 const LIGHT_TELEPORT_OPACITY := 0.48
 const LIGHT_TELEPORT_FADE_TIME := 1.2
@@ -27,6 +28,8 @@ func _ready() -> void:
 	animation_player.animation_finished.connect(_on_animation_finished)
 	boss.defeated.connect(_on_boss_defeated)
 	boss.phase2_started.connect(_on_phase2_started)
+	if teleport_ending != null:
+		teleport_ending.body_entered.connect(_on_teleport_ending)
 
 	# The escape beam only appears after Hitler is defeated.
 	light_teleport.visible = false
@@ -49,6 +52,9 @@ func _start_cutscene() -> void:
 		if phantom_camera_volume.has_method("_deactivate"):
 			phantom_camera_volume._deactivate()
 	_set_player_control(false)
+	var st = load("res://player/speedrun_timer.gd")
+	if st != null and st.has_method("pause_speedrun"):
+		st.pause_speedrun()
 
 	_cutscene_playing = true
 	boss_cutscene.current = true
@@ -70,6 +76,9 @@ func _finish_cutscene() -> void:
 	_show_player_camera()
 	_set_player_control(true)
 	phantom_camera_volume.visible = false
+	var st = load("res://player/speedrun_timer.gd")
+	if st != null and st.has_method("resume_speedrun"):
+		st.resume_speedrun()
 	fighthitler.play()
 
 	# Give the song a moment before the first ball is launched.
@@ -85,6 +94,16 @@ func _on_phase2_started() -> void:
 	if fighthitler.playing:
 		fighthitler.stop()
 	fighttyrone.play()
+
+func _on_teleport_ending(body: Node3D) -> void:
+	if not body.is_in_group("Player"):
+		return
+	if is_instance_valid(_player):
+		if _player.has_method("lock_input"):
+			_player.lock_input()
+	var st = load("res://player/speedrun_timer.gd")
+	if st != null and st.has_method("finalize_speedrun"):
+		st.finalize_speedrun()
 
 func _on_boss_defeated() -> void:
 	if fighthitler.playing:
@@ -137,6 +156,12 @@ func _set_player_control(enabled: bool) -> void:
 	_player.set_physics_process(enabled)
 	if _player is CharacterBody3D:
 		(_player as CharacterBody3D).velocity = Vector3.ZERO
+	if enabled:
+		if _player.has_method("unlock_input"):
+			_player.unlock_input()
+	else:
+		if _player.has_method("lock_input"):
+			_player.lock_input()
 
 
 func _show_player_camera() -> void:

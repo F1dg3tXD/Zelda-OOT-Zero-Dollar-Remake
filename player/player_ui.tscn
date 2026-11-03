@@ -5,6 +5,7 @@
 [ext_resource type="Theme" uid="uid://dgr2w4xejlndg" path="res://themes/funny.tres" id="1_x0k1s"]
 [ext_resource type="Texture2D" uid="uid://c67lqdnn7c2fb" path="res://textures/HealthOver.png" id="2_f7moa"]
 [ext_resource type="Texture2D" uid="uid://pw7hjd48kc4n" path="res://textures/HealthProgress.png" id="3_tpwqs"]
+[ext_resource type="Script" uid="uid://cqmo814kkx8nw" path="res://player/speedrun_timer.gd" id="6_0aiwo"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0aiwo"]
 border_width_left = 15
@@ -96,3 +97,32 @@ step = 1.0
 value = 100.0
 rounded = true
 show_percentage = false
+
+[node name="SpeedrunTimer" type="Control" parent="." unique_id=415225364]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -366.0
+offset_top = -91.0
+offset_right = -10.0
+offset_bottom = -7.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+script = ExtResource("6_0aiwo")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SpeedrunTimer" unique_id=356108277]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="Time" type="Label" parent="SpeedrunTimer/VBoxContainer" unique_id=590256971]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/outline_size = 15
+theme_override_font_sizes/font_size = 24
+text = "Time: 
+$live_game_time(hh:mm:ss:ms)"

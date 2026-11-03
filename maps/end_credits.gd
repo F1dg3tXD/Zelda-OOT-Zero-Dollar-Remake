@@ -8,9 +8,10 @@ const TITLE_SCENE := "res://maps/TitleScreen.tscn"
 @onready var credits_camera: Camera3D = $Camera3D
 @onready var animation_player: AnimationPlayer = $Camera3D/AnimationPlayer
 @onready var end_screen: Node2D = $EndScreen
-@onready var try_again_button: Button = $EndScreen/TryAgainButton
-@onready var quit_button: Button = $EndScreen/QuitButton
+@onready var try_again_button: Button = $EndScreen/Control/TryAgainButton
+@onready var quit_button: Button = $EndScreen/Control/QuitButton
 @onready var player: CharacterBody3D = $Player
+@onready var game_time: Label = $EndScreen/Control/GameTime
 
 var _leaving := false
 
@@ -43,6 +44,16 @@ func _on_animation_finished(animation_name: StringName) -> void:
 	end_screen.visible = true
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	try_again_button.grab_focus()
+	var st = load("res://player/speedrun_timer.gd")
+	if st != null and st.has_method("get_elapsed_text") and game_time != null:
+		game_time.text = "Game Time:" + "\n" + st.get_elapsed_text()
+		if st.has_method("is_cheated") and st.is_cheated():
+			game_time.text = "Cheat Time:" + "\n" + st.get_elapsed_text()
+			game_time.modulate = Color(1.0, 0.0, 1.0, 1.0)
+			game_time.pivot_offset = game_time.size * 0.5
+			var tween := create_tween().set_loops()
+			tween.tween_property(game_time, "rotation_degrees", 30.0, 0.5)
+			tween.tween_property(game_time, "rotation_degrees", -30.0, 0.5)
 
 
 func _on_try_again_pressed() -> void:

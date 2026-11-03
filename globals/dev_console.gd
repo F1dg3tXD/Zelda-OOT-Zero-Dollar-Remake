@@ -35,23 +35,32 @@ func _on_console_closed() -> void:
 
 
 func _reload() -> void:
+	_mark_cheated()
 	get_tree().reload_current_scene()
 
 func _map(map_name: String) -> void:
+	_mark_cheated()
 	var path := "res://maps/%s.tscn" % map_name
 	get_tree().change_scene_to_file(path)
 
 func _exit() -> void:
+	_mark_cheated()
 	get_tree().quit()
 
 
 func _player() -> Node:
 	return get_tree().get_first_node_in_group("Player")
 
+func _mark_cheated() -> void:
+	var st = load("res://player/speedrun_timer.gd")
+	if st != null and st.has_method("mark_cheated"):
+		st.mark_cheated()
+
 
 # ── debug ────────────────────────────────────────────────────────────────────
 
 func on_debug(param: String) -> void:
+	_mark_cheated()
 	var level := param.to_int()
 	if level <= 0:
 		_set_debug_collision(false)
@@ -75,6 +84,7 @@ func _set_debug_collision(enabled: bool) -> void:
 # ── fly ──────────────────────────────────────────────────────────────────────
 
 func on_fly() -> void:
+	_mark_cheated()
 	var player = _player()
 	if player == null:
 		Console.print_line("No player found")
@@ -90,6 +100,7 @@ func on_fly() -> void:
 # ── map ──────────────────────────────────────────────────────────────────────
 
 func on_map(map_name: String) -> void:
+	_mark_cheated()
 	if map_name.is_empty():
 		Console.print_line("Usage: map <map_name>")
 		Console.print_line("Available maps:")
@@ -123,6 +134,7 @@ func _get_available_maps() -> PackedStringArray:
 # ── heal ─────────────────────────────────────────────────────────────────────
 
 func on_heal(param: String) -> void:
+	_mark_cheated()
 	var player = _player()
 	if player == null:
 		Console.print_line("No player found")
@@ -137,6 +149,7 @@ func on_heal(param: String) -> void:
 # ── damage ───────────────────────────────────────────────────────────────────
 
 func on_damage(param: String) -> void:
+	_mark_cheated()
 	var player = _player()
 	if player == null:
 		Console.print_line("No player found")
@@ -148,6 +161,7 @@ func on_damage(param: String) -> void:
 # ── speed ────────────────────────────────────────────────────────────────────
 
 func on_speed(param: String) -> void:
+	_mark_cheated()
 	var player = _player()
 	if player == null:
 		Console.print_line("No player found")
@@ -163,6 +177,7 @@ func on_speed(param: String) -> void:
 # ── tp ───────────────────────────────────────────────────────────────────────
 
 func on_teleport(x: String, y: String, z: String) -> void:
+	_mark_cheated()
 	var player = _player()
 	if player == null:
 		Console.print_line("No player found")
@@ -175,6 +190,7 @@ func on_teleport(x: String, y: String, z: String) -> void:
 # ── kys ──────────────────────────────────────────────────────────────────────
 
 func on_kys() -> void:
+	_mark_cheated()
 	var player = _player()
 	if player == null:
 		Console.print_line("No player found")
@@ -186,6 +202,7 @@ func on_kys() -> void:
 # ── tickrate ────────────────────────────────────────────────────────────────
 
 func on_tickrate(value: String) -> void:
+	_mark_cheated()
 	var sky = get_tree().get_first_node_in_group("sky")
 	if sky == null or not is_instance_valid(sky):
 		Console.print_line("Error: No sky found in current map")
@@ -213,6 +230,7 @@ const TIME_PRESETS := {
 
 
 func on_time(action: String, value: String) -> void:
+	_mark_cheated()
 	var sky = get_tree().get_first_node_in_group("sky")
 	if sky == null or not is_instance_valid(sky):
 		Console.print_line("Error: No sky found in current map")
