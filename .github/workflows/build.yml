@@ -22,6 +22,7 @@ jobs:
         uses: chickensoft-games/setup-godot@v2
         with:
           version: 4.7.2
+          use_mono: false
           include_export_templates: true
 
       - name: Export
